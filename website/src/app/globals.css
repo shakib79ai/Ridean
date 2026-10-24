@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --navy: #0A1F44;
+  --navy-2: #12305F;
+  --navy-3: #1F4A8C;
+  --acc: #F4B000;
+  --ground: #F3F8FD;
+  --surface: #FFFFFF;
+  --line: #DCE6F2;
+  --muted: #4A5D78;
+  --muted-on-dark: #8FA6C8;
+  --ok: #0F6B45;
+  --ok-bg: #DDF3E8;
+  --warn: #7A4A00;
+  --warn-bg: #FBEBCF;
+  --info: #0B4F8A;
+  --info-bg: #E8EEF8;
+  --bad: #A32020;
+  --bad-bg: #FBE0DE;
+
+  --background: var(--surface);
+  --foreground: var(--navy);
+}
+
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-navy-3: var(--navy-3);
+  --color-acc: var(--acc);
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-muted-on-dark: var(--muted-on-dark);
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-bad: var(--bad);
+  --color-bad-bg: var(--bad-bg);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
