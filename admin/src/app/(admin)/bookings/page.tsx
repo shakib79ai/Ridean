@@ -33,22 +33,22 @@ export default function BookingsPage() {
             ))}
           </div>
           <div className="flex gap-2.5">
-            <div className="h-9 flex items-center px-3.5 border border-line rounded-[10px] bg-surface text-[12.5px] text-muted font-semibold">
+            <div className="h-9 flex items-center px-3.5 border border-line rounded-[12px] bg-surface text-[12.5px] text-muted font-semibold">
               Last 30 days ▾
             </div>
-            <div className="h-9 flex items-center px-4 rounded-[10px] bg-acc text-[12.5px] text-navy font-bold">
+            <div className="h-9 flex items-center px-4 rounded-[12px] bg-acc text-[12.5px] text-navy font-bold shadow-[0_6px_16px_rgba(244,176,0,.38)]">
               Export CSV
             </div>
             <Link
               href="/bookings/new"
-              className="h-9 flex items-center px-4 rounded-[10px] bg-navy text-[12.5px] text-white font-bold"
+              className="h-9 flex items-center px-4 rounded-[12px] bg-navy text-[12.5px] text-white font-bold"
             >
               + New booking
             </Link>
           </div>
         </div>
 
-        <div className="bg-surface border border-line rounded-[14px] overflow-hidden">
+        <div className="bg-surface border border-line rounded-[20px] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>

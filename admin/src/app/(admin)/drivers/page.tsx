@@ -24,7 +24,7 @@ export default function DriversPage() {
           <div className="text-[13.5px] font-bold text-muted pb-2.5 border-b-2 border-transparent">Supplier partners</div>
         </div>
 
-        <div className="bg-surface border border-line rounded-[14px] overflow-hidden">
+        <div className="bg-surface border border-line rounded-[20px] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
@@ -61,10 +61,10 @@ export default function DriversPage() {
         <div className="text-[14.5px] font-bold text-navy mt-1.5">Supplier partners</div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {suppliers.map((s) => (
-            <div key={s.name} className="bg-surface border border-line rounded-[14px] p-4.5">
+            <div key={s.name} className="bg-surface border border-line rounded-[20px] p-4.5">
               <div className="flex items-center gap-2.5">
                 <div
-                  className="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center font-extrabold text-xs"
+                  className="w-[38px] h-[38px] rounded-[12px] flex items-center justify-center font-extrabold text-xs"
                   style={{ background: s.color, color: s.textColor }}
                 >
                   {s.code}

@@ -42,16 +42,16 @@ export default function DashboardPage() {
       <div className="p-7 md:p-8 flex flex-col gap-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5">
           {KPIS.map((k) => (
-            <div key={k.label} className="bg-surface border border-line rounded-[14px] p-5">
+            <div key={k.label} className="bg-surface border border-line rounded-[20px] p-5">
               <div className="text-xs text-muted font-semibold">{k.label}</div>
-              <div className="text-[28px] font-extrabold text-navy mt-1.5">{k.value}</div>
+              <div className="font-display text-[28px] font-extrabold text-navy mt-1.5">{k.value}</div>
               <div className={`text-xs font-bold mt-1 ${k.deltaTone}`}>{k.delta}</div>
             </div>
           ))}
         </div>
 
         <div className="flex gap-4.5 flex-wrap">
-          <div className="flex-[999_1_560px] min-w-0 bg-surface border border-line rounded-[14px] p-5.5">
+          <div className="flex-[999_1_560px] min-w-0 bg-surface border border-line rounded-[20px] p-5.5">
             <div className="flex items-center justify-between mb-3.5">
               <div className="text-[14.5px] font-bold text-navy">Revenue — last 30 days</div>
               <div className="text-xs text-muted">$412,900 total</div>
@@ -72,7 +72,7 @@ export default function DashboardPage() {
               <line x1="0" y1="179" x2="560" y2="179" stroke="#DCE6F2" strokeWidth="1" />
             </svg>
           </div>
-          <div className="flex-[1_1_320px] min-w-[280px] bg-surface border border-line rounded-[14px] p-5.5">
+          <div className="flex-[1_1_320px] min-w-[280px] bg-surface border border-line rounded-[20px] p-5.5">
             <div className="text-[14.5px] font-bold text-navy mb-3.5">Bookings by service</div>
             <div className="flex flex-col gap-3">
               {SERVICE_SHARE.map((s) => (
@@ -91,7 +91,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex gap-4.5 flex-wrap">
-          <div className="flex-[999_1_560px] min-w-0 bg-surface border border-line rounded-[14px] overflow-hidden">
+          <div className="flex-[999_1_560px] min-w-0 bg-surface border border-line rounded-[20px] overflow-hidden">
             <div className="flex items-center justify-between px-5 pt-4.5">
               <div className="text-[14.5px] font-bold text-navy">Recent bookings</div>
               <a href="/bookings" className="text-[12.5px] font-bold text-navy-3">
@@ -129,11 +129,11 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex-[1_1_320px] min-w-[280px] bg-surface border border-line rounded-[14px] p-5">
+          <div className="flex-[1_1_320px] min-w-[280px] bg-surface border border-line rounded-[20px] p-5">
             <div className="text-[14.5px] font-bold text-navy mb-3.5">Needs attention</div>
             <div className="flex flex-col gap-3">
               {ALERTS.map((a) => (
-                <div key={a.title} className={`flex gap-2.5 p-3 rounded-[10px] ${ALERT_BG[a.tone]}`}>
+                <div key={a.title} className={`flex gap-2.5 p-3 rounded-[12px] ${ALERT_BG[a.tone]}`}>
                   <div className={`w-1.5 rounded ${ALERT_BAR[a.tone]}`} />
                   <div>
                     <div className="text-[13px] font-bold text-navy">{a.title}</div>
@@ -145,7 +145,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-surface border border-line rounded-[14px] p-5.5">
+        <div className="bg-surface border border-line rounded-[20px] p-5.5">
           <div className="flex items-center justify-between mb-3.5">
             <div className="text-[14.5px] font-bold text-navy">Top vehicle tiers this month</div>
             <div className="text-xs text-muted">By share of completed bookings</div>

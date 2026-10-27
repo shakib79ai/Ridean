@@ -9,7 +9,8 @@
   --surface: #FFFFFF;
   --line: #DCE6F2;
   --muted: #4A5D78;
-  --muted-on-dark: #8FA6C8;
+  --muted-on-dark: #B5C8E6;
+  --chip-track: #E8F0FA;
   --ok: #1E8E5A;
   --ok-bg: #E6F6EE;
   --warn: #B8860B;
@@ -32,6 +33,7 @@
   --color-line: var(--line);
   --color-muted: var(--muted);
   --color-muted-on-dark: var(--muted-on-dark);
+  --color-chip-track: var(--chip-track);
   --color-ok: var(--ok);
   --color-ok-bg: var(--ok-bg);
   --color-warn: var(--warn);
@@ -47,4 +49,10 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: 'Bricolage Grotesque', 'DM Sans', system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }

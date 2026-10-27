@@ -22,15 +22,15 @@ export default function SettlementsPage() {
       <div className="p-7 md:p-8 flex flex-col gap-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4.5">
           {STATS.map((s) => (
-            <div key={s.label} className="bg-surface border border-line rounded-[14px] p-5">
+            <div key={s.label} className="bg-surface border border-line rounded-[20px] p-5">
               <div className="text-xs text-muted font-semibold">{s.label}</div>
-              <div className="text-[26px] font-extrabold text-navy mt-1.5">{s.value}</div>
+              <div className="font-display text-[26px] font-extrabold text-navy mt-1.5">{s.value}</div>
               <div className={`text-xs font-bold mt-1 ${s.tone}`}>{s.note}</div>
             </div>
           ))}
         </div>
 
-        <div className="bg-surface border border-line rounded-[14px] overflow-hidden">
+        <div className="bg-surface border border-line rounded-[20px] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
@@ -67,18 +67,18 @@ export default function SettlementsPage() {
         </div>
 
         <div className="flex gap-4.5 flex-wrap">
-          <div className="flex-1 min-w-[280px] bg-surface border border-line rounded-[14px] p-5">
+          <div className="flex-1 min-w-[280px] bg-surface border border-line rounded-[20px] p-5">
             <div className="text-[14.5px] font-bold text-navy mb-2.5">Payout method</div>
-            <div className="flex items-center gap-2.5 p-3 border border-line rounded-[10px]">
+            <div className="flex items-center gap-2.5 p-3 border border-line rounded-[12px]">
               <CreditCardIcon className="w-[18px] h-[18px] text-navy-3" />
               <div className="text-[13px] text-navy font-semibold">ACH batch — Chase Business ••1172</div>
             </div>
           </div>
-          <div className="flex-1 min-w-[280px] bg-surface border border-line rounded-[14px] p-5">
+          <div className="flex-1 min-w-[280px] bg-surface border border-line rounded-[20px] p-5">
             <div className="text-[14.5px] font-bold text-navy mb-2.5">Export</div>
             <div className="flex gap-2.5">
-              <div className="h-9 flex items-center px-4 rounded-[10px] bg-acc text-[12.5px] text-navy font-bold">Download CSV</div>
-              <div className="h-9 flex items-center px-4 border border-line rounded-[10px] text-[12.5px] text-muted font-bold">Download PDF</div>
+              <div className="h-9 flex items-center px-4 rounded-[12px] bg-acc text-[12.5px] text-navy font-bold shadow-[0_6px_16px_rgba(244,176,0,.38)]">Download CSV</div>
+              <div className="h-9 flex items-center px-4 border border-line rounded-[12px] text-[12.5px] text-muted font-bold">Download PDF</div>
             </div>
           </div>
         </div>

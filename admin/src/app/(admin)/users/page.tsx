@@ -21,14 +21,14 @@ export default function UsersPage() {
       <div className="p-7 md:p-8 flex flex-col gap-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4.5">
           {STATS.map((s) => (
-            <div key={s.label} className="bg-surface border border-line rounded-[14px] p-5">
+            <div key={s.label} className="bg-surface border border-line rounded-[20px] p-5">
               <div className="text-xs text-muted font-semibold">{s.label}</div>
-              <div className="text-[26px] font-extrabold text-navy mt-1.5">{s.value}</div>
+              <div className="font-display text-[26px] font-extrabold text-navy mt-1.5">{s.value}</div>
             </div>
           ))}
         </div>
 
-        <div className="bg-surface border border-line rounded-[14px] overflow-hidden">
+        <div className="bg-surface border border-line rounded-[20px] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>

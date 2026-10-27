@@ -41,12 +41,12 @@ export default function NewBookingPage() {
       <Topbar title="New booking" subtitle="Create a booking on behalf of a customer" />
       <div className="p-7 md:p-8 flex flex-col gap-5 max-w-[640px]">
         {confirmed && (
-          <div className="flex items-center gap-2.5 bg-ok-bg border border-ok/20 rounded-[10px] px-4 py-3 text-[13px] font-bold text-ok">
+          <div className="flex items-center gap-2.5 bg-ok-bg border border-ok/20 rounded-[12px] px-4 py-3 text-[13px] font-bold text-ok">
             Booking created — returning to Bookings…
           </div>
         )}
 
-        <div className="bg-surface border border-line rounded-[14px] p-6 flex flex-col gap-5">
+        <div className="bg-surface border border-line rounded-[20px] p-6 flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <div className="text-[11.5px] tracking-wide uppercase text-muted font-bold">Service</div>
             <div className="flex gap-2 flex-wrap">
@@ -88,7 +88,7 @@ export default function NewBookingPage() {
             <button
               type="button"
               onClick={() => router.push("/bookings")}
-              className="h-10 px-5 rounded-[10px] bg-surface border border-line text-[13px] font-bold text-muted"
+              className="h-10 px-5 rounded-[12px] bg-surface border border-line text-[13px] font-bold text-muted"
             >
               Cancel
             </button>
@@ -96,7 +96,7 @@ export default function NewBookingPage() {
               type="button"
               onClick={handleCreate}
               disabled={confirmed}
-              className="h-10 px-5 rounded-[10px] bg-acc text-navy text-[13px] font-bold disabled:opacity-60"
+              className="h-10 px-5 rounded-[12px] bg-acc text-navy text-[13px] font-bold disabled:opacity-60 shadow-[0_6px_16px_rgba(244,176,0,.38)]"
             >
               Create booking
             </button>
@@ -125,7 +125,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-11 px-3.5 border border-line rounded-[10px] bg-ground text-[13.5px] font-semibold text-navy outline-none placeholder:text-muted placeholder:font-normal"
+        className="h-11 px-3.5 border border-line rounded-[12px] bg-ground text-[13.5px] font-semibold text-navy outline-none placeholder:text-muted placeholder:font-normal"
       />
     </div>
   );
@@ -145,7 +145,7 @@ function Stepper({
   max: number;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2.5 border border-line rounded-[10px] px-3.5 py-2.5 bg-ground">
+    <div className="flex items-center justify-between gap-2.5 border border-line rounded-[12px] px-3.5 py-2.5 bg-ground">
       <span className="text-[12.5px] font-semibold text-navy">{label}</span>
       <div className="flex items-center gap-2.5">
         <button
