@@ -11,8 +11,8 @@ export default function InvoicesPage() {
 
   return (
     <>
-      <HeroHeader title="Invoices" subtitle="Receipts for every completed ride, transfer and rental." />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-2.5 overflow-y-auto">
+      <HeroHeader title="Invoices" />
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-2.5 overflow-y-auto">
         <div className="flex gap-2.5 mb-1">
           <div className="flex-1 bg-ground border border-line rounded-[14px] p-3 text-center">
             <div className="text-[16px] font-extrabold text-navy">{invoices.length}</div>

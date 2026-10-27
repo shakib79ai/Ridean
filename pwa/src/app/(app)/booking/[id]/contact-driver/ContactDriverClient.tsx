@@ -26,7 +26,7 @@ export default function ContactDriverClient({ trip }: { trip: Trip }) {
   return (
     <>
       <HeroHeader title="Contact driver" subtitle={trip.driver ?? "Driver not yet assigned"} />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-5 flex flex-col gap-3.5">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-5 flex flex-col gap-3.5">
         <div className="flex items-center gap-3 border border-line rounded-[14px] p-3.5">
           <div className="w-11 h-11 rounded-full bg-navy-2 flex items-center justify-center text-base font-extrabold text-white">
             {driverName.charAt(0)}

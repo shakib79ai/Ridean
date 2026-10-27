@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import type { Invoice } from "@/data/mock";
-import { CheckeredFlag } from "@/components/HeroHeader";
 import { CreditCardIcon, CarIcon, DownloadIcon, MailIcon } from "@/components/Icons";
 
 export default function InvoiceDetailClient({ invoice }: { invoice: Invoice }) {
@@ -11,28 +10,29 @@ export default function InvoiceDetailClient({ invoice }: { invoice: Invoice }) {
 
   return (
     <>
-      <div className="flex-shrink-0">
-        <CheckeredFlag />
-        <div className="bg-navy px-5 pt-4 pb-5 flex items-center gap-3">
-          <button
-            onClick={() => router.back()}
-            aria-label="Back"
-            className="w-9 h-9 rounded-full bg-navy-2 flex items-center justify-center text-white text-lg flex-shrink-0"
-          >
-            ‹
-          </button>
-          <span className="text-[21px] font-extrabold text-white">Invoice</span>
-          <button
-            aria-label="Share"
-            className="ml-auto w-9 h-9 rounded-full bg-navy-2 flex items-center justify-center text-white text-sm"
-          >
-            ⤴
-          </button>
-        </div>
+      <div className="flex-shrink-0 h-14 flex items-center gap-1 pl-2 pr-3">
+        <button
+          onClick={() => router.back()}
+          aria-label="Back"
+          className="w-11 h-11 rounded-full flex items-center justify-center text-navy flex-shrink-0"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
+        </button>
+        <span className="flex-1 text-[22px] leading-[30px] font-bold text-navy tracking-[-0.01em]" style={{ fontFamily: "var(--font-display)" }}>
+          Invoice
+        </span>
+        <button
+          aria-label="Share"
+          className="w-11 h-11 rounded-full bg-surface border border-line flex items-center justify-center text-navy text-sm flex-shrink-0"
+        >
+          ⤴
+        </button>
       </div>
 
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col overflow-y-auto">
-        <div className="bg-navy rounded-[18px] p-4.5 flex flex-col gap-2.5 mb-3.5 relative overflow-hidden">
+      <div className="flex-1 bg-ground px-4 pt-1 pb-6 flex flex-col overflow-y-auto">
+        <div className="bg-navy rounded-[24px] p-4.5 flex flex-col gap-2.5 mb-3.5 relative overflow-hidden">
           <div className="flex justify-between items-start relative">
             <div>
               <div className="text-muted-on-dark text-[10.5px] font-bold tracking-wide uppercase">Invoice number</div>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { trips } from "@/data/mock";
-import { CheckeredFlag } from "@/components/HeroHeader";
+import { TabHeader } from "@/components/HeroHeader";
 
 const STATUS_STYLE = {
   upcoming: { bg: "bg-warn-bg", fg: "text-warn", label: "Upcoming" },
@@ -11,18 +11,15 @@ const STATUS_STYLE = {
 export default function Trips() {
   return (
     <>
-      <CheckeredFlag />
-      <div className="bg-navy px-5 pt-5 pb-6">
-        <span className="text-2xl font-extrabold text-white">Trips</span>
-      </div>
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-2.5">
+      <TabHeader title="Trips" />
+      <div className="flex-1 bg-ground px-4 pt-1 pb-6 flex flex-col gap-3">
         {trips.map((t) => {
           const s = STATUS_STYLE[t.status];
           return (
             <Link
               key={t.id}
               href={`/booking/${t.id}`}
-              className={`border border-line rounded-2xl p-3.5 flex flex-col gap-1.5 ${
+              className={`bg-surface border border-line shadow-sm rounded-[24px] p-4 flex flex-col gap-1.5 ${
                 t.status === "cancelled" ? "opacity-60" : ""
               }`}
             >

@@ -19,7 +19,10 @@ export function Logo({ size = 30, wordmarkClassName = "text-lg" }: { size?: numb
   return (
     <div className="flex items-center gap-2.5">
       <LogoMark size={size} />
-      <span className={`font-extrabold text-white ${wordmarkClassName}`}>
+      <span
+        className={`font-extrabold text-white tracking-[-0.02em] ${wordmarkClassName}`}
+        style={{ fontFamily: "var(--font-display)" }}
+      >
         Ride<span className="text-acc">an</span>
       </span>
     </div>

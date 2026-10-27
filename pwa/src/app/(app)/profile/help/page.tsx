@@ -18,7 +18,7 @@ export default function HelpSupport() {
   return (
     <>
       <HeroHeader title="Support" />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-2.5">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-2.5">
         <button className="flex items-center gap-3 bg-navy rounded-[18px] p-[17px] text-left">
           <div className="w-[46px] h-[46px] rounded-full bg-acc flex items-center justify-center text-xl flex-shrink-0">
             💬

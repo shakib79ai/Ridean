@@ -11,7 +11,7 @@ export default function SavedAddresses() {
   return (
     <>
       <HeroHeader title="Saved addresses" />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-2.5">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-2.5">
         {ADDRESSES.map((a) => {
           const Icon = a.icon;
           return (

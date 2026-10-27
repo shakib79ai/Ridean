@@ -24,7 +24,7 @@ export default function BookingDetailsClient({ trip }: { trip: Trip }) {
   return (
     <>
       <HeroHeader title="Booking details" subtitle={`${trip.mode} · ${trip.id.toUpperCase()}`} />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-3.5">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-3.5">
         <div className="flex items-center justify-between">
           <span className={`${s.bg} ${s.fg} text-[11px] font-bold px-2.5 py-1 rounded-full`}>{s.label}</span>
           <span className="text-[12px] text-muted font-semibold">

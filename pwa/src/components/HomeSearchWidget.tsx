@@ -103,12 +103,12 @@ export function HomeSearchWidget() {
       {/* Fields */}
       <div className="flex flex-col gap-2.5">
         {tab === "ride" && (
-          <div className="flex p-1 bg-ground border border-line rounded-full">
+          <div className="flex p-1 bg-chip rounded-2xl">
             <button
               type="button"
               onClick={() => setRideTiming("now")}
-              className={`flex-1 rounded-full py-1.5 text-[11.5px] font-bold ${
-                rideTiming === "now" ? "bg-navy text-white" : "text-muted"
+              className={`flex-1 rounded-xl py-2 text-[13px] font-semibold ${
+                rideTiming === "now" ? "bg-navy text-white" : "text-navy"
               }`}
             >
               Ride now
@@ -116,8 +116,8 @@ export function HomeSearchWidget() {
             <button
               type="button"
               onClick={() => setRideTiming("schedule")}
-              className={`flex-1 rounded-full py-1.5 text-[11.5px] font-bold ${
-                rideTiming === "schedule" ? "bg-navy text-white" : "text-muted"
+              className={`flex-1 rounded-xl py-2 text-[13px] font-semibold ${
+                rideTiming === "schedule" ? "bg-navy text-white" : "text-navy"
               }`}
             >
               Schedule
@@ -226,7 +226,7 @@ export function HomeSearchWidget() {
 
       <button
         onClick={handleSearch}
-        className="bg-acc text-navy font-extrabold text-[14px] py-3 rounded-[12px]"
+        className="bg-acc text-navy font-bold text-[16px] py-3.5 rounded-2xl shadow-[0_6px_16px_rgba(244,176,0,0.38)]"
       >
         {tab === "rentals" ? "Search rentals" : "See rates"}
       </button>

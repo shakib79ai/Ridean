@@ -16,7 +16,7 @@ export default function EditProfile() {
   return (
     <>
       <HeroHeader title="Edit profile" />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-6 pb-6 flex flex-col gap-4">
+      <div className="flex-1 bg-ground px-5 pt-6 pb-6 flex flex-col gap-4">
         <div className="flex flex-col items-center gap-2 mb-2">
           <div className="relative">
             <div className="w-20 h-20 rounded-full bg-navy-2 flex items-center justify-center text-3xl font-extrabold text-white">

@@ -20,7 +20,7 @@ export default function EditBookingClient({ trip }: { trip: Trip }) {
   return (
     <>
       <HeroHeader title="Edit booking" subtitle={`${trip.mode} · ${trip.id.toUpperCase()}`} />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-4 overflow-y-auto">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-4 overflow-y-auto">
         <div className="flex gap-3">
           <div className="flex-1">
             <Field label="Pickup date" value={date} onChange={setDate} />

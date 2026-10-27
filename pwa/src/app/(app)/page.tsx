@@ -29,7 +29,10 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="text-2xl font-extrabold text-white">
+        <div
+          className="text-[32px] leading-[38px] font-bold text-white tracking-[-0.02em]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
           Where to next?
         </div>
       </div>

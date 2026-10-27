@@ -17,7 +17,7 @@ export default function AirportTransferClient() {
   return (
     <>
       <HeroHeader title="Airport Transfer" subtitle="Flight-synced pickup, with live tracking." />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-3.5">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-3.5">
         <Field label="Pickup" value={pickup} dot="bg-ok" />
         <Field label="Drop-off" value={dest} dot="bg-bad" dotShape="square" />
         <Field label="Flight number" value="DL 1942" />

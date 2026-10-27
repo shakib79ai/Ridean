@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckIcon } from "@/components/Icons";
-import { CheckeredFlag } from "@/components/HeroHeader";
+import { HeroHeader } from "@/components/HeroHeader";
 
 const BENEFITS = [
   "Easily manage all your bookings",
@@ -16,28 +16,22 @@ export default function CreateAccount() {
 
   return (
     <>
-      <CheckeredFlag />
-      <div className="px-5 py-4 flex items-center">
-        <button
-          onClick={() => router.back()}
-          className="w-9 h-9 rounded-full bg-navy-2 flex items-center justify-center text-white text-lg"
+      <HeroHeader title="Create account" />
+      <div className="flex-1 bg-ground px-5 pt-1 pb-6 flex flex-col gap-4">
+        <div
+          className="text-[26px] font-bold text-navy"
+          style={{ fontFamily: "var(--font-display)" }}
         >
-          ‹
-        </button>
-      </div>
-
-      <div className="flex-1 bg-surface rounded-t-[20px] mt-3 px-6 pt-7 pb-8 flex flex-col gap-4">
-        <div className="text-[26px] font-extrabold text-navy">
-          CREATE AN ACCOUNT
+          Create an account
         </div>
 
         <div className="flex flex-col gap-2.5 mb-1">
           {BENEFITS.map((b) => (
             <div key={b} className="flex gap-2.5 items-center">
-              <div className="w-[20px] h-[20px] rounded-full bg-acc flex items-center justify-center text-navy">
+              <div className="w-[20px] h-[20px] rounded-full bg-acc flex items-center justify-center text-navy flex-shrink-0">
                 <CheckIcon className="w-[11px] h-[11px]" />
               </div>
-              <span className="text-[12.5px] text-navy">{b}</span>
+              <span className="text-[13.5px] text-navy">{b}</span>
             </div>
           ))}
         </div>
@@ -48,13 +42,13 @@ export default function CreateAccount() {
           </div>
           <input
             placeholder="you@example.com"
-            className="w-full bg-ground border border-line rounded-[10px] px-3.5 py-3.5 text-sm text-muted-on-dark outline-none focus:border-navy-3"
+            className="w-full bg-surface border border-line rounded-[16px] px-4 py-3.5 text-sm text-placeholder outline-none focus:border-navy-3"
           />
         </div>
 
         <button
           onClick={() => router.push("/")}
-          className="bg-acc text-navy font-extrabold text-[14.5px] py-3.5 rounded-xl"
+          className="bg-acc text-navy font-bold text-[16px] py-3.5 rounded-2xl shadow-[0_6px_16px_rgba(244,176,0,0.38)]"
         >
           Continue
         </button>
@@ -68,12 +62,12 @@ export default function CreateAccount() {
         <Divider label="Already have an account?" />
         <Link
           href="/sign-in"
-          className="bg-ground border border-line text-navy font-bold text-sm py-3.5 rounded-xl text-center"
+          className="border border-navy text-navy font-bold text-[16px] py-3.5 rounded-2xl text-center"
         >
           Log in
         </Link>
 
-        <div className="text-[10px] text-muted-on-dark text-center mt-auto leading-relaxed">
+        <div className="text-[11px] text-muted text-center leading-relaxed">
           See our policies for{" "}
           <a href="#" className="underline">
             privacy
@@ -97,7 +91,7 @@ function Divider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2.5">
       <div className="flex-1 h-px bg-line" />
-      <span className="text-[11px] text-muted-on-dark font-semibold">{label}</span>
+      <span className="text-[12.5px] text-muted font-medium">{label}</span>
       <div className="flex-1 h-px bg-line" />
     </div>
   );
@@ -105,7 +99,7 @@ function Divider({ label }: { label: string }) {
 
 function SocialBtn({ label }: { label: string }) {
   return (
-    <button className="flex-1 border border-line rounded-[10px] py-3 text-center text-[13px] font-bold text-navy">
+    <button className="flex-1 border border-navy rounded-2xl py-3 text-center text-[13.5px] font-bold text-navy">
       {label}
     </button>
   );

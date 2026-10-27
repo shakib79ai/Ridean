@@ -53,7 +53,7 @@ export default function BookingReviewClient() {
   return (
     <>
       <HeroHeader title="Review booking" subtitle={`${service} · confirm the details below`} />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-3.5">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-3.5">
         <div className="border border-line rounded-[14px] p-3.5 flex flex-col gap-2.5">
           <div className="text-[11px] font-bold text-muted uppercase tracking-wide">Rider details</div>
           <FormField label="Full name" value={name} onChange={setName} />

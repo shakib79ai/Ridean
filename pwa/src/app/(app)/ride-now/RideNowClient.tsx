@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { HeroHeader } from "@/components/HeroHeader";
+import { VehicleArt } from "@/components/VehicleArt";
 import { vehicleCategories } from "@/data/mock";
 
 export default function RideNowClient() {
@@ -22,7 +23,7 @@ export default function RideNowClient() {
   return (
     <>
       <HeroHeader title="Ride Now" />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-4">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-4">
         <div className="bg-ground border border-line rounded-2xl p-3.5 flex flex-col gap-2.5">
           <div className="flex items-center gap-2.5">
             <div className="w-2 h-2 rounded-full bg-ok" />
@@ -55,10 +56,10 @@ export default function RideNowClient() {
           )}
         </div>
 
-        <div className="text-[15px] font-extrabold text-navy">
+        <div className="text-[15px] font-bold text-navy" style={{ fontFamily: "var(--font-display)" }}>
           Choose a ride
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5">
           {vehicleCategories.map((v) => {
             const active = v.id === selected;
             const isUnavailable = v.id === UNAVAILABLE_ID;
@@ -66,29 +67,31 @@ export default function RideNowClient() {
               <button
                 key={v.id}
                 onClick={() => setSelected(v.id)}
-                className={`flex flex-col gap-1.5 rounded-[14px] p-3 text-left ${
-                  active ? "border-2 border-acc bg-white" : "border border-line"
-                }`}
+                className={`relative flex items-center gap-3 rounded-[20px] p-3.5 text-left bg-white shadow-[0_2px_12px_rgba(10,31,68,0.06)] ${
+                  active ? "shadow-[inset_0_0_0_2px_var(--navy)]" : "shadow-[inset_0_0_0_1px_var(--line)]"
+                } ${isUnavailable ? "opacity-55" : ""}`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="text-[22px]">{v.icon}</div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[13.5px] font-bold text-navy">{v.name}</span>
-                      {v.id === POPULAR_ID && (
-                        <span className="bg-acc text-navy text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">
-                          POPULAR
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-[11px] text-muted">
-                      {v.eta} away · {v.seats} seats
-                    </div>
+                {v.id === POPULAR_ID && (
+                  <span className="absolute top-2.5 right-2.5 bg-acc text-navy text-[10px] font-extrabold px-2 py-0.5 rounded-full tracking-wide">
+                    POPULAR
+                  </span>
+                )}
+                <VehicleArt tier={v.id} />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[14.5px] font-bold text-navy">{v.name}</div>
+                  <div className="text-[11.5px] text-muted">{v.desc}</div>
+                  <div className="text-[11.5px] font-semibold text-navy mt-0.5">
+                    {v.seats} seats · {v.eta} away
                   </div>
-                  <div className="font-extrabold text-navy">{v.price}</div>
+                </div>
+                <div
+                  className="font-bold text-navy text-[16px]"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {v.price}
                 </div>
                 {isUnavailable && (
-                  <div className="text-[10.5px] text-muted font-semibold pl-[34px]">
+                  <div className="absolute -bottom-5 left-0 right-0 text-[10.5px] text-muted font-semibold">
                     High demand nearby — longer wait than usual
                   </div>
                 )}
@@ -109,7 +112,7 @@ export default function RideNowClient() {
               )}&tripId=t2&passengers=${encodeURIComponent(String(passengers))}`
             )
           }
-          className="bg-acc text-navy font-extrabold text-[15px] py-3.5 rounded-[14px] mt-auto"
+          className="bg-acc text-navy font-bold text-[16px] py-3.5 rounded-[16px] mt-auto shadow-[0_6px_16px_rgba(244,176,0,0.38)]"
         >
           Confirm {vehicle.name}
         </button>

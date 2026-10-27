@@ -9,7 +9,9 @@
   --surface: #FFFFFF;
   --line: #DCE6F2;
   --muted: #4A5D78;
-  --muted-on-dark: #8FA6C8;
+  --muted-on-dark: #B5C8E6;
+  --placeholder: #6B7D96;
+  --chip: #E8F0FA;
   --ok: #0F6B45;
   --ok-bg: #DDF3E8;
   --warn: #7A4A00;
@@ -18,6 +20,16 @@
   --info-bg: #E8EEF8;
   --bad: #A32020;
   --bad-bg: #FBE0DE;
+
+  /* Vehicle-tier illustration colors */
+  --tier-sedan: #F4B000;
+  --tier-xl: #D68A00;
+  --tier-comfort: #93A8D6;
+  --tier-business: #1F4A8C;
+  --tier-black: #161616;
+
+  --font-display: 'Bricolage Grotesque', 'DM Sans', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
 
   --background: var(--surface);
   --foreground: var(--navy);
@@ -33,6 +45,8 @@
   --color-line: var(--line);
   --color-muted: var(--muted);
   --color-muted-on-dark: var(--muted-on-dark);
+  --color-placeholder: var(--placeholder);
+  --color-chip: var(--chip);
   --color-ok: var(--ok);
   --color-ok-bg: var(--ok-bg);
   --color-warn: var(--warn);
@@ -41,8 +55,15 @@
   --color-info-bg: var(--info-bg);
   --color-bad: var(--bad);
   --color-bad-bg: var(--bad-bg);
+  --color-tier-sedan: var(--tier-sedan);
+  --color-tier-xl: var(--tier-xl);
+  --color-tier-comfort: var(--tier-comfort);
+  --color-tier-business: var(--tier-business);
+  --color-tier-black: var(--tier-black);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
 }
 
 html, body {
@@ -50,6 +71,12 @@ html, body {
   color: var(--foreground);
   max-width: 100vw;
   overflow-x: hidden;
+  font-family: var(--font-body);
+}
+
+input::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
 }
 
 * {

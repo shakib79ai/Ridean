@@ -12,7 +12,7 @@ export default function AddPaymentMethod() {
   return (
     <>
       <HeroHeader title="Add payment method" />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-4">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-4">
         <div className="flex border border-line rounded-[12px] p-1">
           <button
             onClick={() => setTab("card")}

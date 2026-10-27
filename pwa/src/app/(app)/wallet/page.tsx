@@ -1,15 +1,17 @@
+import Link from "next/link";
 import { paymentMethods, walletActivity, walletBalance } from "@/data/mock";
-import { CheckeredFlag } from "@/components/HeroHeader";
+import { TabHeader } from "@/components/HeroHeader";
+import { ReceiptIcon } from "@/components/Icons";
 
 export default function Wallet() {
   return (
     <>
-      <CheckeredFlag />
-      <div className="bg-navy px-5 pt-5 pb-6">
-        <span className="text-2xl font-extrabold text-white">Wallet</span>
-      </div>
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-4">
-        <div className="bg-navy rounded-[18px] p-4.5 flex flex-col gap-2.5">
+      <TabHeader
+        title="Wallet"
+        action={{ icon: <ReceiptIcon className="w-[22px] h-[22px]" />, label: "Invoices", href: "/profile/invoices" }}
+      />
+      <div className="flex-1 bg-ground px-4 pt-1 pb-6 flex flex-col gap-4">
+        <div className="bg-navy-2 rounded-[24px] p-5 flex flex-col gap-2.5">
           <div className="flex justify-between items-start">
             <div>
               <div className="text-[11px] text-muted-on-dark font-semibold">
@@ -40,13 +42,15 @@ export default function Wallet() {
             <span className="text-[13px] font-extrabold text-navy">
               Payment methods
             </span>
-            <span className="text-xs font-bold text-info">+ Add new</span>
+            <Link href="/profile/payment-methods/add" className="text-xs font-bold text-info">
+              + Add new
+            </Link>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="bg-surface border border-line shadow-sm rounded-[24px] p-3 flex flex-col gap-2">
             {paymentMethods.map((pm) => (
               <div
                 key={pm.id}
-                className="border border-line rounded-[14px] p-3 flex items-center gap-2.5"
+                className="p-1 flex items-center gap-2.5"
               >
                 <div className="w-[38px] h-[26px] rounded-[6px] bg-navy flex items-center justify-center">
                   <span className="text-white text-[9px] font-extrabold">

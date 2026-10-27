@@ -14,7 +14,7 @@ export default function TripStatusClient() {
   return (
     <>
       <HeroHeader title="Trip confirmed" showBack={false} />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-6 pb-6 flex flex-col items-center gap-3.5 text-center">
+      <div className="flex-1 bg-ground px-5 pt-6 pb-6 flex flex-col items-center gap-3.5 text-center">
         <div className="w-[72px] h-[72px] rounded-full bg-ok-bg flex items-center justify-center">
           <CheckIcon className="w-[32px] h-[32px] text-ok" />
         </div>

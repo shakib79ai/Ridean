@@ -52,7 +52,7 @@ export default function RentCompareClient() {
   return (
     <>
       <HeroHeader title="Compare rentals" subtitle={`${searched.location} · ${searched.range}`} />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-6 flex flex-col gap-3.5">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-6 flex flex-col gap-3.5">
         <div className="border border-line rounded-[14px] p-3.5 flex flex-col gap-2.5 bg-ground">
           <Field label="Pickup location" value={pickupLocation} onChange={setPickupLocation} />
 

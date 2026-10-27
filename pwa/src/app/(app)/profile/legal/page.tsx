@@ -4,7 +4,7 @@ export default function LegalPrivacy() {
   return (
     <>
       <HeroHeader title="Legal & privacy" />
-      <div className="flex-1 bg-surface rounded-t-[20px] -mt-3 px-5 pt-5 pb-8 flex flex-col gap-5 overflow-y-auto">
+      <div className="flex-1 bg-ground px-5 pt-5 pb-8 flex flex-col gap-5 overflow-y-auto">
         <section className="flex flex-col gap-2.5">
           <h2 className="text-[15px] font-extrabold text-navy">Terms of Service</h2>
           <p className="text-[12.5px] text-muted leading-relaxed">
