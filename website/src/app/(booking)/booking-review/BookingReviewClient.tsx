@@ -28,7 +28,7 @@ export default function BookingReviewClient() {
   return (
     <div className="flex flex-col gap-6 max-w-[640px]">
       <div>
-        <div className="text-[22px] font-extrabold text-navy">Review your booking</div>
+        <div className="font-display text-[22px] font-extrabold text-navy">Review your booking</div>
         <div className="text-sm text-muted mt-1">Check the details below before you confirm.</div>
       </div>
 

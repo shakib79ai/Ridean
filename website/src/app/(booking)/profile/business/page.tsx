@@ -10,7 +10,7 @@ export default function BusinessAccount() {
   return (
     <div className="flex flex-col gap-6 max-w-[640px]">
       <Link href="/profile" className="text-sm font-bold text-navy-3">← Profile</Link>
-      <div className="text-[22px] font-extrabold text-navy">Business account</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Business account</div>
 
       <div className="bg-surface border border-line rounded-2xl p-6 flex flex-col gap-4">
         <label className="flex flex-col gap-1.5">

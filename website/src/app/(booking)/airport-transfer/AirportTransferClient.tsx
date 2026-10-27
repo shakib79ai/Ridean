@@ -35,7 +35,7 @@ export default function AirportTransferClient() {
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       <div className="flex-1 flex flex-col gap-5">
-        <div className="text-[22px] font-extrabold text-navy">Airport Transfer</div>
+        <div className="font-display text-[22px] font-extrabold text-navy">Airport Transfer</div>
         <div className="grid grid-cols-2 gap-3">
           <Field label="From" value={pickup} />
           <Field label="To" value={dest} />

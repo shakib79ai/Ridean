@@ -4,7 +4,7 @@ export default function LegalPrivacy() {
   return (
     <div className="flex flex-col gap-6 max-w-[720px]">
       <Link href="/profile" className="text-sm font-bold text-navy-3">← Profile</Link>
-      <div className="text-[22px] font-extrabold text-navy">Legal &amp; privacy</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Legal &amp; privacy</div>
 
       <div className="bg-surface border border-line rounded-2xl p-6 flex flex-col gap-3">
         <div className="text-base font-extrabold text-navy">Terms of Service</div>

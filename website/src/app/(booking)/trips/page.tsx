@@ -10,7 +10,7 @@ const STATUS_STYLE: Record<string, string> = {
 export default function Trips() {
   return (
     <div className="flex flex-col gap-5">
-      <div className="text-[22px] font-extrabold text-navy">Trips</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Trips</div>
       <div className="flex flex-col gap-3">
         {trips.map((t) => (
           <Link

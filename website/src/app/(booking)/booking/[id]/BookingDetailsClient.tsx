@@ -17,7 +17,7 @@ export default function BookingDetailsClient({ trip }: { trip: Trip }) {
   return (
     <div className="flex flex-col gap-6 max-w-[720px]">
       <div className="flex items-center justify-between">
-        <div className="text-[22px] font-extrabold text-navy">Booking details</div>
+        <div className="font-display text-[22px] font-extrabold text-navy">Booking details</div>
         <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-full capitalize ${STATUS_STYLE[cancelled ? "cancelled" : trip.status]}`}>
           {cancelled ? "cancelled" : trip.status}
         </span>

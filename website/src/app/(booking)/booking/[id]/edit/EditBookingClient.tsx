@@ -31,7 +31,7 @@ export default function EditBookingClient({ trip }: { trip: Trip }) {
   return (
     <div className="flex flex-col gap-6 max-w-[640px]">
       <Link href={`/booking/${trip.id}`} className="text-sm font-bold text-navy-3">← Booking details</Link>
-      <div className="text-[22px] font-extrabold text-navy">Edit booking</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Edit booking</div>
 
       <div className="bg-surface border border-line rounded-2xl p-6 flex flex-col gap-4">
         <div className="text-xs font-bold text-muted uppercase">{trip.mode} · {trip.car}</div>

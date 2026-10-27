@@ -3,14 +3,14 @@ import Link from "next/link";
 export function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2.5">
-      <svg width="34" height="34" viewBox="0 0 240 240" className="shrink-0">
-        <rect width="240" height="240" rx="54" fill="#F4B000" />
-        <g transform="rotate(-25 120 120)">
-          <polygon points="20,210 230,120 20,30 20,100 170,120 20,140" fill="#0A1F44" opacity="0.22" transform="translate(16 14)" />
-          <polygon points="20,210 230,120 20,30 20,100 170,120 20,140" fill="#0A1F44" />
-        </g>
-      </svg>
-      <span className="text-[19px] font-extrabold text-navy">
+      <div className="w-9 h-9 rounded-[11px] bg-acc shrink-0 flex items-center justify-center shadow-[0_4px_12px_rgba(244,176,0,0.35)]">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A1F44" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 15l1.6-4.6A2 2 0 0 1 6.5 9h11a2 2 0 0 1 1.9 1.4L21 15v3a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1h-9v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" />
+          <circle cx="7.5" cy="13" r="1" />
+          <circle cx="16.5" cy="13" r="1" />
+        </svg>
+      </div>
+      <span className="font-display text-[22px] font-extrabold text-navy">
         Ride<span className="text-acc">an</span>
       </span>
     </Link>

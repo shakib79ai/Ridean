@@ -10,6 +10,16 @@
   --line: #DCE6F2;
   --muted: #4A5D78;
   --muted-on-dark: #8FA6C8;
+  --placeholder: #6B7D96;
+  --chip-track: #E8F0FA;
+  --sidebar-muted: #B5C8E6;
+  --tier-sedan: #F4B000;
+  --tier-xl: #D68A00;
+  --tier-comfort: #93A8D6;
+  --tier-business: #1F4A8C;
+  --tier-black: #161616;
+  --font-display: 'Bricolage Grotesque', 'DM Sans', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
   --ok: #0F6B45;
   --ok-bg: #DDF3E8;
   --warn: #7A4A00;
@@ -43,11 +53,32 @@
   --color-bad-bg: var(--bad-bg);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-placeholder: var(--placeholder);
+  --color-chip-track: var(--chip-track);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-tier-sedan: var(--tier-sedan);
+  --color-tier-xl: var(--tier-xl);
+  --color-tier-comfort: var(--tier-comfort);
+  --color-tier-business: var(--tier-business);
+  --color-tier-black: var(--tier-black);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+input::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 .no-scrollbar {

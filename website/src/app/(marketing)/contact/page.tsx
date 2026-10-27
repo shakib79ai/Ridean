@@ -5,7 +5,7 @@ export default function Contact() {
         <div className="text-[13px] font-extrabold text-acc tracking-wide mb-2.5">
           CONTACT &amp; SUPPORT
         </div>
-        <h1 className="text-[34px] font-extrabold text-navy mb-4">
+        <h1 className="font-display text-[34px] font-extrabold text-navy mb-4">
           We&apos;re here to help.
         </h1>
         <p className="text-sm text-muted leading-relaxed mb-7 max-w-[420px]">

@@ -20,7 +20,7 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-6 max-w-[640px]">
       <Link href="/profile" className="text-sm font-bold text-navy-3">← Profile</Link>
-      <div className="text-[22px] font-extrabold text-navy">Settings</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Settings</div>
 
       <div className="bg-surface border border-line rounded-2xl p-6 flex flex-col gap-4">
         <div className="text-sm font-bold text-navy">Notifications</div>

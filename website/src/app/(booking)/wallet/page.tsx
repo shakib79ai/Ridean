@@ -3,7 +3,7 @@ import { paymentMethods, walletActivity, walletBalance } from "@/data/booking-mo
 export default function Wallet() {
   return (
     <div className="flex flex-col gap-6">
-      <div className="text-[22px] font-extrabold text-navy">Wallet</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Wallet</div>
 
       <div className="bg-navy rounded-2xl p-6 flex items-center justify-between">
         <div>

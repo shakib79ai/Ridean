@@ -10,7 +10,7 @@ export default function HelpSupport() {
   return (
     <div className="flex flex-col gap-6 max-w-[640px]">
       <Link href="/profile" className="text-sm font-bold text-navy-3">← Profile</Link>
-      <div className="text-[22px] font-extrabold text-navy">Help &amp; support</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Help &amp; support</div>
 
       <div className="bg-surface border border-line rounded-2xl overflow-hidden">
         {faqs.map((f) => (

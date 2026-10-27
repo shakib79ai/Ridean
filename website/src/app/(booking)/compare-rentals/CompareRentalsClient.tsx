@@ -56,7 +56,7 @@ export default function CompareRentalsClient() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="text-[22px] font-extrabold text-navy">Compare Rentals</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Compare Rentals</div>
 
       <div className="bg-surface border border-line rounded-2xl p-5 flex flex-col gap-4">
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">

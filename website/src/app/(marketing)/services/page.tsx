@@ -33,7 +33,7 @@ export default function Services() {
             </div>
             <div className="text-right flex-shrink-0 sm:text-right">
               <div className="text-xs text-muted-on-dark font-bold">FROM</div>
-              <div className="text-[22px] font-extrabold text-navy">
+              <div className="font-display text-[22px] font-extrabold text-navy">
                 {s.fromPrice}
               </div>
             </div>

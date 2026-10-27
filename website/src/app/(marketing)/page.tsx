@@ -6,14 +6,24 @@ export default function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="bg-navy px-8 md:px-16 pt-16 md:pt-20 pb-24 md:pb-28">
+      <section className="relative bg-navy px-8 md:px-16 pt-16 md:pt-20 pb-24 md:pb-28 overflow-hidden">
+        <div
+          className="absolute top-0 left-0 right-0 h-4"
+          style={{
+            backgroundColor: "#12305F",
+            backgroundImage:
+              "linear-gradient(45deg,#F4B000 25%,transparent 25%),linear-gradient(-45deg,#F4B000 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#F4B000 75%),linear-gradient(-45deg,transparent 75%,#F4B000 75%)",
+            backgroundSize: "16px 16px",
+            backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0px",
+          }}
+        />
         <div className="max-w-[760px] mx-auto text-center">
           <div className="inline-block bg-navy-2 px-3.5 py-1.5 rounded-full mb-5">
             <span className="text-acc text-xs font-extrabold tracking-wide">
               NOW SERVING NEW YORK CITY
             </span>
           </div>
-          <h1 className="text-[40px] md:text-[52px] leading-[1.1] font-extrabold text-white mb-4">
+          <h1 className="font-display text-[40px] md:text-[52px] leading-[1.1] font-extrabold text-white mb-4">
             Mobility,
             <br />
             on your terms.
@@ -44,7 +54,7 @@ export default function Home() {
           <div className="text-[13px] font-extrabold text-acc tracking-wide mb-2.5">
             ONE APP, FIVE WAYS TO MOVE
           </div>
-          <h2 className="text-[34px] font-extrabold text-navy">
+          <h2 className="font-display text-[34px] font-extrabold text-navy">
             Every kind of trip, covered.
           </h2>
         </div>

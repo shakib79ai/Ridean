@@ -11,7 +11,7 @@ export default function AddPaymentMethod() {
   return (
     <div className="flex flex-col gap-6 max-w-[560px]">
       <Link href="/profile/payment-methods" className="text-sm font-bold text-navy-3">← Payment methods</Link>
-      <div className="text-[22px] font-extrabold text-navy">Add payment method</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Add payment method</div>
 
       <div className="flex gap-2 bg-ground border border-line rounded-xl p-1 w-fit">
         <button

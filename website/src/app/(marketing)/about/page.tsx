@@ -28,7 +28,7 @@ export default function About() {
       </section>
 
       <section className="px-8 md:px-16 py-16 flex flex-col gap-7 max-w-[900px]">
-        <h2 className="text-[26px] font-extrabold text-navy">
+        <h2 className="font-display text-[26px] font-extrabold text-navy">
           Our principles
         </h2>
         <Principle

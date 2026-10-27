@@ -21,7 +21,7 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <div className="text-[26px] font-extrabold text-navy">Where to next?</div>
+        <div className="font-display text-[26px] font-extrabold text-navy">Where to next?</div>
         <div className="text-sm text-muted mt-1">Welcome back, Shakib.</div>
       </div>
 

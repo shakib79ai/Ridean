@@ -23,7 +23,7 @@ export default function ContactDriverClient({ trip }: { trip: Trip }) {
   return (
     <div className="flex flex-col gap-6 max-w-[560px]">
       <Link href={`/booking/${trip.id}`} className="text-sm font-bold text-navy-3">← Booking details</Link>
-      <div className="text-[22px] font-extrabold text-navy">Contact driver</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Contact driver</div>
 
       <div className="bg-surface border border-line rounded-2xl p-5 flex items-center gap-4">
         <div className="w-14 h-14 rounded-full bg-navy flex items-center justify-center text-acc font-extrabold">

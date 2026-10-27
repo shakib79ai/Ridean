@@ -15,7 +15,7 @@ export default function EditProfile() {
       <div className="flex items-center gap-3">
         <Link href="/profile" className="text-sm font-bold text-navy-3">← Profile</Link>
       </div>
-      <div className="text-[22px] font-extrabold text-navy">Edit profile</div>
+      <div className="font-display text-[22px] font-extrabold text-navy">Edit profile</div>
 
       <div className="bg-surface border border-line rounded-2xl p-6 flex flex-col gap-5">
         <div className="flex items-center gap-4">

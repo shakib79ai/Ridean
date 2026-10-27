@@ -45,7 +45,7 @@ export default function PaymentClient() {
       <div className="flex flex-col gap-6 max-w-[560px]">
         <div className="w-14 h-14 rounded-full bg-ok-bg flex items-center justify-center text-2xl">✓</div>
         <div>
-          <div className="text-[22px] font-extrabold text-navy">Booking confirmed</div>
+          <div className="font-display text-[22px] font-extrabold text-navy">Booking confirmed</div>
           <div className="text-sm text-muted mt-1">
             Your {service.toLowerCase()} is booked and paid. A receipt has been sent to {email || "your email"}.
           </div>
@@ -75,7 +75,7 @@ export default function PaymentClient() {
   return (
     <div className="flex flex-col gap-6 max-w-[640px]">
       <div>
-        <div className="text-[22px] font-extrabold text-navy">Payment</div>
+        <div className="font-display text-[22px] font-extrabold text-navy">Payment</div>
         <div className="text-sm text-muted mt-1">Choose how you&apos;d like to pay for this booking.</div>
       </div>
 

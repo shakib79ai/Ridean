@@ -5,12 +5,21 @@ import { useRouter } from "next/navigation";
 
 type TabKey = "ride" | "airport" | "hourly" | "luxury" | "rentals";
 
-const TABS: { key: TabKey; label: string; icon: string }[] = [
-  { key: "ride", label: "Ride Now", icon: "⚡" },
-  { key: "airport", label: "Airport Transfer", icon: "✈️" },
-  { key: "hourly", label: "Hourly Chauffeur", icon: "🕐" },
-  { key: "luxury", label: "Luxury Chauffeur", icon: "🚘" },
-  { key: "rentals", label: "Compare Rentals", icon: "🔑" },
+function TabIcon({ k }: { k: TabKey }) {
+  const common = { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  if (k === "ride") return <svg {...common}><path d="M13 3L5 14h6l-1 7 8-11h-6z" /></svg>;
+  if (k === "airport") return <svg {...common}><circle cx="6" cy="18" r="2" /><circle cx="18" cy="6" r="2" /><path d="M8 18h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6" /></svg>;
+  if (k === "hourly") return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
+  if (k === "luxury") return <svg {...common}><rect x="4" y="9" width="16" height="9" rx="2" /><path d="M7 9V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3" /></svg>;
+  return <svg {...common}><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8" /><path d="M20 4v4h-4" /><path d="M20 12a8 8 0 0 1-13.7 5.6L4 16" /><path d="M4 20v-4h4" /></svg>;
+}
+
+const TABS: { key: TabKey; label: string }[] = [
+  { key: "ride", label: "Ride Now" },
+  { key: "airport", label: "Airport Transfer" },
+  { key: "hourly", label: "Hourly Chauffeur" },
+  { key: "luxury", label: "Luxury Chauffeur" },
+  { key: "rentals", label: "Compare Rentals" },
 ];
 
 export function HomeSearchWidget() {
@@ -63,30 +72,30 @@ export function HomeSearchWidget() {
 
   return (
     <div className="w-full max-w-[1040px] mx-auto -mt-10 md:-mt-14 relative z-10 px-4">
-      <div className="bg-surface rounded-[22px] shadow-2xl border border-line overflow-hidden">
-        {/* Service tabs */}
-        <div className="flex overflow-x-auto no-scrollbar border-b border-line">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`flex items-center gap-2 px-5 py-4 text-[13px] font-bold whitespace-nowrap border-b-2 transition-colors ${
-                tab === t.key
-                  ? "border-acc text-navy bg-ground"
-                  : "border-transparent text-muted hover:text-navy"
-              }`}
-            >
-              <span>{t.icon}</span>
-              {t.label}
-            </button>
-          ))}
+      <div className="bg-surface rounded-[24px] shadow-[0_10px_30px_rgba(10,31,68,0.10)] border border-line overflow-hidden">
+        {/* Service tabs — segmented pill */}
+        <div className="p-4 pb-0">
+          <div className="flex gap-1 bg-chip-track rounded-2xl p-1 overflow-x-auto no-scrollbar">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-bold whitespace-nowrap transition-colors shrink-0 ${
+                  tab === t.key ? "bg-navy text-white" : "text-navy hover:bg-white/60"
+                }`}
+              >
+                <TabIcon k={t.key} />
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Fields */}
         <div className="p-5 md:p-6 flex flex-col md:flex-row gap-3 items-stretch">
           <div className="flex-1 flex flex-col gap-3">
             {tab === "ride" && (
-              <div className="flex gap-2 bg-ground border border-line rounded-full p-1 w-fit">
+              <div className="flex gap-1 bg-chip-track rounded-2xl p-1 w-fit">
                 <button
                   type="button"
                   onClick={() => setRideWhen("now")}
@@ -228,7 +237,7 @@ export function HomeSearchWidget() {
 
           <button
             onClick={handleSearch}
-            className="bg-acc text-navy font-extrabold text-[15px] px-8 py-4 rounded-xl hover:brightness-95 transition shrink-0 self-end md:self-auto"
+            className="bg-acc text-navy font-extrabold text-[15px] px-8 py-4 rounded-2xl border border-[rgba(10,31,68,0.12)] shadow-[0_6px_16px_rgba(244,176,0,0.38)] hover:brightness-95 transition shrink-0 self-end md:self-auto"
           >
             {tab === "rentals" ? "Search rentals" : "See rates"}
           </button>
@@ -245,7 +254,7 @@ export function HomeSearchWidget() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="bg-ground border border-line rounded-xl px-4 py-2.5">
+    <div className="bg-surface border border-line rounded-2xl px-4 py-2.5">
       <div className="text-[10px] font-bold text-muted uppercase tracking-wide">{label}</div>
       <div className="mt-0.5">{children}</div>
     </div>
