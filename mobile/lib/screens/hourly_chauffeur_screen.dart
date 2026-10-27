@@ -112,12 +112,7 @@ class _HourlyChauffeurScreenState extends State<HourlyChauffeurScreen> {
                                   Text(v.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: RColors.navy)),
                                   if (v.id == 'c2') ...[
                                     const SizedBox(width: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                      decoration: BoxDecoration(color: RColors.warnBg, borderRadius: BorderRadius.circular(RRadius.pill)),
-                                      child: const Text('POPULAR',
-                                          style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: RColors.warn)),
-                                    ),
+                                    const RPill(label: 'POPULAR', tone: 'accent'),
                                   ],
                                 ],
                               ),
@@ -128,7 +123,7 @@ class _HourlyChauffeurScreenState extends State<HourlyChauffeurScreen> {
                             ],
                           ),
                         ),
-                        Text('\$${v.pricePerHr}/hr', style: const TextStyle(fontWeight: FontWeight.w800, color: RColors.navy, fontSize: 13.5)),
+                        Text('\$${v.pricePerHr}/hr', style: RFonts.display(size: 14.5, weight: FontWeight.w800)),
                       ],
                     ),
                   ),

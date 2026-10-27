@@ -63,12 +63,7 @@ class _RideNowScreenState extends State<RideNowScreen> {
                                   Text(v.name, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: RColors.navy)),
                                   if (v.id == 'comfort') ...[
                                     const SizedBox(width: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                      decoration: BoxDecoration(color: RColors.warnBg, borderRadius: BorderRadius.circular(RRadius.pill)),
-                                      child: const Text('POPULAR',
-                                          style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: RColors.warn)),
-                                    ),
+                                    const RPill(label: 'POPULAR', tone: 'accent'),
                                   ],
                                 ],
                               ),
@@ -80,7 +75,7 @@ class _RideNowScreenState extends State<RideNowScreen> {
                             ],
                           ),
                         ),
-                        Text(v.price, style: const TextStyle(fontWeight: FontWeight.w800, color: RColors.navy, fontSize: 14)),
+                        Text(v.price, style: RFonts.display(size: 15, weight: FontWeight.w800)),
                       ],
                     ),
                   ),

@@ -43,10 +43,10 @@ class HomeScreen extends StatelessWidget {
                             const RideanMark(size: 34),
                             const SizedBox(width: 9),
                             RichText(
-                              text: const TextSpan(
-                                style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800, color: Colors.white),
+                              text: TextSpan(
+                                style: RFonts.display(size: 22, weight: FontWeight.w800, color: Colors.white),
                                 children: [
-                                  TextSpan(text: 'Ride'),
+                                  const TextSpan(text: 'Ride'),
                                   TextSpan(text: 'an', style: TextStyle(color: RColors.acc)),
                                 ],
                               ),
@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 22),
-                    const Text('Where to next?', style: TextStyle(fontSize: 27, fontWeight: FontWeight.w800, color: Colors.white)),
+                    Text('Where to next?', style: RFonts.display(size: 28, weight: FontWeight.w800, color: Colors.white)),
                     const SizedBox(height: 18),
                     Row(
                       children: [
@@ -937,7 +937,7 @@ class _RecentTripRow extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(trip.price, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: RColors.navy)),
+              Text(trip.price, style: RFonts.display(size: 14, weight: FontWeight.w800)),
               const SizedBox(height: 2),
               RPill(label: trip.status == 'cancelled' ? 'Cancelled' : 'Completed', tone: trip.status == 'cancelled' ? 'bad' : 'ok'),
             ],

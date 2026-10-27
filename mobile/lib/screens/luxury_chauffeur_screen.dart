@@ -128,7 +128,7 @@ class _LuxuryChauffeurScreenState extends State<LuxuryChauffeurScreen> {
                             ],
                           ),
                         ),
-                        Text('\$${v.price}', style: const TextStyle(fontWeight: FontWeight.w800, color: RColors.navy, fontSize: 14)),
+                        Text('\$${v.price}', style: RFonts.display(size: 15, weight: FontWeight.w800)),
                       ],
                     ),
                   ),

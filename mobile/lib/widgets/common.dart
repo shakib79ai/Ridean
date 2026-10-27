@@ -20,6 +20,7 @@ class RButton extends StatelessWidget {
     Color bg;
     Color fg;
     BoxBorder? border;
+    List<BoxShadow>? shadow;
     switch (variant) {
       case RButtonVariant.primary:
         bg = RColors.navy;
@@ -28,6 +29,8 @@ class RButton extends StatelessWidget {
       case RButtonVariant.accent:
         bg = RColors.acc;
         fg = RColors.navy;
+        border = Border.all(color: RColors.navy.withOpacity(0.12));
+        shadow = RShadows.gold;
         break;
       case RButtonVariant.secondary:
         bg = RColors.surface;
@@ -43,17 +46,15 @@ class RButton extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 15),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(RRadius.md),
           border: border,
+          boxShadow: shadow,
         ),
-        child: Text(
-          label,
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: fg),
-        ),
+        child: Text(label, style: RFonts.body(size: 15.5, weight: FontWeight.w700, color: fg)),
       ),
     );
   }
@@ -88,15 +89,7 @@ class RCard extends StatelessWidget {
             color: selected ? RColors.acc : (dark ? RColors.navy2 : RColors.line),
             width: selected ? 2 : 1,
           ),
-          boxShadow: dark
-              ? null
-              : [
-                  BoxShadow(
-                    color: RColors.navy.withOpacity(0.08),
-                    blurRadius: 16,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
+          boxShadow: dark ? null : RShadows.card,
         ),
         child: child,
       ),
@@ -117,12 +110,15 @@ class RPill extends StatelessWidget {
       'warn': (RColors.warnBg, RColors.warn),
       'info': (RColors.infoBg, RColors.info),
       'bad': (RColors.badBg, RColors.bad),
+      'accent': (RColors.acc, RColors.navy),
+      'chip': (RColors.chipTrack, RColors.navy),
     };
     final (bg, fg) = map[tone] ?? map['info']!;
+    final bold = tone == 'accent' ? FontWeight.w800 : FontWeight.w700;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(RRadius.pill)),
-      child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
+      child: Text(label, style: RFonts.body(size: 11, weight: bold, color: fg)),
     );
   }
 }
@@ -135,6 +131,7 @@ class RField extends StatelessWidget {
     this.placeholder,
     this.onTap,
     this.leftDot,
+    this.icon,
   });
 
   final String label;
@@ -142,21 +139,25 @@ class RField extends StatelessWidget {
   final String? placeholder;
   final VoidCallback? onTap;
   final Color? leftDot;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: RColors.ground,
+          color: RColors.surface,
           borderRadius: BorderRadius.circular(RRadius.md),
           border: Border.all(color: RColors.line),
         ),
         child: Row(
           children: [
-            if (leftDot != null) ...[
+            if (icon != null) ...[
+              Icon(icon, size: 19, color: RColors.navy),
+              const SizedBox(width: 10),
+            ] else if (leftDot != null) ...[
               Container(
                 width: 10,
                 height: 10,
@@ -170,15 +171,15 @@ class RField extends StatelessWidget {
                 children: [
                   Text(
                     label.toUpperCase(),
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: RColors.muted),
+                    style: RFonts.body(size: 11, weight: FontWeight.w600, color: RColors.muted),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     value ?? placeholder ?? '',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: value != null ? FontWeight.w600 : FontWeight.w500,
-                      color: value != null ? RColors.navy : RColors.muted,
+                    style: RFonts.body(
+                      size: 15,
+                      weight: value != null ? FontWeight.w600 : FontWeight.w500,
+                      color: value != null ? RColors.navy : RColors.placeholder,
                     ),
                   ),
                 ],
@@ -186,6 +187,64 @@ class RField extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Pill-shaped segmented control (e.g. "Ride now / Schedule",
+/// "One way / Round trip") matching the reference mockups' toggle style.
+class RSegmented extends StatelessWidget {
+  const RSegmented({
+    super.key,
+    required this.options,
+    required this.selectedIndex,
+    required this.onChanged,
+    this.activeColor = RColors.navy,
+    this.activeLabelColor = Colors.white,
+  });
+
+  final List<String> options;
+  final int selectedIndex;
+  final ValueChanged<int> onChanged;
+  final Color activeColor;
+  final Color activeLabelColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: RColors.chipTrack,
+        borderRadius: BorderRadius.circular(RRadius.md),
+      ),
+      child: Row(
+        children: [
+          for (int i = 0; i < options.length; i++) ...[
+            Expanded(
+              child: GestureDetector(
+                onTap: () => onChanged(i),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 9),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: i == selectedIndex ? activeColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(RRadius.sm),
+                  ),
+                  child: Text(
+                    options[i],
+                    style: RFonts.body(
+                      size: 13,
+                      weight: FontWeight.w700,
+                      color: i == selectedIndex ? activeLabelColor : RColors.navy,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (i != options.length - 1) const SizedBox(width: 4),
+          ],
+        ],
       ),
     );
   }
@@ -203,11 +262,11 @@ class RSectionHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: RColors.navy)),
+        Text(title, style: RFonts.display(size: 16, weight: FontWeight.w800)),
         if (action != null)
           GestureDetector(
             onTap: onAction,
-            child: Text(action!, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: RColors.info)),
+            child: Text(action!, style: RFonts.body(size: 13, weight: FontWeight.w700, color: RColors.info)),
           ),
       ],
     );
@@ -226,7 +285,7 @@ class RDivider extends StatelessWidget {
         const Expanded(child: Divider(color: RColors.line, height: 1)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: RColors.mutedOnDark)),
+          child: Text(label, style: RFonts.body(size: 11, weight: FontWeight.w600, color: RColors.mutedOnDark)),
         ),
         const Expanded(child: Divider(color: RColors.line, height: 1)),
       ],

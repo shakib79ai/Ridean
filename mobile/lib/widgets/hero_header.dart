@@ -20,7 +20,8 @@ class RideanMark extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: RColors.acc,
-        borderRadius: BorderRadius.circular(size * 0.225),
+        borderRadius: BorderRadius.circular(size * 0.33),
+        boxShadow: RShadows.markGlow,
       ),
       child: Stack(
         alignment: Alignment.center,
@@ -126,11 +127,7 @@ class HeroHeader extends StatelessWidget {
                   if (showBack) const SizedBox(width: 12),
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 21,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
+                    style: RFonts.display(size: 22, weight: FontWeight.w800, color: Colors.white),
                   ),
                 ],
               ),
@@ -139,10 +136,7 @@ class HeroHeader extends StatelessWidget {
                   padding: EdgeInsets.only(top: 6, left: showBack ? 48 : 0),
                   child: Text(
                     subtitle!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: RColors.mutedOnDark,
-                    ),
+                    style: RFonts.body(size: 12, weight: FontWeight.w500, color: RColors.mutedOnDark),
                   ),
                 ),
             ],
@@ -169,8 +163,8 @@ class RSheet extends StatelessWidget {
         decoration: const BoxDecoration(
           color: RColors.surface,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
         ),
         transform: Matrix4.translationValues(0, -13, 0),
