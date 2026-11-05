@@ -24,7 +24,7 @@
 | `apps/api` | NestJS API. `src/modules/*` feature modules, `src/integrations/*` supplier adapters, `src/db/*` Drizzle schema, migrations and seed |
 | `apps/website` | Marketing site + booking flow (`/`, `/[service]`, `/quotes`, `/checkout/[id]`, `/bookings/[id]`, `/account`) |
 | `apps/pwa` | Mobile-first installable app with bottom tabs (Home, Trips, Wallet, Account), manifest and service worker |
-| `apps/admin` | Dashboard, bookings, transaction report, earnings, settlements, supplier accounts & ledger, users |
+| `apps/admin` | Dashboard, bookings, new booking for a customer, drivers & suppliers, users, settlements, earnings, transaction report, supplier accounts & ledger, settings & team, profile, help, contact inbox |
 | `apps/mobile` | Flutter app using the same API |
 
 ## Services are data, not code
@@ -103,12 +103,19 @@ JWT bearer tokens (`JWT_SECRET`, `JWT_EXPIRES_IN`). Roles: `customer`, `ops`, `f
 |---|---|---|---|
 | Dashboard, bookings, reports, users | ✓ | ✓ | ✓ |
 | Change booking status | ✓ | ✓ | ✓ |
+| Book for a customer (`POST /admin/bookings`) | ✓ | | ✓ |
 | Edit supplier terms | | ✓ | ✓ |
 | Record payments / adjustments | | ✓ | ✓ |
-| Create suppliers | | | ✓ |
+| Create suppliers, platform settings, team roles | | | ✓ |
 
-`admin` passes every role check. Staff accounts are created by the seed (first admin) or by setting `users.role` in the database.
+`admin` passes every role check. The first admin is created by the seed; admins then give existing Ridean accounts a staff role under **Settings → Team & roles** (`PATCH /admin/team`).
+
+### Admin-only features
+
+- **Book for a customer** — staff search quotes like a customer, then `POST /admin/bookings` with the customer's details. The customer account is found by email (or created without a usable password). Payment is the customer's default saved card, an invoice collected outside the app (`payment_method = invoice`, payment row `pending`), or the partner when it collects.
+- **Drivers** — chauffeur details reported by a partner on an assigned trip are stored on the booking (`supplier_meta.driver`) and listed by `GET /admin/drivers`. Chauffeurs themselves are managed by the partners.
+- **Platform settings** (`platform_settings`, one row) — platform name and support details, default commercial terms for new suppliers, and `bookingsPaused`, which makes quote search and booking return 503 while existing trips continue.
 
 ## Data model (PostgreSQL)
 
-`users` (incl. `settings` jsonb), `addresses`, `suppliers` (code, adapter, services[], terms jsonb, config jsonb), `quotes`, `bookings` (full price breakdown, payment flow and method, tip, promo discount, supplier reference), `booking_messages`, `payments`, `ledger_entries`, `wallet_transactions`, `business_accounts`, `business_members`, `contact_messages`, `webhook_events`. Schema: `apps/api/src/db/schema.ts`; migrations: `apps/api/drizzle/`.
+`users` (incl. `settings` jsonb), `addresses`, `suppliers` (code, adapter, services[], terms jsonb, config jsonb), `quotes`, `bookings` (full price breakdown, payment flow and method, tip, promo discount, supplier reference), `booking_messages`, `payments`, `ledger_entries`, `wallet_transactions`, `business_accounts`, `business_members`, `contact_messages`, `platform_settings`, `webhook_events`. Schema: `apps/api/src/db/schema.ts`; migrations: `apps/api/drizzle/`.

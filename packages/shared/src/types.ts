@@ -139,7 +139,7 @@ export interface Booking {
   price: PriceBreakdown;
   paymentFlow: PaymentFlow;
   /** How the customer paid: card, wallet, business account, or directly to the supplier */
-  paymentMethod?: 'card' | 'wallet' | 'business' | 'supplier';
+  paymentMethod?: 'card' | 'wallet' | 'business' | 'supplier' | 'invoice';
   passengers?: number;
   luggage?: number;
   /** Chauffeur tip included in price.customerPrice (minor units) */
@@ -389,4 +389,81 @@ export interface ContactRequest {
   email: string;
   topic: string;
   message: string;
+}
+
+// ---- Admin panel
+
+export interface PlatformSettings {
+  general: { platformName: string; company: string; supportEmail: string; market: string };
+  /** Commercial terms pre-filled when a new supplier is added */
+  supplierDefaults: { inventoryType: 'net' | 'gross'; commissionPct: number; markupType: 'percent' | 'fixed'; markupValue: number };
+  /** When true, quote search and new bookings are refused (existing trips continue) */
+  bookingsPaused: boolean;
+  updatedAt?: string;
+}
+
+export type StaffRole = 'ops' | 'finance' | 'admin';
+
+export interface TeamMember {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: StaffRole;
+  createdAt: string;
+}
+
+/** A chauffeur seen on bookings (reported by the supplier once assigned). */
+export interface AdminDriver {
+  key: string;
+  name: string;
+  phone?: string;
+  vehicle?: string;
+  plate?: string;
+  rating?: number;
+  supplierId: string;
+  supplierName: string;
+  trips: number;
+  completedTrips: number;
+  /** Assigned to an upcoming or active trip right now */
+  onTrip: boolean;
+  lastBookingId: string;
+  lastSeenAt: string;
+}
+
+export interface AdminUserRow extends User {
+  trips: number;
+  walletBalance: number;
+  deleted: boolean;
+}
+
+export interface AdminUsersResponse extends Paginated<AdminUserRow> {
+  stats: { total: number; newThisWeek: number; newLastWeek: number; withTrips: number };
+}
+
+export interface AdminDashboard {
+  currency: string;
+  bookingsToday: number;
+  bookingsYesterday: number;
+  activeTrips: number;
+  revenueToday: number;
+  revenueYesterday: number;
+  earningsToday: number;
+  activeSuppliers: number;
+  month: ReportTotals & { takeRate: number };
+  byService: ({ key: string; label: string } & ReportTotals)[];
+  /** Customer revenue per day for the last 30 days, oldest first */
+  revenueSeries: { date: string; revenue: number; bookings: number }[];
+  topVehicles: { vehicleClass: string; service: string; bookings: number; share: number }[];
+  attention: { openMessages: number; failedBookings: number; payableToSuppliers: number; suppliersOwed: number };
+  recent: Booking[];
+}
+
+export interface AdminCreateBookingRequest {
+  quoteId: string;
+  customer: { firstName: string; lastName: string; email: string; phone: string };
+  flightNumber?: string;
+  notes?: string;
+  /** card = the customer's default saved card; invoice = collected outside the app. Ignored when the supplier collects. */
+  payment: 'card' | 'invoice';
 }

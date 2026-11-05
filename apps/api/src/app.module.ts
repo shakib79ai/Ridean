@@ -18,6 +18,7 @@ import { CatalogModule } from './modules/catalog/catalog.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { WebhooksModule } from './modules/payments/webhooks.module';
 import { QuotesModule } from './modules/quotes/quotes.module';
+import { PlatformModule } from './modules/platform/platform.service';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { QuotesModule } from './modules/quotes/quotes.module';
       }),
     }),
     DbModule,
+    PlatformModule,
     IntegrationsModule,
     CatalogModule,
     AuthModule,

@@ -11,6 +11,7 @@ import { LedgerService } from '../ledger/ledger.service';
 import { PaymentsService } from '../payments/payments.service';
 import { QuotesService } from '../quotes/quotes.service';
 import { SuppliersService } from '../suppliers/suppliers.service';
+import { PlatformService } from '../platform/platform.service';
 
 const CANCELLABLE: BookingStatus[] = ['pending_payment', 'payment_authorised', 'confirmed', 'driver_assigned'];
 
@@ -26,6 +27,7 @@ export class BookingsService {
     private readonly paymentsSvc: PaymentsService,
     private readonly ledger: LedgerService,
     private readonly business: BusinessService,
+    private readonly platform: PlatformService,
   ) {}
 
   /**
@@ -35,9 +37,11 @@ export class BookingsService {
    *  2. Supplier collects: book with the supplier straight away; the supplier charges the customer
    *     (optionally via its hosted payment page) and owes Ridean commission + markup.
    */
-  async create(userId: string, input: CreateBookingRequest): Promise<CreateBookingResponse> {
+  async create(userId: string, input: CreateBookingRequest, opts: { byStaff?: boolean; invoice?: boolean } = {}): Promise<CreateBookingResponse> {
+    await this.platform.assertTakingBookings();
     const { row: quote, supplier } = await this.quotes.getBookable(input.quoteId);
-    if (quote.userId && quote.userId !== userId) throw new ForbiddenException('This quote belongs to another account');
+    // Operations staff book on behalf of a customer with a quote they searched themselves.
+    if (!opts.byStaff && quote.userId && quote.userId !== userId) throw new ForbiddenException('This quote belongs to another account');
     const already = await this.db.select({ id: bookings.id }).from(bookings).where(and(eq(bookings.quoteId, quote.id), eq(bookings.userId, userId)));
     if (already.length) throw new ConflictException('This quote has already been booked');
 
@@ -67,7 +71,8 @@ export class BookingsService {
       if (input.tripPurpose?.trim()) notes = [notes, `Trip purpose: ${input.tripPurpose.trim()}`].filter(Boolean).join('\n');
     }
 
-    const paymentMethod = !ridenCollects ? 'supplier' : input.payWithBusiness ? 'business' : input.payWithWallet ? 'wallet' : 'card';
+    const invoice = !!opts.invoice && ridenCollects;
+    const paymentMethod = !ridenCollects ? 'supplier' : invoice ? 'invoice' : input.payWithBusiness ? 'business' : input.payWithWallet ? 'wallet' : 'card';
     const [b] = await this.db
       .insert(bookings)
       .values({
@@ -107,6 +112,14 @@ export class BookingsService {
     if (supplier.paymentFlow === 'supplier_collects') {
       const result = await this.bookWithSupplier(b, supplier);
       return { booking: this.toBooking(result.booking, supplier), supplierPaymentUrl: result.paymentUrl };
+    }
+
+    if (invoice) {
+      // Booked by operations; the customer is invoiced outside the app, so the payment stays pending until finance marks it paid.
+      await this.db.insert(payments).values({ bookingId: b.id, userId, provider: 'invoice', kind: 'charge', amount: customerPrice, currency: p.currency, status: 'pending' });
+      await this.db.update(bookings).set({ status: 'payment_authorised' }).where(eq(bookings.id, b.id));
+      const done = await this.bookWithSupplier({ ...b, status: 'payment_authorised' }, supplier);
+      return { booking: this.toBooking(done.booking, supplier) };
     }
 
     if (businessAccountId) {
@@ -256,9 +269,9 @@ export class BookingsService {
   }
 
   /** Live trip status: our booking state plus chauffeur details from the supplier when available. */
-  async liveStatus(userId: string, id: string): Promise<BookingLiveStatus> {
+  async liveStatus(userId: string | null, id: string): Promise<BookingLiveStatus> {
     const b = await this.row(id);
-    if (b.userId !== userId) throw new NotFoundException('Booking not found');
+    if (userId && b.userId !== userId) throw new NotFoundException('Booking not found');
     const supplier = await this.suppliersSvc.get(b.supplierId);
     const adapter = this.registry.get(supplier.adapter);
     const ctx = this.registry.context(supplier, b.currency);
@@ -269,7 +282,14 @@ export class BookingsService {
       try {
         const s = await adapter.status!(b.supplierReference, ctx);
         if (['driver_assigned', 'in_progress', 'completed'].includes(s.status)) status = s.status;
-        if (s.driver) driver = { name: s.driver.name, phone: s.driver.phone, vehicle: s.driver.vehicle, plate: s.driver.plate, rating: s.driver.rating };
+        if (s.driver) {
+          driver = { name: s.driver.name, phone: s.driver.phone, vehicle: s.driver.vehicle, plate: s.driver.plate, rating: s.driver.rating };
+          // Remember the chauffeur so operations can see who drove which trip.
+          const known = (b.supplierMeta as { driver?: { name?: string; plate?: string } }).driver;
+          if (!known || known.name !== driver.name || known.plate !== driver.plate) {
+            await this.db.update(bookings).set({ supplierMeta: { ...b.supplierMeta, driver } }).where(eq(bookings.id, b.id));
+          }
+        }
         etaMinutes = s.etaMinutes;
         if (status !== b.status) await this.db.update(bookings).set({ status, updatedAt: new Date() }).where(eq(bookings.id, b.id));
       } catch (e) {

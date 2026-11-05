@@ -8,6 +8,7 @@ import { CurrentUser, Public, type AuthUser } from '../../common/auth';
 import { ZodPipe } from '../../common/zod.pipe';
 import { SuppliersModule } from '../suppliers/suppliers.module';
 import { QuotesService } from './quotes.service';
+import { PlatformService } from '../platform/platform.service';
 
 const Geo = z.object({
   address: z.string().min(2).max(300),
@@ -39,12 +40,16 @@ export const QuoteSearchSchema = z.object({
 @ApiTags('quotes')
 @Controller('quotes')
 export class QuotesController {
-  constructor(private readonly quotes: QuotesService) {}
+  constructor(
+    private readonly quotes: QuotesService,
+    private readonly platform: PlatformService,
+  ) {}
 
   /** Public so visitors can see prices before signing in; the quote is linked to the user when logged in. */
   @Public()
   @Post('search')
   async search(@Body(new ZodPipe(QuoteSearchSchema)) body: QuoteSearchRequest, @CurrentUser() user?: AuthUser) {
+    await this.platform.assertTakingBookings();
     const r = await this.quotes.search(body, user?.id);
     return { ...r, quotes: r.quotes.map(publicQuote) };
   }

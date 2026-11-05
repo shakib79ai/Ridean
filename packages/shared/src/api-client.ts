@@ -23,6 +23,13 @@ import type {
   BusinessAccount,
   BusinessPolicy,
   ContactRequest,
+  AdminCreateBookingRequest,
+  AdminDashboard,
+  AdminDriver,
+  AdminUsersResponse,
+  PlatformSettings,
+  StaffRole,
+  TeamMember,
 } from './types';
 
 export class ApiError extends Error {
@@ -220,12 +227,19 @@ export class RideanApi {
   }
 
   admin = {
-    dashboard: () => this.request<Record<string, unknown>>('GET', '/admin/dashboard'),
-    bookings: (params: { status?: string; service?: string; supplierId?: string; q?: string; page?: number } = {}) =>
+    dashboard: () => this.request<AdminDashboard>('GET', '/admin/dashboard'),
+    createBooking: (input: AdminCreateBookingRequest) => this.request<Booking>('POST', '/admin/bookings', input),
+    drivers: () => this.request<AdminDriver[]>('GET', '/admin/drivers'),
+    bookingStatus: (id: string) => this.request<BookingLiveStatus>('GET', `/admin/bookings/${id}/status`),
+    settings: () => this.request<PlatformSettings>('GET', '/admin/settings'),
+    updateSettings: (patch: Partial<Omit<PlatformSettings, 'updatedAt'>>) => this.request<PlatformSettings>('PATCH', '/admin/settings', patch),
+    team: () => this.request<TeamMember[]>('GET', '/admin/team'),
+    setTeamRole: (input: { email: string; role: StaffRole | 'customer' }) => this.request<TeamMember[]>('PATCH', '/admin/team', input),
+    bookings: (params: { status?: string; service?: string; supplierId?: string; q?: string; page?: number; pageSize?: number; from?: string; to?: string; userId?: string } = {}) =>
       this.request<Paginated<Booking>>('GET', '/admin/bookings', undefined, params),
     booking: (id: string) => this.request<Booking>('GET', `/admin/bookings/${id}`),
     updateBookingStatus: (id: string, status: string) => this.request<Booking>('PATCH', `/admin/bookings/${id}/status`, { status }),
-    users: (params: { q?: string; page?: number } = {}) => this.request<Paginated<User>>('GET', '/admin/users', undefined, params),
+    users: (params: { q?: string; page?: number; filter?: 'active' | 'new' | 'deleted' } = {}) => this.request<AdminUsersResponse>('GET', '/admin/users', undefined, params),
     suppliers: () => this.request<Supplier[]>('GET', '/admin/suppliers'),
     supplier: (id: string) => this.request<Supplier & { balance: number }>('GET', `/admin/suppliers/${id}`),
     createSupplier: (input: Omit<Supplier, 'id'>) => this.request<Supplier>('POST', '/admin/suppliers', input),

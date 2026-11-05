@@ -234,3 +234,11 @@ export type SupplierRow = typeof suppliers.$inferSelect;
 export type QuoteRow = typeof quotes.$inferSelect;
 export type BookingRow = typeof bookings.$inferSelect;
 export type LedgerRow = typeof ledgerEntries.$inferSelect;
+
+/** Platform-wide settings edited in the admin panel (single row, id = 'platform'). */
+export const platformSettings = pgTable('platform_settings', {
+  id: text('id').primaryKey(),
+  value: jsonb('value').$type<Record<string, unknown>>().notNull().default({}),
+  updatedBy: uuid('updated_by'),
+  updatedAt: ts('updated_at').notNull().defaultNow(),
+});
