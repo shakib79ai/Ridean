@@ -8,6 +8,9 @@ on:
     branches: [emerald-v2]
     paths: ['apps/mobile/**', '.github/workflows/mobile-screens.yml', '.github/scripts/mobile-screens.mjs']
 
+permissions:
+  contents: write
+
 jobs:
   screens:
     runs-on: ubuntu-latest
@@ -68,7 +71,19 @@ jobs:
           QUOTE_ID: ${{ steps.seed.outputs.quote }}
           TOKEN: ${{ steps.seed.outputs.token }}
       - if: always()
-        run: cp /tmp/api.log screens/ 2>/dev/null || true
+        run: |
+          cp /tmp/api.log screens/ 2>/dev/null || true
+          cat screens/report.txt || true
+          ls -la screens | head -20
+      - name: Publish to the mobile-screens branch
+        if: always()
+        run: |
+          cd screens
+          git init -q -b mobile-screens
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "Screens for ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" mobile-screens
       - uses: actions/upload-artifact@v4
         if: always()
         with:
