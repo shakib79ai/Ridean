@@ -1,9 +1,134 @@
 'use client';
 
-// DESIGN-STATIC: generated from the PWA design canvas board "CreateAccount". Wire to the API and remove this marker.
-/* eslint-disable */
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState, type FormEvent } from 'react';
+import { useRidean } from '@ridean/web-core';
+import { Arrow, ErrorNote, Field } from '@/components/site/ui';
+import { AuthHero, IconMail, IconPhone, IconUser, PasswordField, ctaButton, safeNext } from '@/components/auth/AuthKit';
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function CreateAccountPage() {
   return (
-    <><div style={{ paddingBottom: "24px" }}><div style={{ position: "relative", height: "250px", overflow: "hidden" }}><img src="/img/design/night-car.jpg" alt="" style={{ position: "absolute", inset: "0", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%" }} /><div style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg,rgba(7,26,20,.35),#071A14)" }}></div><div style={{ position: "absolute", left: "24px", right: "24px", bottom: "20px" }}><span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: "-.01em", background: "linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", fontSize: "40px" }}>Ridean</span><div style={{ fontSize: "14px", color: "#D7DED6", marginTop: "4px" }}>Arrive exceptionally.</div></div></div><div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "0 20px" }}><h1 style={{ margin: "0", fontFamily: "Playfair Display,serif", fontSize: "28px", fontWeight: 600 }}>Create your account</h1><div style={{ display: "flex", gap: "10px" }}><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>First name</div><input name="fn" type="text" defaultValue="" placeholder="Shakib" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Last name</div><input name="ln" type="text" defaultValue="" placeholder="Haider" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div></div><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6l8.5 7 8.5-7" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Email</div><input name="email" type="email" defaultValue="" placeholder="you@example.com" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Phone</div><input name="phone" type="tel" defaultValue="" placeholder="+1 (555) 000-0000" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Password</div><input name="pw" type="password" defaultValue="" placeholder="At least 8 characters" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div><div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "48px", alignSelf: "stretch", borderLeft: "1px solid #1F4537" }}><button type="button" data-act="rdPw(this)" aria-label="Show password" style={{ all: "unset", cursor: "pointer", display: "flex" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="3" /></svg></button></div></label><label style={{ display: "flex", gap: "10px", alignItems: "flex-start", fontSize: "13px", lineHeight: 1.45, color: "#9FB2A6" }}><input type="checkbox" defaultChecked style={{ accentColor: "#F6C428", width: "18px", height: "18px", margin: "1px 0 0" }} />I agree to the <a href="/legal" style={{ color: "#D9A94F" }}>Terms</a> and <a href="/legal" style={{ color: "#D9A94F" }}>Privacy policy</a></label><a href="/" className="dz-cta" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", height: "54px", borderRadius: "12px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "17px", fontWeight: 600 }}><span>Create account</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A1F18" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 12h14M13 6l6 6-6 6" /></svg></a><div style={{ textAlign: "center", fontSize: "14px", color: "#9FB2A6" }}>Already have an account? <a href="/signin" style={{ color: "#D9A94F", fontWeight: 600 }}>Sign in</a></div></div></div></>
+    <div style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}>
+      <AuthHero />
+      <Suspense fallback={null}>
+        <SignUpForm />
+      </Suspense>
+    </div>
+  );
+}
+
+type Key = 'firstName' | 'lastName' | 'email' | 'phone' | 'password' | 'terms';
+
+function SignUpForm() {
+  const { register, user, ready } = useRidean();
+  const router = useRouter();
+  const nextParam = useSearchParams().get('next');
+  const next = safeNext(nextParam);
+
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '' });
+  const [terms, setTerms] = useState(false);
+  const [invalid, setInvalid] = useState<Partial<Record<Key, boolean>>>({});
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (ready && user) router.replace(next);
+  }, [ready, user, next, router]);
+
+  const set = (k: keyof typeof form) => (v: string) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setInvalid((i) => ({ ...i, [k]: false }));
+  };
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (busy) return;
+    setError('');
+    const bad: Partial<Record<Key, boolean>> = {
+      firstName: !form.firstName.trim(),
+      lastName: !form.lastName.trim(),
+      email: !EMAIL_RE.test(form.email.trim()),
+      phone: !!form.phone.trim() && form.phone.replace(/\D/g, '').length < 6,
+      password: form.password.length < 8,
+      terms: !terms,
+    };
+    setInvalid(bad);
+    if (bad.firstName || bad.lastName) return setError('Please enter your first and last name.');
+    if (bad.email) return setError('Please enter a valid email address.');
+    if (bad.phone) return setError('Please check your phone number.');
+    if (bad.password) return setError('Your password needs at least 8 characters.');
+    if (bad.terms) return setError('Please agree to the Terms and Privacy policy to continue.');
+    setBusy(true);
+    try {
+      await register({ firstName: form.firstName.trim(), lastName: form.lastName.trim(), email: form.email.trim(), password: form.password, phone: form.phone.trim() || undefined });
+      router.replace(next);
+    } catch (err) {
+      setError((err as Error).message || 'We couldn’t create your account. Please try again.');
+      setBusy(false);
+    }
+  }
+
+  const bad = (k: Key) => (invalid[k] ? { borderColor: '#E5645A' } : undefined);
+
+  return (
+    <form onSubmit={submit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '0 20px' }}>
+      <h1 style={{ margin: '0', fontFamily: 'Playfair Display,serif', fontSize: '28px', fontWeight: 600 }}>Create your account</h1>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ flex: 1, minWidth: '0' }}>
+          <Field icon={<IconUser />} label="First name" style={bad('firstName')}>
+            <input className="dz-input" name="firstName" autoComplete="given-name" value={form.firstName} onChange={(e) => set('firstName')(e.target.value)} placeholder="First name" aria-invalid={invalid.firstName || undefined} />
+          </Field>
+        </div>
+        <div style={{ flex: 1, minWidth: '0' }}>
+          <Field icon={<IconUser />} label="Last name" style={bad('lastName')}>
+            <input className="dz-input" name="lastName" autoComplete="family-name" value={form.lastName} onChange={(e) => set('lastName')(e.target.value)} placeholder="Last name" aria-invalid={invalid.lastName || undefined} />
+          </Field>
+        </div>
+      </div>
+      <Field icon={<IconMail />} label="Email" style={bad('email')}>
+        <input className="dz-input" name="email" type="email" autoComplete="email" inputMode="email" value={form.email} onChange={(e) => set('email')(e.target.value)} placeholder="you@example.com" aria-invalid={invalid.email || undefined} />
+      </Field>
+      <Field icon={<IconPhone />} label="Phone" style={bad('phone')}>
+        <input className="dz-input" name="phone" type="tel" autoComplete="tel" value={form.phone} onChange={(e) => set('phone')(e.target.value)} placeholder="+1 (555) 000-0000" aria-invalid={invalid.phone || undefined} />
+      </Field>
+      <PasswordField value={form.password} onChange={set('password')} placeholder="At least 8 characters" autoComplete="new-password" invalid={invalid.password} />
+      <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '13px', lineHeight: 1.45, color: invalid.terms ? '#FFB3AC' : '#9FB2A6' }}>
+        <input
+          type="checkbox"
+          checked={terms}
+          required
+          onChange={(e) => {
+            setTerms(e.target.checked);
+            setInvalid((i) => ({ ...i, terms: false }));
+          }}
+          aria-invalid={invalid.terms || undefined}
+          style={{ accentColor: '#F6C428', width: '18px', height: '18px', margin: '1px 0 0', flexShrink: 0 }}
+        />
+        <span>
+          I agree to the{' '}
+          <Link href="/legal" style={{ color: '#D9A94F' }}>
+            Terms
+          </Link>{' '}
+          and{' '}
+          <Link href="/legal#privacy" style={{ color: '#D9A94F' }}>
+            Privacy policy
+          </Link>
+        </span>
+      </label>
+      {error && <ErrorNote>{error}</ErrorNote>}
+      <button type="submit" className="dz-cta" disabled={busy} style={ctaButton}>
+        <span>{busy ? 'Creating account…' : 'Create account'}</span>
+        {!busy && <Arrow />}
+      </button>
+      <div style={{ textAlign: 'center', fontSize: '14px', color: '#9FB2A6' }}>
+        Already have an account?{' '}
+        <Link href={nextParam ? `/signin?next=${encodeURIComponent(next)}` : '/signin'} style={{ color: '#D9A94F', fontWeight: 600 }}>
+          Sign in
+        </Link>
+      </div>
+    </form>
   );
 }

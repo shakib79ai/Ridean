@@ -51,13 +51,16 @@ export function BookingRow({ b, href }: { b: Booking; href: string }) {
 /** Wraps account pages: shows a sign-in prompt when nobody is logged in. */
 export function RequireAuth({ children, signInPath = '/signin' }: { children: ReactNode; signInPath?: string }) {
   const { user, ready } = useRidean();
-  if (!ready) return <div className="rd-skeleton" style={{ height: 240 }} />;
+  // Inline styles so the prompt looks right in apps that don't load web-core's stylesheet.
+  if (!ready) return <div aria-busy="true" style={{ height: 240, margin: 16, borderRadius: 16, background: '#0E2A22' }} />;
   if (!user)
     return (
-      <div className="rd-card rd-stack" style={{ textAlign: 'center', padding: 40, alignItems: 'center' }}>
-        <h2 className="rd-display" style={{ fontSize: 28 }}>Please sign in</h2>
-        <p className="rd-muted" style={{ margin: 0 }}>Sign in to see your trips, wallet and saved details.</p>
-        <Link className="rd-btn" href={`${signInPath}?next=${typeof window !== 'undefined' ? encodeURIComponent(location.pathname + location.search) : ''}`}>Sign in</Link>
+      <div style={{ margin: 16, padding: 32, borderRadius: 16, background: '#0E2A22', border: '1px solid #1F4537', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center', color: '#F3EEDF', fontFamily: "'Inter', sans-serif" }}>
+        <h2 style={{ margin: 0, fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: 28 }}>Please sign in</h2>
+        <p style={{ margin: 0, color: '#9FB2A6', fontSize: 15 }}>Sign in to see your trips, wallet and saved details.</p>
+        <Link href={`${signInPath}?next=${typeof window !== 'undefined' ? encodeURIComponent(location.pathname + location.search) : ''}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 50, padding: '0 28px', borderRadius: 12, background: 'linear-gradient(180deg,#FFD43B,#F2B705)', color: '#0A1F18', fontWeight: 600, fontSize: 16, textDecoration: 'none' }}>
+          Sign in
+        </Link>
       </div>
     );
   return <>{children}</>;
