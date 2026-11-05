@@ -2,53 +2,89 @@
 
 import { useState } from 'react';
 import { useRidean } from '@ridean/web-core/src/api-context';
-import { Loading, PageHead } from '@/components/Shell';
+import { Avatar, Btn, Chips, Empty, Loading, PageHead, Pill, useToast } from '@/components/ui';
 import { dt } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
+
+const FILTERS = [
+  ['false', 'Open'],
+  ['true', 'Handled'],
+  ['', 'All'],
+] as const;
+type FilterKey = (typeof FILTERS)[number][0];
 
 /** Messages sent through the website contact form. */
 export default function InboxPage() {
   const { api } = useRidean();
-  const [filter, setFilter] = useState<'false' | 'true' | ''>('false');
-  const { data, error, reload } = useLoad(() => api.admin.contactMessages(filter ? { handled: filter } : {}), [api, filter]);
-  const [open, setOpen] = useState<string | null>(null);
+  const toast = useToast();
+  const [filter, setFilter] = useState<FilterKey>('false');
+  const { data, error, loading, reload, setData } = useLoad(() => api.admin.contactMessages(filter ? { handled: filter } : {}), [api, filter]);
+  const [busy, setBusy] = useState<string | null>(null);
 
   async function toggle(id: string, handled: boolean) {
-    await api.admin.markContactMessage(id, handled);
-    reload();
+    setBusy(id);
+    try {
+      await api.admin.markContactMessage(id, handled);
+      // Drop it from a filtered list straight away; in "All" just flip its state.
+      setData((list) => (list ? (filter ? list.filter((x) => x.id !== id) : list.map((x) => (x.id === id ? { ...x, handled } : x))) : list));
+      toast(handled ? 'Marked as handled' : 'Message reopened');
+    } catch (e) {
+      toast((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
   }
+
+  const label = FILTERS.find(([k]) => k === filter)![1].toLowerCase();
 
   return (
     <>
-      <PageHead title="Inbox" sub="Messages from the website contact form">
-        <div className="seg2">
-          <button aria-pressed={filter === 'false'} onClick={() => setFilter('false')}>Open</button>
-          <button aria-pressed={filter === 'true'} onClick={() => setFilter('true')}>Handled</button>
-          <button aria-pressed={filter === ''} onClick={() => setFilter('')}>All</button>
+      <PageHead
+        title="Inbox"
+        sub={data ? `${data.length} ${filter === '' ? '' : `${label} `}${data.length === 1 ? 'message' : 'messages'} from the contact form` : 'Messages from the website contact form'}
+      />
+
+      <div className="az-between">
+        <Chips label="Filter messages" options={FILTERS} value={filter} onChange={setFilter} />
+        <span className="az-muted" style={{ fontSize: 13.5 }}>Reply from your support mailbox, then mark the message handled.</span>
+      </div>
+
+      {!data ? (
+        <Loading error={error} onRetry={reload} height={320} />
+      ) : data.length === 0 ? (
+        <div className="az-card">
+          <Empty title={filter === 'false' ? 'Inbox zero' : 'No messages'}>
+            {filter === 'false' ? 'Every contact-form message has been handled.' : 'Nothing here yet.'}
+          </Empty>
         </div>
-      </PageHead>
-      {!data ? <Loading error={error} /> : (
-        <div className="tbl-wrap">
-          <table className="tbl">
-            <thead><tr><th>Received</th><th>From</th><th>Topic</th><th>Message</th><th /></tr></thead>
-            <tbody>
-              {data.length === 0 && <tr><td colSpan={5} className="rd-muted">No messages.</td></tr>}
-              {data.map((m) => (
-                <tr key={m.id} className="click" onClick={() => setOpen(open === m.id ? null : m.id)}>
-                  <td>{dt(m.createdAt)}</td>
-                  <td><strong>{m.name}</strong><div className="rd-muted" style={{ fontSize: 12 }}>{m.email}</div></td>
-                  <td>{m.topic}</td>
-                  <td style={{ whiteSpace: open === m.id ? 'pre-wrap' : 'nowrap', maxWidth: 520, overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.message}</td>
-                  <td className="num">
-                    <button className="rd-btn rd-btn-dark btn-sm" onClick={(e) => { e.stopPropagation(); void toggle(m.id, !m.handled); }}>{m.handled ? 'Reopen' : 'Mark handled'}</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      ) : (
+        <div className="az-stack" style={{ gap: 12, opacity: loading ? 0.6 : 1 }} aria-busy={loading}>
+          {data.map((msg) => (
+            <article key={msg.id} className="az-card" style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+              <Avatar name={msg.name} size={42} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="az-between" style={{ alignItems: 'flex-start' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div className="az-row" style={{ gap: 8 }}>
+                      <strong style={{ fontSize: 15, fontWeight: 600 }}>{msg.name}</strong>
+                      <span className="az-badge">{msg.topic}</span>
+                      {msg.handled ? <Pill tone="ok">Handled</Pill> : <Pill tone="warn">Open</Pill>}
+                    </div>
+                    <a href={`mailto:${msg.email}?subject=${encodeURIComponent(`Re: ${msg.topic}`)}`} className="az-a" style={{ fontWeight: 500, display: 'inline-block', marginTop: 4, overflowWrap: 'anywhere' }}>{msg.email}</a>
+                  </div>
+                  <div className="az-row" style={{ gap: 12 }}>
+                    <time className="az-muted" style={{ fontSize: 13 }} dateTime={msg.createdAt}>{dt(msg.createdAt)}</time>
+                    <Btn size="sm" kind={msg.handled ? 'o' : 'g'} icon={msg.handled ? 'refresh' : 'check'} disabled={busy === msg.id} onClick={() => void toggle(msg.id, !msg.handled)}>
+                      {busy === msg.id ? 'Saving…' : msg.handled ? 'Reopen' : 'Mark handled'}
+                    </Btn>
+                  </div>
+                </div>
+                <p style={{ margin: '12px 0 0', fontSize: 14.5, lineHeight: 1.55, color: 'var(--soft)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{msg.message}</p>
+              </div>
+            </article>
+          ))}
         </div>
       )}
-      <p className="legend">Reply from your support mailbox to the sender's email address, then mark the message handled.</p>
     </>
   );
 }

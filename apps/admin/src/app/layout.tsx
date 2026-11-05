@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import '@ridean/web-core/src/styles.css';
 import './globals.css';
 import { Providers } from './providers';
 import { Shell } from '@/components/Shell';

@@ -1,64 +1,184 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import type { Booking } from '@ridean/shared';
 import { useRidean } from '@ridean/web-core/src/api-context';
-import { ServiceSelect, SupplierSelect } from '@/components/Filters';
-import { Loading, PageHead } from '@/components/Shell';
-import { Status } from '@/components/Status';
-import { dt, FLOW_LABEL, m, svc } from '@/lib/format';
+import { Btn, Chips, Empty, Loading, PageHead, Pager, StatusPill, useToast } from '@/components/ui';
+import { csvCell, passengerName, RefLink, ServiceCell, whenShort } from '@/components/ops/bits';
+import { downloadText, m, svc } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
 
-const STATUSES = ['pending_payment', 'payment_authorised', 'confirmed', 'driver_assigned', 'in_progress', 'completed', 'cancelled', 'failed'];
+const STATUS_CHIPS = [
+  ['', 'All'],
+  ['confirmed', 'Scheduled'],
+  ['driver_assigned', 'En route'],
+  ['in_progress', 'In progress'],
+  ['completed', 'Completed'],
+  ['cancelled', 'Cancelled'],
+  ['failed', 'Failed'],
+] as const;
+type StatusKey = (typeof STATUS_CHIPS)[number][0];
+
+const RANGES = [
+  ['30d', 'Last 30 days', 'in the last 30 days'],
+  ['today', 'Today', 'today'],
+  ['7d', 'Last 7 days', 'in the last 7 days'],
+  ['all', 'All time', 'in total'],
+] as const;
+type RangeKey = (typeof RANGES)[number][0];
+
+/** ISO start of the selected period (local midnight), undefined for all time. */
+function rangeFrom(r: RangeKey): string | undefined {
+  if (r === 'all') return undefined;
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  if (r === '7d') d.setDate(d.getDate() - 6);
+  if (r === '30d') d.setDate(d.getDate() - 29);
+  return d.toISOString();
+}
+
+const PAGE_SIZE = 10;
 
 export default function BookingsPage() {
+  return (
+    <Suspense fallback={<><PageHead title="Bookings" /><Loading height={420} /></>}>
+      <Bookings />
+    </Suspense>
+  );
+}
+
+function Bookings() {
   const { api } = useRidean();
   const router = useRouter();
-  const [f, setF] = useState({ q: '', status: '', service: '', supplierId: '', page: 1 });
-  const set = (k: keyof typeof f, v: string | number) => setF((o) => ({ ...o, [k]: v, page: k === 'page' ? Number(v) : 1 }));
-  const suppliers = useLoad(() => api.admin.suppliers(), [api]);
-  const { data, error } = useLoad(() => api.admin.bookings(f), [api, f]);
-  const pages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1;
+  const path = usePathname();
+  const params = useSearchParams();
+  const toast = useToast();
+  const q = params.get('q')?.trim() ?? '';
+  const statusParam = params.get('status') ?? '';
+  const status: StatusKey = (STATUS_CHIPS.find(([k]) => k === statusParam)?.[0] ?? '') as StatusKey;
+  const [range, setRange] = useState<RangeKey>('30d');
+  const [page, setPage] = useState(1);
+  const [exporting, setExporting] = useState(false);
+  const from = rangeFrom(range);
+
+  const { data, error, loading, reload } = useLoad(
+    () => api.admin.bookings({ status: status || undefined, q: q || undefined, from, page, pageSize: PAGE_SIZE }),
+    // `from` changes every render only when the range changes (day granularity), so key on the range.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [api, status, q, range, page],
+  );
+
+  const setParam = (key: 'status' | 'q', value: string) => {
+    const next = new URLSearchParams(params.toString());
+    if (value) next.set(key, value);
+    else next.delete(key);
+    setPage(1);
+    const s = next.toString();
+    router.replace(s ? `${path}?${s}` : path, { scroll: false });
+  };
+
+  const cycleRange = () => {
+    const i = RANGES.findIndex(([k]) => k === range);
+    setRange(RANGES[(i + 1) % RANGES.length]![0]);
+    setPage(1);
+  };
+  const rangeInfo = RANGES.find(([k]) => k === range)!;
+
+  async function exportCsv() {
+    setExporting(true);
+    try {
+      const rows: Booking[] = [];
+      for (let p = 1; ; p++) {
+        const r = await api.admin.bookings({ status: status || undefined, q: q || undefined, from, page: p, pageSize: 100 });
+        rows.push(...r.items);
+        if (rows.length >= r.total || r.items.length === 0) break;
+      }
+      const head = ['Reference', 'Created', 'Status', 'Service', 'Customer', 'Email', 'Phone', 'Supplier', 'Supplier reference', 'Pickup time', 'Pickup', 'Destination', 'Vehicle', 'Currency', 'Customer price', 'Supplier price', 'Earnings', 'Collected by'];
+      const lines = rows.map((b) => [
+        b.reference, b.createdAt, b.status, svc(b.service), passengerName(b), b.passenger.email, b.passenger.phone, b.supplierName, b.supplierReference ?? '',
+        b.pickupAt ?? '', b.pickup.address, b.dropoff?.address ?? '', b.vehicle.name, b.price.currency,
+        (b.price.customerPrice / 100).toFixed(2), (b.price.supplierPrice / 100).toFixed(2), (b.price.earnings / 100).toFixed(2), b.price.collectedBy,
+      ].map(csvCell).join(','));
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadText(`ridean-bookings-${stamp}.csv`, [head.join(','), ...lines].join('\n'));
+      toast(`Exported ${rows.length.toLocaleString()} ${rows.length === 1 ? 'booking' : 'bookings'}`);
+    } catch (e) {
+      toast((e as Error).message);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <>
-      <PageHead title="Bookings" sub={data ? `${data.total} bookings` : undefined} />
-      <div className="filters">
-        <input className="inp" placeholder="Reference, name or email" value={f.q} onChange={(e) => set('q', e.target.value)} style={{ minWidth: 240 }} />
-        <select className="inp" value={f.status} onChange={(e) => set('status', e.target.value)}>
-          <option value="">All statuses</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
-        </select>
-        <ServiceSelect value={f.service} onChange={(v) => set('service', v)} />
-        <SupplierSelect suppliers={suppliers.data ?? []} value={f.supplierId} onChange={(v) => set('supplierId', v)} />
-      </div>
-      {!data ? <Loading error={error} /> : (
-        <div className="tbl-wrap">
-          <table className="tbl">
-            <thead><tr><th>Reference</th><th>Created</th><th>Service</th><th>Supplier</th><th>Passenger</th><th>Pickup</th><th>Payment</th><th>Status</th><th className="num">Customer</th><th className="num">Earnings</th></tr></thead>
-            <tbody>
-              {data.items.length === 0 && <tr><td colSpan={10} className="rd-muted">No bookings match these filters.</td></tr>}
-              {data.items.map((b) => (
-                <tr key={b.id} className="click" onClick={() => router.push(`/bookings/${b.id}`)}>
-                  <td><strong>{b.reference}</strong></td>
-                  <td>{dt(b.createdAt)}</td>
-                  <td>{svc(b.service)}</td>
-                  <td>{b.supplierName}</td>
-                  <td>{b.passenger.firstName} {b.passenger.lastName}</td>
-                  <td style={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.pickup.address}</td>
-                  <td>{FLOW_LABEL[b.paymentFlow]}</td>
-                  <td><Status s={b.status} /></td>
-                  <td className="num">{m(b.price.customerPrice, b.price.currency)}</td>
-                  <td className="num">{m(b.price.earnings, b.price.currency)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="pager">
-            Page {data.page} of {pages}
-            <button className="rd-btn rd-btn-dark btn-sm" disabled={data.page <= 1} onClick={() => set('page', data.page - 1)}>Previous</button>
-            <button className="rd-btn rd-btn-dark btn-sm" disabled={data.page >= pages} onClick={() => set('page', data.page + 1)}>Next</button>
-          </div>
+      <PageHead
+        title="Bookings"
+        sub={data ? `${data.total.toLocaleString()} ${data.total === 1 ? 'booking' : 'bookings'} ${rangeInfo[2]}` : undefined}
+        actions={<Btn kind="y" icon="plus" onClick={() => router.push('/bookings/new')}>New booking</Btn>}
+        searchPlaceholder="Search bookings, customers…"
+      />
+
+      <div className="az-between" style={{ gap: 16 }}>
+        <Chips label="Filter by status" options={STATUS_CHIPS} value={status} onChange={(v) => setParam('status', v)} />
+        <div className="az-row" style={{ gap: 10 }}>
+          <Btn kind="o" icon="calendar" onClick={cycleRange} aria-label={`Date range: ${rangeInfo[1]}. Change range`} title="Change date range">{rangeInfo[1]}</Btn>
+          <Btn kind="g" icon="download" onClick={exportCsv} disabled={exporting || !data || data.total === 0}>{exporting ? 'Exporting…' : 'Export CSV'}</Btn>
         </div>
+      </div>
+
+      {q && (
+        <div className="az-row" style={{ fontSize: 14 }}>
+          <span className="az-muted">Results for</span>
+          <span className="az-badge" style={{ fontSize: 13 }}>“{q}”</span>
+          <button type="button" className="az-a" onClick={() => setParam('q', '')}>Clear search</button>
+        </div>
+      )}
+
+      {!data ? (
+        <Loading error={error} onRetry={reload} height={420} />
+      ) : (
+        <>
+          {error && <Loading error={error} onRetry={reload} />}
+          <div className="az-twrap" style={{ opacity: loading ? 0.6 : 1, transition: 'opacity .15s' }} aria-busy={loading}>
+            {data.items.length === 0 ? (
+              <Empty
+                title={q || status ? 'No matching bookings' : 'No bookings yet'}
+                action={range !== 'all' ? <Btn size="sm" onClick={() => { setRange('all'); setPage(1); }}>Show all time</Btn> : undefined}
+              >
+                {q || status ? 'Try another status, a wider date range, or a different search.' : `Nothing was booked ${rangeInfo[2]}.`}
+              </Empty>
+            ) : (
+              <table className="az-t">
+                <thead>
+                  <tr>
+                    <th>Booking</th><th>Customer</th><th>Service</th><th>Driver / supplier</th><th>Pickup</th><th>Status</th><th className="num">Amount</th><th aria-label="Actions" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.items.map((b) => (
+                    <tr key={b.id}>
+                      <td><RefLink b={b} /></td>
+                      <td>{passengerName(b)}</td>
+                      <td><ServiceCell service={b.service} /></td>
+                      <td style={{ color: 'var(--soft)' }}>{b.supplierName}</td>
+                      <td style={{ color: 'var(--soft)' }} title={b.pickup.address}>{whenShort(b.pickupAt)}</td>
+                      <td><StatusPill status={b.status} /></td>
+                      <td className="num" style={{ fontWeight: 600 }}>{m(b.price.customerPrice, b.price.currency)}</td>
+                      <td className="num">
+                        <Link href={`/bookings/${b.id}`} className="az-a" aria-label={`View booking ${b.reference}`}>
+                          {b.status === 'failed' ? 'Review' : 'View'}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+          {data.total > 0 && <Pager page={data.page} pageSize={data.pageSize} total={data.total} onPage={setPage} noun="bookings" />}
+        </>
       )}
     </>
   );
