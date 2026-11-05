@@ -1,9 +1,134 @@
 'use client';
 
-// DESIGN-STATIC: generated from the PWA design canvas board "Profile". Wire to the API and remove this marker.
-/* eslint-disable */
-export default function ProfilePage() {
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import type { ReactNode } from 'react';
+import { RequireAuth, useRidean } from '@ridean/web-core';
+import { C, Skeleton, initials } from '@/components/site/ui';
+import { ErrorNote, Icon, cardLabel, fetchAllBookings, isCancelled, money, useLoad, type IconName } from '@/components/account/kit';
+
+const tileStyle = { background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '12px', textAlign: 'center', minWidth: 0 } as const;
+
+function Tile({ value, label }: { value: string | null; label: string }) {
   return (
-    <><div style={{ paddingBottom: "92px" }}><div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 20px 14px" }}><span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: "-.01em", background: "linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", fontSize: "30px" }}>Ridean</span><a href="/account/settings" aria-label="Menu" style={{ width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" /><path d="M10 21h4" /></svg></a></div><div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "0 20px" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "16px" }}><div style={{ display: "flex", alignItems: "center", gap: "14px" }}><div style={{ width: "62px", height: "62px", borderRadius: "31px", background: "linear-gradient(135deg,#E2B04A,#9C6F1F)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display',serif", fontWeight: 700, fontSize: "24px", color: "#0A1F18", flexShrink: 0 }}>SH</div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "22px", fontWeight: 600 }}>Shakib Haider</div><div style={{ fontSize: "13px", color: "#9FB2A6", marginTop: "3px" }}>shakib@bestmyflight.com</div><div style={{ marginTop: "8px" }}><span style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "4px 9px", borderRadius: "999px", background: "rgba(217,169,79,.14)", color: "#D9A94F", fontSize: "11.5px", fontWeight: 600 }}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z" /></svg> Ridean+ Gold</span></div></div><a href="/account/edit" aria-label="Edit profile"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg></a></div></div><div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "10px" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "12px", textAlign: "center" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "22px", fontWeight: 600 }}>48</div><div style={{ fontSize: "11.5px", color: "#9FB2A6", marginTop: "2px" }}>Trips</div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "12px", textAlign: "center" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "22px", fontWeight: 600 }}>4.96</div><div style={{ fontSize: "11.5px", color: "#9FB2A6", marginTop: "2px" }}>Rating</div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "12px", textAlign: "center" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "22px", fontWeight: 600 }}>$64</div><div style={{ fontSize: "11.5px", color: "#9FB2A6", marginTop: "2px" }}>Wallet</div></div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "2px 14px" }}><a href="/account/edit" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Edit profile</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Name, phone, email</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a><a href="/account/payment-methods" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="5.5" width="18" height="13" rx="2" /><path d="M3 10h18M7 15h3" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Payment methods</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Visa •••• 4242</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a><a href="/account/addresses" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.4" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Saved addresses</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Home, Work + 2</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a><a href="/account/business" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5h6v2M3 12h18" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Business account</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Acme Ltd</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a><a href="/account/invoices" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Invoices</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Receipts and tax invoices</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a><a href="/account/settings" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" /><path d="M10 21h4" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Settings</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Notifications, language</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a><a href="/help" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="9" /><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.3c-.9.4-1.3 1-1.3 1.9M12 17h.01" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Help & support</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>24/7 chauffeur support</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a><a href="/legal" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 3l7.5 3v6c0 4.5-3.2 8-7.5 9-4.3-1-7.5-4.5-7.5-9V6z" /><path d="M9 12l2 2 4-4" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Legal & privacy</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Terms, data and cookies</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a></div><a href="/signin" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", height: "50px", borderRadius: "12px", border: "1px solid #1F4537", color: "#E5645A", fontSize: "15px", fontWeight: 600 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E5645A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10" /></svg>Sign out</a></div></div></>
+    <div style={tileStyle}>
+      {value === null ? (
+        <Skeleton h={28} style={{ width: '60%', margin: '0 auto', borderRadius: 8 }} />
+      ) : (
+        <div style={{ fontFamily: 'Playfair Display,serif', fontSize: value.length > 7 ? '17px' : '22px', lineHeight: '28px', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</div>
+      )}
+      <div style={{ fontSize: '11.5px', color: '#9FB2A6', marginTop: '2px' }}>{label}</div>
+    </div>
+  );
+}
+
+function MenuRow({ href, icon, title, sub, last }: { href: string; icon: IconName; title: string; sub: ReactNode; last?: boolean }) {
+  return (
+    <Link href={href} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 2px', borderBottom: last ? undefined : '1px solid #1F4537' }}>
+      <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: '#12352B', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <Icon name={icon} />
+      </div>
+      <div style={{ flex: 1, minWidth: '0' }}>
+        <div style={{ fontSize: '15px', fontWeight: 500, color: '#F3EEDF' }}>{title}</div>
+        <div style={{ fontSize: '12.5px', color: '#9FB2A6', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sub}</div>
+      </div>
+      <Icon name="right" color="#9FB2A6" />
+    </Link>
+  );
+}
+
+const subSkel = <span className="dz-skel" style={{ display: 'inline-block', width: 110, height: 12, borderRadius: 6, verticalAlign: 'middle' }} />;
+
+function Profile() {
+  const { api, user, logout } = useRidean();
+  const router = useRouter();
+
+  const trips = useLoad(async () => {
+    const all = await fetchAllBookings(api);
+    return all.filter((b) => b.status === 'completed' || (!isCancelled(b) && b.pickupAt && new Date(b.pickupAt).getTime() < Date.now())).length;
+  }, [api]);
+  const addresses = useLoad(() => api.addresses(), [api]);
+  const wallet = useLoad(() => api.wallet(), [api]);
+  const cards = useLoad(() => api.paymentMethods(), [api]);
+  const business = useLoad(() => api.business(), [api]);
+
+  const memberSince = user?.createdAt ? new Date(user.createdAt).getFullYear() : null;
+  const def = cards.data ? cards.data.find((c) => c.isDefault) ?? cards.data[0] : undefined;
+  const addr = addresses.data;
+  const addrSub = !addr
+    ? addresses.error ? 'Home, work and favourite places' : subSkel
+    : addr.length === 0
+      ? 'Add home or work'
+      : addr.length <= 2
+        ? addr.map((a) => a.label).join(', ')
+        : `${addr.slice(0, 2).map((a) => a.label).join(', ')} + ${addr.length - 2}`;
+  const cardSub = cards.data ? (def ? cardLabel(def) : 'Add a card') : cards.error ? 'Cards, wallet and business' : subSkel;
+  const bizSub = business.data ? business.data.name : business.loading ? subSkel : business.error ? 'Travel for work' : 'Set up for your team';
+
+  const error = trips.error || addresses.error || wallet.error;
+
+  function signOut() {
+    logout();
+    router.push('/');
+  }
+
+  return (
+    <div style={{ paddingBottom: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 20px 14px', minHeight: '62px' }}>
+        <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: '-.01em', background: 'linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', fontSize: '30px' }}>Ridean</span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '0 20px' }}>
+        <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{ width: '62px', height: '62px', borderRadius: '31px', background: 'linear-gradient(135deg,#E2B04A,#9C6F1F)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Playfair Display',serif", fontWeight: 700, fontSize: '24px', color: '#0A1F18', flexShrink: 0 }}>{initials(user)}</div>
+            <div style={{ flex: 1, minWidth: '0' }}>
+              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '22px', fontWeight: 600, overflowWrap: 'anywhere' }}>{user ? `${user.firstName} ${user.lastName}` : ''}</div>
+              <div style={{ fontSize: '13px', color: '#9FB2A6', marginTop: '3px', overflowWrap: 'anywhere' }}>{user?.email}</div>
+              {memberSince && (
+                <div style={{ marginTop: '8px' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 9px', borderRadius: '999px', background: 'rgba(217,169,79,.14)', color: '#D9A94F', fontSize: '11.5px', fontWeight: 600 }}>
+                    <Icon name="calendar" size={13} /> Member since {memberSince}
+                  </span>
+                </div>
+              )}
+            </div>
+            <Link href="/account/edit" aria-label="Edit profile" style={{ padding: 4 }}>
+              <Icon name="pencil" size={19} />
+            </Link>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: '10px' }}>
+          <Tile value={trips.data !== null ? String(trips.data) : trips.error ? '—' : null} label="Trips" />
+          <Tile value={addr ? String(addr.length) : addresses.error ? '—' : null} label="Saved places" />
+          <Tile value={wallet.data ? money(wallet.data.balance, wallet.data.currency) : wallet.error ? '—' : null} label="Wallet" />
+        </div>
+        {error && <ErrorNote>{error}</ErrorNote>}
+
+        <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '2px 14px' }}>
+          <MenuRow href="/account/edit" icon="user" title="Edit profile" sub="Name, phone, email" />
+          <MenuRow href="/account/payment-methods" icon="card" title="Payment methods" sub={cardSub} />
+          <MenuRow href="/account/addresses" icon="pin" title="Saved addresses" sub={addrSub} />
+          <MenuRow href="/account/business" icon="briefcase" title="Business account" sub={bizSub} />
+          <MenuRow href="/account/invoices" icon="doc" title="Invoices" sub="Receipts for your trips" />
+          <MenuRow href="/account/settings" icon="bell" title="Settings" sub="Notifications, language" />
+          <MenuRow href="/help" icon="help" title="Help & support" sub="24/7 chauffeur support" />
+          <MenuRow href="/legal" icon="shield" title="Legal & privacy" sub="Terms, data and cookies" last />
+        </div>
+
+        <button type="button" onClick={signOut} className="dz-btn-reset" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', width: '100%', height: '50px', borderRadius: '12px', border: '1px solid #1F4537', color: '#E5645A', fontSize: '15px', fontWeight: 600 }}>
+          <Icon name="logout" color="#E5645A" />
+          Sign out
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function AccountTabPage() {
+  return (
+    <RequireAuth>
+      <Profile />
+    </RequireAuth>
   );
 }

@@ -1,9 +1,113 @@
 'use client';
 
-// DESIGN-STATIC: generated from the PWA design canvas board "Invoices". Wire to the API and remove this marker.
-/* eslint-disable */
+import Link from 'next/link';
+import { useState } from 'react';
+import { RequireAuth, useRidean } from '@ridean/web-core';
+import type { Invoice } from '@ridean/shared';
+import { C, Skeleton, useToast } from '@/components/site/ui';
+import { EmptyCard, ErrorNote, Icon, S, Screen, ScreenHead, downloadFile, fmtDate, money, serviceMeta, useLoad } from '@/components/account/kit';
+
+const monthKey = (iso: string) => iso.slice(0, 7);
+const monthName = (key: string) => {
+  const [y, m] = key.split('-').map(Number);
+  const d = new Date(Date.UTC(y, m - 1, 1));
+  const name = d.toLocaleDateString('en-US', { month: 'long', timeZone: 'UTC' });
+  return y === new Date().getFullYear() ? name : `${name} ${y}`;
+};
+const tripLabel = (i: Invoice) => {
+  const parts = i.description.split(' · ');
+  return parts.length > 1 ? `${serviceMeta(i.service).label} · ${parts[1]}` : i.description;
+};
+const csvCell = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
+
+function Invoices() {
+  const { api } = useRidean();
+  const toast = useToast();
+  const [month, setMonth] = useState('all');
+  const all = useLoad(() => api.invoices(), [api]);
+  const filtered = useLoad(() => (month === 'all' ? Promise.resolve(null) : api.invoices({ month })), [api, month]);
+
+  const year = new Date().getFullYear();
+  const months = Array.from(new Set((all.data ?? []).map((i) => monthKey(i.issuedAt)))).sort().reverse().slice(0, 3);
+  const thisYear = (all.data ?? []).filter((i) => new Date(i.issuedAt).getFullYear() === year);
+  const currency = thisYear[0]?.currency ?? all.data?.[0]?.currency ?? 'USD';
+  const yearTotal = thisYear.reduce((n, i) => n + i.total, 0);
+  const rows = month === 'all' ? all.data : filtered.data;
+  const loading = month === 'all' ? all.loading && !all.data : filtered.loading || !filtered.data;
+  const error = all.error || (month !== 'all' ? filtered.error : '');
+
+  function exportCsv() {
+    if (!rows?.length) return;
+    const head = ['Invoice', 'Date', 'Reference', 'Trip', 'Paid with', 'Amount', 'Currency'];
+    const lines = rows.map((i) => [i.number, i.issuedAt.slice(0, 10), i.reference, i.description, i.paidWith, (i.total / 100).toFixed(2), i.currency].map(csvCell).join(','));
+    downloadFile(`ridean-statement-${month === 'all' ? 'all' : month}.csv`, [head.map(csvCell).join(','), ...lines].join('\n'), 'text/csv;charset=utf-8');
+    toast('Statement downloaded');
+  }
+
+  const canExport = !!rows?.length && !loading;
+
+  return (
+    <Screen>
+      <ScreenHead title="Invoices" fallback="/account" />
+      <div style={S.body}>
+        {months.length > 0 && (
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }} role="radiogroup" aria-label="Month">
+            {['all', ...months].map((m) => (
+              <button key={m} type="button" role="radio" aria-checked={month === m} className={`dz-chip ${month === m ? 'on' : ''}`} onClick={() => setMonth(m)}>
+                {m === 'all' ? 'All' : monthName(m)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div style={{ ...S.panel, padding: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: '12.5px', color: '#9FB2A6' }}>Total spent · {year}</div>
+              {all.data ? (
+                <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '28px', fontWeight: 600, marginTop: '2px', overflowWrap: 'anywhere' }}>{money(yearTotal, currency)}</div>
+              ) : all.error ? (
+                <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '28px', fontWeight: 600, marginTop: '2px' }}>—</div>
+              ) : (
+                <Skeleton h={34} style={{ width: 130, marginTop: 4, borderRadius: 8 }} />
+              )}
+            </div>
+            <button type="button" onClick={exportCsv} disabled={!canExport} className="pa-link" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13.5px', fontWeight: 600, color: '#D9A94F', flexShrink: 0 }}>
+              <Icon name="download" size={17} />
+              Export
+            </button>
+          </div>
+        </div>
+
+        {error && <ErrorNote>{error}</ErrorNote>}
+
+        {loading ? (
+          <Skeleton h={260} />
+        ) : rows && rows.length === 0 ? (
+          <EmptyCard text={month === 'all' ? 'No invoices yet — you’ll get one for every paid trip.' : 'No invoices for this month.'} action={month === 'all' ? <Link href="/book/ride" style={{ ...S.goldLink, fontSize: 14 }}>Book a ride</Link> : undefined} />
+        ) : rows ? (
+          <div style={S.list}>
+            {rows.map((i, idx) => (
+              <Link key={i.id} href={`/account/invoices/${i.id}`} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 2px', borderBottom: idx === rows.length - 1 ? undefined : '1px solid #1F4537' }}>
+                <div style={S.iconBox}><Icon name={serviceMeta(i.service).icon} /></div>
+                <div style={{ flex: 1, minWidth: '0' }}>
+                  <div style={{ fontSize: '15px', fontWeight: 500, color: '#F3EEDF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tripLabel(i)}</div>
+                  <div style={{ fontSize: '12.5px', color: '#9FB2A6', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fmtDate(i.issuedAt)} · {i.number}</div>
+                </div>
+                <span style={{ fontSize: '14.5px', fontWeight: 600, whiteSpace: 'nowrap', color: C.cream }}>{money(i.total, i.currency)}</span>
+              </Link>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </Screen>
+  );
+}
+
 export default function InvoicesPage() {
   return (
-    <><div style={{ paddingBottom: "24px" }}><div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "6px 20px 14px" }}><a href="/account" aria-label="Back" style={{ width: "40px", height: "40px", borderRadius: "20px", border: "1px solid #1F4537", background: "#0E2A22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M15 18l-6-6 6-6" /></svg></a><div style={{ flex: 1, minWidth: "0" }}><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "24px", lineHeight: 1.15, color: "#F3EEDF" }}>Invoices</h1></div></div><div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "0 20px" }}><div className="dz-chipw" data-g="month" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}><button type="button" className="dz-chip on" data-v="all" data-act="rdChip(this)">All</button><button type="button" className="dz-chip" data-v="nov" data-act="rdChip(this)">November</button><button type="button" className="dz-chip" data-v="oct" data-act="rdChip(this)">October</button></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "16px" }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: "12.5px", color: "#9FB2A6" }}>Total spent · 2026</div><div style={{ fontFamily: "Playfair Display,serif", fontSize: "28px", fontWeight: 600, marginTop: "2px" }}>$1,284.60</div></div><button type="button" data-act="rdToast(this,'Preparing your statement\u2026')" style={{ all: "unset", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontSize: "13.5px", fontWeight: 600, color: "#D9A94F" }}><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></svg>Export</button></div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "2px 14px" }}><a href="/account/invoices/INVOICE" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 15l1.6-4.6A2 2 0 0 1 6.5 9h11a2 2 0 0 1 1.9 1.4L21 15v3a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1h-9v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" /><path d="M6.5 13.5h.01M17.5 13.5h.01" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Ride · Sketch</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>3 Nov 2026 · RDN-47790</div></div><span style={{ fontSize: "14.5px", fontWeight: 600 }}>$21.40</span></a><a href="/account/invoices/INVOICE" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" /><rect x="3" y="11" width="18" height="6" rx="2" /><path d="M6 17v2M18 17v2M7 14h.01M17 14h.01" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Hertz · C-Class</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>28 Oct 2026 · RDN-47512</div></div><span style={{ fontSize: "14.5px", fontWeight: 600 }}>$162.00</span></a><a href="/account/invoices/INVOICE" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M10.5 13.5L3 11l1.5-1.5 7.5 1L16.5 6c1-1 2.5-1.5 3-1s0 2-1 3l-4.5 4.5 1 7.5L13.5 21 11 13.5" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Airport transfer · LHR</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>14 Oct 2026 · RDN-47033</div></div><span style={{ fontSize: "14.5px", fontWeight: 600 }}>$64.00</span></a><a href="/account/invoices/INVOICE" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Hourly chauffeur · 4 h</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>9 Oct 2026 · RDN-46871</div></div><span style={{ fontSize: "14.5px", fontWeight: 600 }}>$260.00</span></a></div></div></div></>
+    <RequireAuth>
+      <Invoices />
+    </RequireAuth>
   );
 }

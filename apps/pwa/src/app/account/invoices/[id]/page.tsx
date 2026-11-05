@@ -1,9 +1,115 @@
 'use client';
 
-// DESIGN-STATIC: generated from the PWA design canvas board "InvoiceDetail". Wire to the API and remove this marker.
-/* eslint-disable */
-export default function InvoiceDetailPage() {
+import { use } from 'react';
+import { RequireAuth, useRidean } from '@ridean/web-core';
+import type { Invoice } from '@ridean/shared';
+import { Skeleton, useToast } from '@/components/site/ui';
+import { ErrorNote, Icon, S, Screen, ScreenHead, fmtDate, money, useLoad } from '@/components/account/kit';
+
+const Divider = () => <div style={{ height: '1px', background: '#1F4537', margin: '6px 0' }} />;
+
+const lineAmount = (amount: number, currency: string) => (amount < 0 ? `−${money(-amount, currency)}` : money(amount, currency));
+
+function summary(i: Invoice) {
+  return [
+    `Ridean invoice ${i.number}`,
+    `Booking ${i.reference} · issued ${fmtDate(i.issuedAt)}`,
+    i.description,
+    ...i.lines.map((l) => `${l.label}: ${lineAmount(l.amount, i.currency)}`),
+    `Total paid: ${money(i.total, i.currency)} (${i.paidWith})`,
+  ].join('\n');
+}
+
+function InvoiceDetail({ id }: { id: string }) {
+  const { api } = useRidean();
+  const toast = useToast();
+  const inv = useLoad(() => api.invoice(id), [api, id]);
+  const i = inv.data;
+
+  async function share() {
+    if (!i) return;
+    const text = summary(i);
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: `Ridean invoice ${i.number}`, text });
+        return;
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'AbortError') return;
+        // fall through to copying
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('Invoice summary copied');
+    } catch {
+      toast('Couldn’t copy — please try again');
+    }
+  }
+
   return (
-    <><div style={{ paddingBottom: "24px" }}><div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "6px 20px 14px" }}><a href="/account/invoices" aria-label="Back" style={{ width: "40px", height: "40px", borderRadius: "20px", border: "1px solid #1F4537", background: "#0E2A22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M15 18l-6-6 6-6" /></svg></a><div style={{ flex: 1, minWidth: "0" }}><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "24px", lineHeight: 1.15, color: "#F3EEDF" }}>Invoice</h1><div style={{ fontSize: "12px", color: "#9FB2A6", marginTop: "2px" }}>RDN-48213 · 14 Oct 2026</div></div></div><div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "0 20px" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "18px" }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}><span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: "-.01em", background: "linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", fontSize: "26px" }}>Ridean</span><div style={{ textAlign: "right", fontSize: "11.5px", color: "#9FB2A6", lineHeight: 1.5 }}>Best My Flight Inc.<br />1088 Liberty Ave<br />Brooklyn, NY 11208</div></div><div style={{ height: "1px", background: "#1F4537", margin: "6px 0" }}></div><div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", padding: "6px 0" }}><div><div style={{ color: "#9FB2A6", fontSize: "12px" }}>Billed to</div><div style={{ marginTop: "3px" }}>Shakib Haider</div></div><div style={{ textAlign: "right" }}><div style={{ color: "#9FB2A6", fontSize: "12px" }}>Paid with</div><div style={{ marginTop: "3px" }}>Visa •••• 4242</div></div></div><div style={{ height: "1px", background: "#1F4537", margin: "6px 0" }}></div><div style={{ fontSize: "13px", color: "#9FB2A6", padding: "6px 0" }}>Airport transfer · Hotel Verde → Heathrow T5</div><div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: "14px", color: "#9FB2A6", fontWeight: 400 }}><span>Transfer fare</span><span>$58.00</span></div><div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: "14px", color: "#9FB2A6", fontWeight: 400 }}><span>Meet & greet</span><span>$4.00</span></div><div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: "14px", color: "#9FB2A6", fontWeight: 400 }}><span>VAT (20%)</span><span>$2.00</span></div><div style={{ height: "1px", background: "#1F4537", margin: "6px 0" }}></div><div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: "15px", color: "#F3EEDF", fontWeight: 600 }}><span>Total paid</span><span>$64.00</span></div></div><div style={{ display: "flex", gap: "10px" }}><a href="#" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", height: "48px", borderRadius: "12px", border: "1px solid #D9A94F", color: "#D9A94F", fontSize: "14.5px", fontWeight: 600 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6l8.5 7 8.5-7" /></svg>Email</a><a href="#" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", height: "48px", borderRadius: "12px", border: "1px solid #D9A94F", color: "#D9A94F", fontSize: "14.5px", fontWeight: 600 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M4 12l16-8-6 16-2.5-6.5z" /></svg>Share</a></div><a href="#" data-act="rdToast(this,'Downloading invoice\u2026');return false;" className="dz-cta" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", height: "54px", borderRadius: "12px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "17px", fontWeight: 600 }}><span>Download PDF</span></a></div></div></>
+    <Screen>
+      <ScreenHead title="Invoice" sub={i ? `${i.number} · ${fmtDate(i.issuedAt)}` : undefined} fallback="/account/invoices" />
+      <div style={S.body}>
+        {inv.error && <ErrorNote>{inv.error}</ErrorNote>}
+        {!i && inv.loading ? (
+          <Skeleton h={360} />
+        ) : i ? (
+          <>
+            <div style={{ ...S.panel, padding: '18px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                <div style={{ minWidth: 0 }}>
+                  <span style={{ ...S.wordmark, fontSize: '26px' }}>Ridean</span>
+                  <div style={{ fontSize: '11.5px', color: '#9FB2A6', marginTop: 2 }}>Booking {i.reference}</div>
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '11.5px', color: '#9FB2A6', lineHeight: 1.5 }}>Best My Flight Inc.<br />1088 Liberty Ave<br />Brooklyn, NY 11208</div>
+              </div>
+              <Divider />
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, fontSize: '13px', padding: '6px 0' }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ color: '#9FB2A6', fontSize: '12px' }}>Billed to</div>
+                  <div style={{ marginTop: '3px', overflowWrap: 'anywhere' }}>{i.billedTo.name}</div>
+                  {i.billedTo.company && <div style={{ marginTop: '2px', color: '#9FB2A6', fontSize: '12px', overflowWrap: 'anywhere' }}>{i.billedTo.company}</div>}
+                </div>
+                <div style={{ textAlign: 'right', minWidth: 0 }}>
+                  <div style={{ color: '#9FB2A6', fontSize: '12px' }}>Paid with</div>
+                  <div style={{ marginTop: '3px', overflowWrap: 'anywhere' }}>{i.paidWith}</div>
+                </div>
+              </div>
+              <Divider />
+              <div style={{ fontSize: '13px', color: '#9FB2A6', padding: '6px 0', overflowWrap: 'anywhere' }}>{i.description}</div>
+              {i.lines.map((l, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '6px 0', fontSize: '14px', color: '#9FB2A6', fontWeight: 400 }}>
+                  <span>{l.label}</span>
+                  <span style={{ whiteSpace: 'nowrap' }}>{lineAmount(l.amount, i.currency)}</span>
+                </div>
+              ))}
+              <Divider />
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '15px', color: '#F3EEDF', fontWeight: 600 }}>
+                <span>Total paid</span>
+                <span>{money(i.total, i.currency)}</span>
+              </div>
+            </div>
+            <div className="no-print" style={{ display: 'flex', gap: '10px' }}>
+              <button type="button" onClick={share} style={{ ...S.ghost, flex: 1 }}>
+                <Icon name="send" />
+                Share
+              </button>
+            </div>
+            <button type="button" className="dz-cta no-print" onClick={() => window.print()} title="Opens the print dialog — choose “Save as PDF”" style={S.cta}>
+              <span>Download PDF</span>
+            </button>
+          </>
+        ) : null}
+      </div>
+    </Screen>
+  );
+}
+
+export default function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  return (
+    <RequireAuth>
+      <InvoiceDetail id={id} />
+    </RequireAuth>
   );
 }
