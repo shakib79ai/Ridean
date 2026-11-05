@@ -1,0 +1,76 @@
+name: Mobile screens
+
+# Builds the Flutter app for the web, runs it against a local API (simulated payments, mock suppliers)
+# and captures every screen on an iPhone and an Android viewport. Download the "mobile-screens" artifact.
+on:
+  workflow_dispatch:
+  push:
+    branches: [emerald-v2]
+    paths: ['apps/mobile/**', '.github/workflows/mobile-screens.yml', '.github/scripts/mobile-screens.mjs']
+
+jobs:
+  screens:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ridean
+          POSTGRES_PASSWORD: ridean
+          POSTGRES_DB: ridean
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ridean" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://ridean:ridean@localhost:5432/ridean
+      JWT_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
+      PAYMENTS_MODE: simulated
+      SUPPLIER_MODE: mock
+      PROMO_CODES: RIDEAN10:10
+      CORS_ORIGINS: http://localhost:8080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build:shared && npm run build -w @ridean/api
+      - name: Start API
+        run: |
+          npm run db:migrate && npm run db:seed
+          (cd apps/api && nohup node dist/main.js > /tmp/api.log 2>&1 &)
+          for i in $(seq 1 30); do curl -sf localhost:4000/health && break; sleep 1; done
+        env:
+          ADMIN_EMAIL: admin@ridean.test
+          ADMIN_PASSWORD: ci-password-123
+      - name: Create demo customer
+        id: seed
+        run: node .github/scripts/mobile-screens.mjs seed >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Build web
+        working-directory: apps/mobile
+        run: |
+          flutter create --org com.ridean --project-name ridean --platforms=web .
+          flutter pub get
+          flutter build web --release --dart-define=API_URL=http://localhost:4000 --dart-define=DEV_TOKEN=${{ steps.seed.outputs.token }}
+      - name: Capture screens
+        run: |
+          (cd apps/mobile/build/web && nohup python3 -m http.server 8080 > /tmp/web.log 2>&1 &)
+          npx -y playwright@1.56.1 install --with-deps chromium
+          npm i --no-save playwright@1.56.1
+          node .github/scripts/mobile-screens.mjs shoot
+        env:
+          BOOKING_ID: ${{ steps.seed.outputs.booking }}
+          QUOTE_ID: ${{ steps.seed.outputs.quote }}
+          TOKEN: ${{ steps.seed.outputs.token }}
+      - if: always()
+        run: cp /tmp/api.log screens/ 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-screens
+          path: screens/

@@ -2,7 +2,9 @@
 
 iOS and Android app for Ridean customers: search every service (Ride Now, Airport transfer, Rent a car, Hourly and Luxury chauffeur), compare supplier quotes, pay with Stripe PaymentSheet / Apple Pay / Google Pay or the Ridean wallet, and manage trips.
 
-> **Status:** written against the same REST API as the website and PWA, but it has **not been compiled** in this repository's CI (no Flutter SDK there). Run `flutter analyze` and a device build before release.
+Every screen follows the "Ridean App — Emerald & Pure Gold" design (29 screens, with the iOS and Android variations from the platform boards: round back button / bare arrow, Cupertino / Material switches and dialogs, flat tab bar / Material 3 tab bar).
+
+CI runs `flutter analyze` and `flutter test` on every push. The **Mobile screens** workflow builds the app for the web, runs it against a local API with simulated payments and mock suppliers, and uploads screenshots of every screen on an iPhone and an Android viewport (artifact `mobile-screens`).
 
 ## First-time setup
 
@@ -45,7 +47,14 @@ flutter build ipa       --dart-define=API_URL=https://api.ridean.com --dart-defi
 | `lib/api/` | Models and the typed REST client (mirrors `packages/shared`) |
 | `lib/state/providers.dart` | Riverpod providers and auth |
 | `lib/router.dart` | go_router routes and sign-in redirects |
-| `lib/screens/` | Home, search (one adaptive form for every service), quotes, checkout, booking, trips, wallet, account, sign in/up |
+| `lib/widgets/kit.dart` | The design kit: page scaffolds, cards, fields, chips, segments, toggles, option rows, CTA, map, states |
+| `lib/widgets/shell.dart` | Bottom tab bar (Home, Trips, Wallet, Account) |
+| `lib/screens/home_screen.dart`, `wallet_screen.dart` | Home and Wallet tabs |
+| `lib/screens/book/` | Ride, Airport transfer, Hourly chauffeur, Luxury chauffeur, Rent a car, Compare rentals |
+| `lib/screens/checkout/` | Review booking, Payment |
+| `lib/screens/trips/` | Trips, Booking details, Trip status, Contact chauffeur, Edit booking, Trip receipt |
+| `lib/screens/account/` | Account, Edit profile, Payment methods, Add card, Saved addresses, Business account, Settings, Invoices, Invoice |
+| `lib/screens/support/`, `lib/screens/auth/` | Help & support, Legal & privacy, Sign in, Create account |
 
 ## Adding a service
 
