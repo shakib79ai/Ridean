@@ -1,0 +1,243 @@
+<title>Ridean PWA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: a screen-by-screen walkthrough — header, then the app's screens in the order a user meets them. Single dark look on purpose: it is Ridean's own Emerald & Gold brand. */
+:root {
+  --bg: #071A14; --surface: #0D241C; --line: rgba(160,200,185,.16);
+  --cream: #F3EEDF; --muted: #9FB3AA; --gold: #D9A94F; --yellow: #FCCB2C;
+  --display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--cream); font: 15px/1.55 var(--body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { display: grid; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+.eyebrow { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+h1 { font-family: var(--display); font-weight: 600; font-size: clamp(34px, 5vw, 52px); line-height: 1.05; margin: 0; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--gold); }
+.lead { margin: 0; max-width: 62ch; color: #c9d2cb; font-size: 16.5px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.meta b { color: var(--cream); font-weight: 500; }
+.grid { display: grid; gap: 36px 28px; }
+.desktop .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); }
+.phone .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); }
+.shot { margin: 0; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.frame { all: unset; cursor: zoom-in; display: block; overflow: hidden; background: #04110C; border: 1px solid var(--line); transition: border-color .15s, transform .15s; }
+.frame:hover { border-color: var(--gold); }
+.frame:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
+.desktop .frame { border-radius: 12px; }
+.desktop .frame img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+.bar { display: flex; gap: 6px; padding: 9px 12px; background: #0B1F18; border-bottom: 1px solid var(--line); }
+.bar i { width: 9px; height: 9px; border-radius: 50%; background: rgba(243,238,223,.18); }
+.phone .frame { border-radius: 28px; padding: 6px; background: #020B08; }
+.phone .frame img { display: block; width: 100%; height: auto; border-radius: 22px; aspect-ratio: 390 / 664; object-fit: cover; object-position: top; }
+figcaption { display: grid; gap: 2px; }
+figcaption strong { font-weight: 600; font-size: 15px; }
+figcaption span { color: var(--muted); font-size: 13.5px; }
+.note { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; max-width: 75ch; }
+dialog { border: 0; padding: 0; background: transparent; max-width: min(1400px, 96vw); max-height: 94vh; }
+dialog::backdrop { background: rgba(2,8,6,.88); }
+.lb { display: grid; gap: 10px; }
+.lb-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--cream); }
+.lb-head button { all: unset; cursor: pointer; padding: 6px 14px; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; font-size: 13px; }
+.lb-head button:focus-visible { outline: 2px solid var(--yellow); }
+.lb-body { overflow: auto; max-height: calc(94vh - 52px); border-radius: 10px; }
+.lb-body img { display: block; max-width: 100%; height: auto; }
+.phone .lb-body img { max-width: 420px; }
+@media (prefers-reduced-motion: reduce) { .frame { transition: none; } }
+</style>
+
+<div class="wrap phone">
+  <header>
+    <span class="eyebrow">Ridean · 27 screens</span>
+    <h1><em>Ridean</em> PWA</h1>
+    <p class="lead">The installable phone app, built from the Emerald &amp; Gold PWA design: live quotes for every service, Review then Pay, trip status with your chauffeur, and the full account area.</p>
+    <div class="meta"><span><b>app.ridean.com · installable · port 3001</b></span><span>Captured from the running code on the <b>emerald-v2</b> branch with sample suppliers and test payments.</span></div>
+  </header>
+  <div class="grid">
+<figure class="shot" id="s0">
+  <button class="frame" type="button" data-full="img/pub-home.jpg" data-cap="Home" aria-label="Enlarge Home">
+    <img src="img/pub-home.jpg" alt="Home screen" loading="lazy" width="900" height="3461">
+  </button>
+  <figcaption><strong>Home</strong><span>Hero search, services, trust tiles and car classes.</span></figcaption>
+</figure>
+<figure class="shot" id="s1">
+  <button class="frame" type="button" data-full="img/book-ride-results.jpg" data-cap="Ride" aria-label="Enlarge Ride">
+    <img src="img/book-ride-results.jpg" alt="Ride screen" loading="lazy" width="900" height="2296">
+  </button>
+  <figcaption><strong>Ride</strong><span>Live quotes from partners; confirm goes to review.</span></figcaption>
+</figure>
+<figure class="shot" id="s2">
+  <button class="frame" type="button" data-full="img/x-airport.jpg" data-cap="Airport transfer" aria-label="Enlarge Airport transfer">
+    <img src="img/x-airport.jpg" alt="Airport transfer screen" loading="lazy" width="900" height="3461">
+  </button>
+  <figcaption><strong>Airport transfer</strong><span>One way or return, flight number, then live transfer prices.</span></figcaption>
+</figure>
+<figure class="shot" id="s3">
+  <button class="frame" type="button" data-full="img/pub-book-hourly.jpg" data-cap="Hourly chauffeur" aria-label="Enlarge Hourly chauffeur">
+    <img src="img/pub-book-hourly.jpg" alt="Hourly chauffeur screen" loading="lazy" width="900" height="2183">
+  </button>
+  <figcaption><strong>Hourly chauffeur</strong><span>Pick hours, start place and time to see prices.</span></figcaption>
+</figure>
+<figure class="shot" id="s4">
+  <button class="frame" type="button" data-full="img/x-luxury.jpg" data-cap="Luxury chauffeur" aria-label="Enlarge Luxury chauffeur">
+    <img src="img/x-luxury.jpg" alt="Luxury chauffeur screen" loading="lazy" width="900" height="2093">
+  </button>
+  <figcaption><strong>Luxury chauffeur</strong><span>First-class cars with real prices for your trip.</span></figcaption>
+</figure>
+<figure class="shot" id="s5">
+  <button class="frame" type="button" data-full="img/pub-book-rent.jpg" data-cap="Rent a car" aria-label="Enlarge Rent a car">
+    <img src="img/pub-book-rent.jpg" alt="Rent a car screen" loading="lazy" width="900" height="1677">
+  </button>
+  <figcaption><strong>Rent a car</strong><span>Compare rental partners with class filters.</span></figcaption>
+</figure>
+<figure class="shot" id="s6">
+  <button class="frame" type="button" data-full="img/co-review-promo.jpg" data-cap="Review booking" aria-label="Enlarge Review booking">
+    <img src="img/co-review-promo.jpg" alt="Review booking screen" loading="lazy" width="900" height="2513">
+  </button>
+  <figcaption><strong>Review booking</strong><span>Route, vehicle, passenger details and promo code.</span></figcaption>
+</figure>
+<figure class="shot" id="s7">
+  <button class="frame" type="button" data-full="img/co-pay.jpg" data-cap="Payment" aria-label="Enlarge Payment">
+    <img src="img/co-pay.jpg" alt="Payment screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Payment</strong><span>Card, wallet, business account and tip, or pay the partner directly.</span></figcaption>
+</figure>
+<figure class="shot" id="s8">
+  <button class="frame" type="button" data-full="img/trip-status.jpg" data-cap="Trip status" aria-label="Enlarge Trip status">
+    <img src="img/trip-status.jpg" alt="Trip status screen" loading="lazy" width="900" height="1899">
+  </button>
+  <figcaption><strong>Trip status</strong><span>Chauffeur, ETA, live timeline, call, message, share, cancel.</span></figcaption>
+</figure>
+<figure class="shot" id="s9">
+  <button class="frame" type="button" data-full="img/x-chauffeur.jpg" data-cap="Contact chauffeur" aria-label="Enlarge Contact chauffeur">
+    <img src="img/x-chauffeur.jpg" alt="Contact chauffeur screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Contact chauffeur</strong><span>Message thread with quick replies and a call button.</span></figcaption>
+</figure>
+<figure class="shot" id="s11">
+  <button class="frame" type="button" data-full="img/acc-trips.jpg" data-cap="Trips" aria-label="Enlarge Trips">
+    <img src="img/acc-trips.jpg" alt="Trips screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Trips</strong><span>Upcoming and past trips.</span></figcaption>
+</figure>
+<figure class="shot" id="s12">
+  <button class="frame" type="button" data-full="img/trip-details.jpg" data-cap="Booking details" aria-label="Enlarge Booking details">
+    <img src="img/trip-details.jpg" alt="Booking details screen" loading="lazy" width="900" height="2007">
+  </button>
+  <figcaption><strong>Booking details</strong><span>Route, chauffeur, payment, invoice and cancel.</span></figcaption>
+</figure>
+<figure class="shot" id="s13">
+  <button class="frame" type="button" data-full="img/trip-edit.jpg" data-cap="Edit booking" aria-label="Enlarge Edit booking">
+    <img src="img/trip-edit.jpg" alt="Edit booking screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Edit booking</strong><span>Time, flight, passengers, luggage and notes.</span></figcaption>
+</figure>
+<figure class="shot" id="s14">
+  <button class="frame" type="button" data-full="img/wallet-topup.jpg" data-cap="Wallet" aria-label="Enlarge Wallet">
+    <img src="img/wallet-topup.jpg" alt="Wallet screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Wallet</strong><span>Balance, add funds and activity.</span></figcaption>
+</figure>
+<figure class="shot" id="s15">
+  <button class="frame" type="button" data-full="img/acc-account.jpg" data-cap="Account" aria-label="Enlarge Account">
+    <img src="img/acc-account.jpg" alt="Account screen" loading="lazy" width="900" height="2229">
+  </button>
+  <figcaption><strong>Account</strong><span>Profile, stats and every account section.</span></figcaption>
+</figure>
+<figure class="shot" id="s-edit">
+  <button class="frame" type="button" data-full="img/acc-account-edit.jpg" data-cap="Edit profile" aria-label="Enlarge Edit profile">
+    <img src="img/acc-account-edit.jpg" alt="Edit profile screen" loading="lazy" width="900" height="1746">
+  </button>
+  <figcaption><strong>Edit profile</strong><span>Name, mobile and ride preferences; email is read-only.</span></figcaption>
+</figure>
+<figure class="shot" id="s16">
+  <button class="frame" type="button" data-full="img/x-payment-methods.jpg" data-cap="Payment methods" aria-label="Enlarge Payment methods">
+    <img src="img/x-payment-methods.jpg" alt="Payment methods screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Payment methods</strong><span>Default card, other cards and wallet.</span></figcaption>
+</figure>
+<figure class="shot" id="s17">
+  <button class="frame" type="button" data-full="img/x-add-card.jpg" data-cap="Add card" aria-label="Enlarge Add card">
+    <img src="img/x-add-card.jpg" alt="Add card screen" loading="lazy" width="900" height="1560">
+  </button>
+  <figcaption><strong>Add card</strong><span>Card preview with test-mode card entry (Stripe in production).</span></figcaption>
+</figure>
+<figure class="shot" id="s18">
+  <button class="frame" type="button" data-full="img/x-addresses.jpg" data-cap="Saved addresses" aria-label="Enlarge Saved addresses">
+    <img src="img/x-addresses.jpg" alt="Saved addresses screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Saved addresses</strong><span>Search, add and remove saved places.</span></figcaption>
+</figure>
+<figure class="shot" id="s19">
+  <button class="frame" type="button" data-full="img/acc-account-business.jpg" data-cap="Business account" aria-label="Enlarge Business account">
+    <img src="img/acc-account-business.jpg" alt="Business account screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Business account</strong><span>Set up a company account, budget and policy.</span></figcaption>
+</figure>
+<figure class="shot" id="s20">
+  <button class="frame" type="button" data-full="img/x-help.jpg" data-cap="Help &amp; support" aria-label="Enlarge Help &amp; support">
+    <img src="img/x-help.jpg" alt="Help &amp; support screen" loading="lazy" width="900" height="1887">
+  </button>
+  <figcaption><strong>Help &amp; support</strong><span>Searchable questions, contact email and recent trip help.</span></figcaption>
+</figure>
+<figure class="shot" id="s21">
+  <button class="frame" type="button" data-full="img/acc-account-settings.jpg" data-cap="Settings" aria-label="Enlarge Settings">
+    <img src="img/acc-account-settings.jpg" alt="Settings screen" loading="lazy" width="900" height="2097">
+  </button>
+  <figcaption><strong>Settings</strong><span>Notifications, preferences, password, delete account.</span></figcaption>
+</figure>
+<figure class="shot" id="s22">
+  <button class="frame" type="button" data-full="img/x-legal.jpg" data-cap="Legal &amp; privacy" aria-label="Enlarge Legal &amp; privacy">
+    <img src="img/x-legal.jpg" alt="Legal &amp; privacy screen" loading="lazy" width="900" height="1818">
+  </button>
+  <figcaption><strong>Legal &amp; privacy</strong><span>Document summaries, privacy choices and data download.</span></figcaption>
+</figure>
+<figure class="shot" id="s23">
+  <button class="frame" type="button" data-full="img/x-invoices.jpg" data-cap="Invoices" aria-label="Enlarge Invoices">
+    <img src="img/x-invoices.jpg" alt="Invoices screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Invoices</strong><span>Month filter, yearly total, export and receipts.</span></figcaption>
+</figure>
+<figure class="shot" id="s24">
+  <button class="frame" type="button" data-full="img/acc-invoice-detail.jpg" data-cap="Invoice" aria-label="Enlarge Invoice">
+    <img src="img/acc-invoice-detail.jpg" alt="Invoice screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Invoice</strong><span>Printable invoice; share or save as PDF.</span></figcaption>
+</figure>
+<figure class="shot" id="s25">
+  <button class="frame" type="button" data-full="img/pub-signin.jpg" data-cap="Sign in" aria-label="Enlarge Sign in">
+    <img src="img/pub-signin.jpg" alt="Sign in screen" loading="lazy" width="900" height="1532">
+  </button>
+  <figcaption><strong>Sign in</strong><span>Email or phone sign-in.</span></figcaption>
+</figure>
+<figure class="shot" id="s26">
+  <button class="frame" type="button" data-full="img/pub-signup.jpg" data-cap="Create account" aria-label="Enlarge Create account">
+    <img src="img/pub-signup.jpg" alt="Create account screen" loading="lazy" width="900" height="1675">
+  </button>
+  <figcaption><strong>Create account</strong><span>Name, email, mobile and password.</span></figcaption>
+</figure>
+  </div>
+  <p class="note">Click any screen to see it full size. Prices, bookings and balances are test data from sample suppliers; no real payments were made.</p>
+</div>
+
+<dialog id="lb" aria-label="Screen preview">
+  <div class="lb">
+    <div class="lb-head"><strong id="lb-cap"></strong><button type="button" id="lb-close">Close</button></div>
+    <div class="lb-body"><img id="lb-img" alt=""></div>
+  </div>
+</dialog>
+<script>
+(() => {
+  const d = document.getElementById('lb'), img = document.getElementById('lb-img'), cap = document.getElementById('lb-cap');
+  document.querySelectorAll('.frame').forEach((b) => b.addEventListener('click', () => {
+    img.src = b.dataset.full; img.alt = b.dataset.cap + ' screen'; cap.textContent = b.dataset.cap;
+    d.showModal(); d.querySelector('.lb-body').scrollTop = 0;
+  }));
+  document.getElementById('lb-close').addEventListener('click', () => d.close());
+  d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+})();
+</script>

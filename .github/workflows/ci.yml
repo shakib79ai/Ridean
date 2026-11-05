@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main, emerald-v2]
+  pull_request:
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ridean
+          POSTGRES_PASSWORD: ridean
+          POSTGRES_DB: ridean
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ridean" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://ridean:ridean@localhost:5432/ridean
+      JWT_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Migrate and seed database
+        run: npm run db:migrate && npm run db:seed
+        env:
+          ADMIN_EMAIL: admin@ridean.test
+          ADMIN_PASSWORD: ci-password-123
+
+  flutter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter create --org com.ridean --project-name ridean --platforms=android,ios . 
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos
+      - run: flutter test

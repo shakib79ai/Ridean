@@ -1,0 +1,257 @@
+<title>Ridean App</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: a screen-by-screen walkthrough — header, then the app's screens in the order a user meets them. Single dark look on purpose: it is Ridean's own Emerald & Gold brand. */
+:root {
+  --bg: #071A14; --surface: #0D241C; --line: rgba(160,200,185,.16);
+  --cream: #F3EEDF; --muted: #9FB3AA; --gold: #D9A94F; --yellow: #FCCB2C;
+  --display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--cream); font: 15px/1.55 var(--body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { display: grid; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+.eyebrow { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+h1 { font-family: var(--display); font-weight: 600; font-size: clamp(34px, 5vw, 52px); line-height: 1.05; margin: 0; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--gold); }
+.lead { margin: 0; max-width: 62ch; color: #c9d2cb; font-size: 16.5px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.meta b { color: var(--cream); font-weight: 500; }
+.grid { display: grid; gap: 36px 28px; }
+.desktop .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); }
+.phone .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); }
+.shot { margin: 0; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.frame { all: unset; cursor: zoom-in; display: block; overflow: hidden; background: #04110C; border: 1px solid var(--line); transition: border-color .15s, transform .15s; }
+.frame:hover { border-color: var(--gold); }
+.frame:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
+.desktop .frame { border-radius: 12px; }
+.desktop .frame img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+.bar { display: flex; gap: 6px; padding: 9px 12px; background: #0B1F18; border-bottom: 1px solid var(--line); }
+.bar i { width: 9px; height: 9px; border-radius: 50%; background: rgba(243,238,223,.18); }
+.phone .frame { border-radius: 28px; padding: 6px; background: #020B08; }
+.phone .frame img { display: block; width: 100%; height: auto; border-radius: 22px; aspect-ratio: 390 / 664; object-fit: cover; object-position: top; }
+figcaption { display: grid; gap: 2px; }
+figcaption strong { font-weight: 600; font-size: 15px; }
+figcaption span { color: var(--muted); font-size: 13.5px; }
+.note { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; max-width: 75ch; }
+dialog { border: 0; padding: 0; background: transparent; max-width: min(1400px, 96vw); max-height: 94vh; }
+dialog::backdrop { background: rgba(2,8,6,.88); }
+.lb { display: grid; gap: 10px; }
+.lb-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--cream); }
+.lb-head button { all: unset; cursor: pointer; padding: 6px 14px; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; font-size: 13px; }
+.lb-head button:focus-visible { outline: 2px solid var(--yellow); }
+.lb-body { overflow: auto; max-height: calc(94vh - 52px); border-radius: 10px; }
+.lb-body img { display: block; max-width: 100%; height: auto; }
+.phone .lb-body img { max-width: 420px; }
+@media (prefers-reduced-motion: reduce) { .frame { transition: none; } }
+.seg { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); justify-self: start; }
+.seg button { all: unset; cursor: pointer; padding: 8px 18px; border-radius: 9px; font-size: 14px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: #1E5442; color: var(--cream); font-weight: 600; }
+.seg button:focus-visible { outline: 2px solid var(--yellow); }
+</style>
+<div class="wrap phone">
+  <header>
+    <span class="eyebrow">Ridean · 27 screens</span>
+    <h1><em>Ridean</em> App</h1>
+    <p class="lead">The Flutter app for iOS and Android, built from the Emerald &amp; Pure Gold app design and wired to the Ridean API: every booking flow, checkout, live trip status with your chauffeur, wallet and the full account area.</p>
+    <div class="meta"><span><b>Flutter · iOS &amp; Android</b></span><span>Captured by CI from the running app on the <b>emerald-v2</b> branch, against the API with sample suppliers and test payments.</span></div>
+    <div class="seg" role="group" aria-label="Platform"><button type="button" data-p="ios" aria-pressed="true">iPhone</button><button type="button" data-p="android" aria-pressed="false">Android</button></div>
+  </header>
+  <div class="grid">
+<figure class="shot" id="s0">
+  <button class="frame" type="button" data-n="home" data-cap="Home" aria-label="Enlarge Home">
+    <img src="img/ios-home.jpg" alt="Home screen" loading="lazy" width="780" height="5184">
+  </button>
+  <figcaption><strong>Home</strong><span>Hero search, all five services, car classes and Meet &amp; Greet.</span></figcaption>
+</figure>
+<figure class="shot" id="s1">
+  <button class="frame" type="button" data-n="ride" data-cap="Ride" aria-label="Enlarge Ride">
+    <img src="img/ios-ride.jpg" alt="Ride screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Ride</strong><span>Now or schedule, then live quotes from partners.</span></figcaption>
+</figure>
+<figure class="shot" id="s2">
+  <button class="frame" type="button" data-n="airport-transfer" data-cap="Airport transfer" aria-label="Enlarge Airport transfer">
+    <img src="img/ios-airport-transfer.jpg" alt="Airport transfer screen" loading="lazy" width="780" height="2128">
+  </button>
+  <figcaption><strong>Airport transfer</strong><span>One way or return, flight number, passengers and luggage.</span></figcaption>
+</figure>
+<figure class="shot" id="s3">
+  <button class="frame" type="button" data-n="hourly" data-cap="Hourly chauffeur" aria-label="Enlarge Hourly chauffeur">
+    <img src="img/ios-hourly.jpg" alt="Hourly chauffeur screen" loading="lazy" width="780" height="1931">
+  </button>
+  <figcaption><strong>Hourly chauffeur</strong><span>Pick hours, start place and time; prices per vehicle class.</span></figcaption>
+</figure>
+<figure class="shot" id="s4">
+  <button class="frame" type="button" data-n="luxury" data-cap="Luxury chauffeur" aria-label="Enlarge Luxury chauffeur">
+    <img src="img/ios-luxury.jpg" alt="Luxury chauffeur screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Luxury chauffeur</strong><span>First-class cars with real prices for your trip.</span></figcaption>
+</figure>
+<figure class="shot" id="s5">
+  <button class="frame" type="button" data-n="rent" data-cap="Rent a car" aria-label="Enlarge Rent a car">
+    <img src="img/ios-rent.jpg" alt="Rent a car screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Rent a car</strong><span>Pick-up, return and dates, then compare partners.</span></figcaption>
+</figure>
+<figure class="shot" id="s6">
+  <button class="frame" type="button" data-n="review" data-cap="Review booking" aria-label="Enlarge Review booking">
+    <img src="img/ios-review.jpg" alt="Review booking screen" loading="lazy" width="780" height="2203">
+  </button>
+  <figcaption><strong>Review booking</strong><span>Route, car, passenger details, promo code and total.</span></figcaption>
+</figure>
+<figure class="shot" id="s7">
+  <button class="frame" type="button" data-n="trips" data-cap="Trips" aria-label="Enlarge Trips">
+    <img src="img/ios-trips.jpg" alt="Trips screen" loading="lazy" width="780" height="5184">
+  </button>
+  <figcaption><strong>Trips</strong><span>Upcoming and past trips with status and price.</span></figcaption>
+</figure>
+<figure class="shot" id="s8">
+  <button class="frame" type="button" data-n="booking-details" data-cap="Booking details" aria-label="Enlarge Booking details">
+    <img src="img/ios-booking-details.jpg" alt="Booking details screen" loading="lazy" width="780" height="1769">
+  </button>
+  <figcaption><strong>Booking details</strong><span>Trip, chauffeur, what was charged, edit, invoice and cancel.</span></figcaption>
+</figure>
+<figure class="shot" id="s9">
+  <button class="frame" type="button" data-n="trip-status" data-cap="Trip status" aria-label="Enlarge Trip status">
+    <img src="img/ios-trip-status.jpg" alt="Trip status screen" loading="lazy" width="780" height="1713">
+  </button>
+  <figcaption><strong>Trip status</strong><span>Live status, chauffeur card, call or message, timeline.</span></figcaption>
+</figure>
+<figure class="shot" id="s10">
+  <button class="frame" type="button" data-n="contact-driver" data-cap="Contact chauffeur" aria-label="Enlarge Contact chauffeur">
+    <img src="img/ios-contact-driver.jpg" alt="Contact chauffeur screen" loading="lazy" width="780" height="5187">
+  </button>
+  <figcaption><strong>Contact chauffeur</strong><span>Messages relayed to your chauffeur, with quick replies.</span></figcaption>
+</figure>
+<figure class="shot" id="s11">
+  <button class="frame" type="button" data-n="edit-booking" data-cap="Edit booking" aria-label="Enlarge Edit booking">
+    <img src="img/ios-edit-booking.jpg" alt="Edit booking screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Edit booking</strong><span>Change time, flight, passengers, luggage and notes.</span></figcaption>
+</figure>
+<figure class="shot" id="s12">
+  <button class="frame" type="button" data-n="receipt" data-cap="Trip receipt" aria-label="Enlarge Trip receipt">
+    <img src="img/ios-receipt.jpg" alt="Trip receipt screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Trip receipt</strong><span>Route, fare and links to the invoice or help.</span></figcaption>
+</figure>
+<figure class="shot" id="s13">
+  <button class="frame" type="button" data-n="wallet" data-cap="Wallet" aria-label="Enlarge Wallet">
+    <img src="img/ios-wallet.jpg" alt="Wallet screen" loading="lazy" width="780" height="5184">
+  </button>
+  <figcaption><strong>Wallet</strong><span>Balance, add funds, payment methods and recent activity.</span></figcaption>
+</figure>
+<figure class="shot" id="s14">
+  <button class="frame" type="button" data-n="account" data-cap="Account" aria-label="Enlarge Account">
+    <img src="img/ios-account.jpg" alt="Account screen" loading="lazy" width="780" height="5184">
+  </button>
+  <figcaption><strong>Account</strong><span>Profile, real stats and the account menu.</span></figcaption>
+</figure>
+<figure class="shot" id="s15">
+  <button class="frame" type="button" data-n="edit-profile" data-cap="Edit profile" aria-label="Enlarge Edit profile">
+    <img src="img/ios-edit-profile.jpg" alt="Edit profile screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Edit profile</strong><span>Name and phone, plus ride preferences.</span></figcaption>
+</figure>
+<figure class="shot" id="s16">
+  <button class="frame" type="button" data-n="payment-methods" data-cap="Payment methods" aria-label="Enlarge Payment methods">
+    <img src="img/ios-payment-methods.jpg" alt="Payment methods screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Payment methods</strong><span>Saved cards, default card and wallet.</span></figcaption>
+</figure>
+<figure class="shot" id="s17">
+  <button class="frame" type="button" data-n="add-card" data-cap="Add card" aria-label="Enlarge Add card">
+    <img src="img/ios-add-card.jpg" alt="Add card screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Add card</strong><span>Live card preview; Stripe in production.</span></figcaption>
+</figure>
+<figure class="shot" id="s18">
+  <button class="frame" type="button" data-n="addresses" data-cap="Saved addresses" aria-label="Enlarge Saved addresses">
+    <img src="img/ios-addresses.jpg" alt="Saved addresses screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Saved addresses</strong><span>Search, add and remove saved places.</span></figcaption>
+</figure>
+<figure class="shot" id="s19">
+  <button class="frame" type="button" data-n="business" data-cap="Business account" aria-label="Enlarge Business account">
+    <img src="img/ios-business.jpg" alt="Business account screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Business account</strong><span>Set up a company account with a monthly budget.</span></figcaption>
+</figure>
+<figure class="shot" id="s20">
+  <button class="frame" type="button" data-n="settings" data-cap="Settings" aria-label="Enlarge Settings">
+    <img src="img/ios-settings.jpg" alt="Settings screen" loading="lazy" width="780" height="1873">
+  </button>
+  <figcaption><strong>Settings</strong><span>Notifications, preferences, password and account deletion.</span></figcaption>
+</figure>
+<figure class="shot" id="s21">
+  <button class="frame" type="button" data-n="invoices" data-cap="Invoices" aria-label="Enlarge Invoices">
+    <img src="img/ios-invoices.jpg" alt="Invoices screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Invoices</strong><span>Monthly filter, total spent and every invoice.</span></figcaption>
+</figure>
+<figure class="shot" id="s22">
+  <button class="frame" type="button" data-n="invoice" data-cap="Invoice" aria-label="Enlarge Invoice">
+    <img src="img/ios-invoice.jpg" alt="Invoice screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Invoice</strong><span>Lines, total, billed to and paid with.</span></figcaption>
+</figure>
+<figure class="shot" id="s23">
+  <button class="frame" type="button" data-n="help" data-cap="Help &amp; support" aria-label="Enlarge Help &amp; support">
+    <img src="img/ios-help.jpg" alt="Help &amp; support screen" loading="lazy" width="780" height="2771">
+  </button>
+  <figcaption><strong>Help &amp; support</strong><span>Email, common questions and a message form.</span></figcaption>
+</figure>
+<figure class="shot" id="s24">
+  <button class="frame" type="button" data-n="legal" data-cap="Legal &amp; privacy" aria-label="Enlarge Legal &amp; privacy">
+    <img src="img/ios-legal.jpg" alt="Legal &amp; privacy screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Legal &amp; privacy</strong><span>Terms, privacy, cookies and your data choices.</span></figcaption>
+</figure>
+<figure class="shot" id="s25">
+  <button class="frame" type="button" data-n="signin" data-cap="Sign in" aria-label="Enlarge Sign in">
+    <img src="img/ios-signin.jpg" alt="Sign in screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Sign in</strong><span>Email or phone sign-in.</span></figcaption>
+</figure>
+<figure class="shot" id="s26">
+  <button class="frame" type="button" data-n="signup" data-cap="Create account" aria-label="Enlarge Create account">
+    <img src="img/ios-signup.jpg" alt="Create account screen" loading="lazy" width="780" height="1658">
+  </button>
+  <figcaption><strong>Create account</strong><span>Name, email, mobile and password.</span></figcaption>
+</figure>
+  </div>
+  <p class="note">Click any screen to see the whole page. iPhone shows the iOS look (round back button, Cupertino switches, flat tab bar); Android shows the Material look (bare arrow, Material switches, pill tab indicator). Payment and Compare rentals open from Review booking and Rent a car and aren't captured here. Prices, bookings and balances are test data; no real payments were made.</p>
+</div>
+
+<dialog id="lb" aria-label="Screen preview">
+  <div class="lb">
+    <div class="lb-head"><strong id="lb-cap"></strong><button type="button" id="lb-close">Close</button></div>
+    <div class="lb-body"><img id="lb-img" alt=""></div>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  let plat = 'ios';
+  try { plat = localStorage.getItem('rd-plat') || 'ios'; } catch (e) {}
+  const segs = document.querySelectorAll('.seg button');
+  const apply = () => {
+    segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.p === plat)));
+    document.querySelectorAll('.frame').forEach((b) => { b.querySelector('img').src = `img/${plat}-${b.dataset.n}.jpg`; });
+  };
+  segs.forEach((b) => b.addEventListener('click', () => { plat = b.dataset.p; try { localStorage.setItem('rd-plat', plat); } catch (e) {} apply(); }));
+  apply();
+  const d = document.getElementById('lb'), img = document.getElementById('lb-img'), cap = document.getElementById('lb-cap');
+  document.querySelectorAll('.frame').forEach((b) => b.addEventListener('click', () => {
+    img.src = `img/${plat}-${b.dataset.n}.jpg`; img.alt = b.dataset.cap + ' screen'; cap.textContent = b.dataset.cap + (plat === 'ios' ? ' · iPhone' : ' · Android');
+    d.showModal(); d.querySelector('.lb-body').scrollTop = 0;
+  }));
+  document.getElementById('lb-close').addEventListener('click', () => d.close());
+  d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+})();
+</script>

@@ -1,0 +1,193 @@
+<title>Ridean Admin</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: a screen-by-screen walkthrough — header, then the app's screens in the order a user meets them. Single dark look on purpose: it is Ridean's own Emerald & Gold brand. */
+:root {
+  --bg: #071A14; --surface: #0D241C; --line: rgba(160,200,185,.16);
+  --cream: #F3EEDF; --muted: #9FB3AA; --gold: #D9A94F; --yellow: #FCCB2C;
+  --display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--cream); font: 15px/1.55 var(--body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { display: grid; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+.eyebrow { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+h1 { font-family: var(--display); font-weight: 600; font-size: clamp(34px, 5vw, 52px); line-height: 1.05; margin: 0; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--gold); }
+.lead { margin: 0; max-width: 62ch; color: #c9d2cb; font-size: 16.5px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.meta b { color: var(--cream); font-weight: 500; }
+.grid { display: grid; gap: 36px 28px; }
+.desktop .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); }
+.phone .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); }
+.shot { margin: 0; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.frame { all: unset; cursor: zoom-in; display: block; overflow: hidden; background: #04110C; border: 1px solid var(--line); transition: border-color .15s, transform .15s; }
+.frame:hover { border-color: var(--gold); }
+.frame:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
+.desktop .frame { border-radius: 12px; }
+.desktop .frame img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+.bar { display: flex; gap: 6px; padding: 9px 12px; background: #0B1F18; border-bottom: 1px solid var(--line); }
+.bar i { width: 9px; height: 9px; border-radius: 50%; background: rgba(243,238,223,.18); }
+.phone .frame { border-radius: 28px; padding: 6px; background: #020B08; }
+.phone .frame img { display: block; width: 100%; height: auto; border-radius: 22px; aspect-ratio: 390 / 664; object-fit: cover; object-position: top; }
+figcaption { display: grid; gap: 2px; }
+figcaption strong { font-weight: 600; font-size: 15px; }
+figcaption span { color: var(--muted); font-size: 13.5px; }
+.note { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; max-width: 75ch; }
+dialog { border: 0; padding: 0; background: transparent; max-width: min(1400px, 96vw); max-height: 94vh; }
+dialog::backdrop { background: rgba(2,8,6,.88); }
+.lb { display: grid; gap: 10px; }
+.lb-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--cream); }
+.lb-head button { all: unset; cursor: pointer; padding: 6px 14px; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; font-size: 13px; }
+.lb-head button:focus-visible { outline: 2px solid var(--yellow); }
+.lb-body { overflow: auto; max-height: calc(94vh - 52px); border-radius: 10px; }
+.lb-body img { display: block; max-width: 100%; height: auto; }
+.phone .lb-body img { max-width: 420px; }
+@media (prefers-reduced-motion: reduce) { .frame { transition: none; } }
+</style>
+
+<div class="wrap desktop">
+  <header>
+    <span class="eyebrow">Ridean · 16 screens</span>
+    <h1><em>Ridean</em> Admin</h1>
+    <p class="lead">The admin panel rebuilt from the Emerald &amp; Pure Gold admin design and wired to the API: operations, booking for customers, chauffeurs and partners, settlements, earnings, the transaction report, platform settings and team roles.</p>
+    <div class="meta"><span><b>admin.ridean.com · operations & finance · port 3002</b></span><span>Captured from the running code on the <b>emerald-v2</b> branch with sample suppliers and test payments.</span></div>
+  </header>
+  <div class="grid">
+<figure class="shot" id="s0">
+  <button class="frame" type="button" data-full="img/login.jpg" data-cap="Sign in" aria-label="Enlarge Sign in">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/login.jpg" alt="Sign in screen" loading="lazy" width="1440" height="900">
+  </button>
+  <figcaption><strong>Sign in</strong><span>Staff only: operations, finance and administrators.</span></figcaption>
+</figure>
+<figure class="shot" id="s1">
+  <button class="frame" type="button" data-full="img/d-dashboard.jpg" data-cap="Dashboard" aria-label="Enlarge Dashboard">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-dashboard.jpg" alt="Dashboard screen" loading="lazy" width="1440" height="1159">
+  </button>
+  <figcaption><strong>Dashboard</strong><span>Today vs yesterday, 30-day revenue, services, needs attention, top vehicles.</span></figcaption>
+</figure>
+<figure class="shot" id="s2">
+  <button class="frame" type="button" data-full="img/d-bookings.jpg" data-cap="Bookings" aria-label="Enlarge Bookings">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-bookings.jpg" alt="Bookings screen" loading="lazy" width="1440" height="900">
+  </button>
+  <figcaption><strong>Bookings</strong><span>Status chips, period, search, CSV export and paging.</span></figcaption>
+</figure>
+<figure class="shot" id="s3">
+  <button class="frame" type="button" data-full="img/d-bookings-id.jpg" data-cap="Booking detail" aria-label="Enlarge Booking detail">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-bookings-id.jpg" alt="Booking detail screen" loading="lazy" width="1440" height="1146">
+  </button>
+  <figcaption><strong>Booking detail</strong><span>Route, live status with chauffeur, full money breakdown, status changes.</span></figcaption>
+</figure>
+<figure class="shot" id="s4">
+  <button class="frame" type="button" data-full="img/d-bookings-new.jpg" data-cap="New booking" aria-label="Enlarge New booking">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-bookings-new.jpg" alt="New booking screen" loading="lazy" width="1440" height="919">
+  </button>
+  <figcaption><strong>New booking</strong><span>Book for a customer: live partner prices, saved card or invoice.</span></figcaption>
+</figure>
+<figure class="shot" id="s5">
+  <button class="frame" type="button" data-full="img/d-drivers.jpg" data-cap="Drivers &amp; Suppliers" aria-label="Enlarge Drivers &amp; Suppliers">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-drivers.jpg" alt="Drivers &amp; Suppliers screen" loading="lazy" width="1440" height="900">
+  </button>
+  <figcaption><strong>Drivers &amp; Suppliers</strong><span>Chauffeurs reported by partners, and partner accounts.</span></figcaption>
+</figure>
+<figure class="shot" id="s6">
+  <button class="frame" type="button" data-full="img/d-users.jpg" data-cap="Users" aria-label="Enlarge Users">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-users.jpg" alt="Users screen" loading="lazy" width="1440" height="1757">
+  </button>
+  <figcaption><strong>Users</strong><span>Riders with trips, wallet balance and status.</span></figcaption>
+</figure>
+<figure class="shot" id="s7">
+  <button class="frame" type="button" data-full="img/d-settlements.jpg" data-cap="Settlements &amp; payments" aria-label="Enlarge Settlements &amp; payments">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-settlements.jpg" alt="Settlements &amp; payments screen" loading="lazy" width="1440" height="978">
+  </button>
+  <figcaption><strong>Settlements &amp; payments</strong><span>Period totals per supplier with Pay, Receive and Pay all pending.</span></figcaption>
+</figure>
+<figure class="shot" id="s8">
+  <button class="frame" type="button" data-full="img/d-earnings.jpg" data-cap="Earnings" aria-label="Enlarge Earnings">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-earnings.jpg" alt="Earnings screen" loading="lazy" width="1440" height="2427">
+  </button>
+  <figcaption><strong>Earnings</strong><span>Commission and markup per booking, money flow and the price calculator.</span></figcaption>
+</figure>
+<figure class="shot" id="s9">
+  <button class="frame" type="button" data-full="img/d-reports.jpg" data-cap="Transaction report" aria-label="Enlarge Transaction report">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-reports.jpg" alt="Transaction report screen" loading="lazy" width="1440" height="1742">
+  </button>
+  <figcaption><strong>Transaction report</strong><span>By supplier or by service, expandable to each transaction.</span></figcaption>
+</figure>
+<figure class="shot" id="s10">
+  <button class="frame" type="button" data-full="img/d-suppliers.jpg" data-cap="Supplier accounts" aria-label="Enlarge Supplier accounts">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-suppliers.jpg" alt="Supplier accounts screen" loading="lazy" width="1440" height="1868">
+  </button>
+  <figcaption><strong>Supplier accounts</strong><span>Commercial terms, how money moves, and the accounting history.</span></figcaption>
+</figure>
+<figure class="shot" id="s11">
+  <button class="frame" type="button" data-full="img/d-suppliers-new.jpg" data-cap="Add supplier" aria-label="Enlarge Add supplier">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-suppliers-new.jpg" alt="Add supplier screen" loading="lazy" width="1440" height="1338">
+  </button>
+  <figcaption><strong>Add supplier</strong><span>New API partner with terms pre-filled from platform defaults.</span></figcaption>
+</figure>
+<figure class="shot" id="s12">
+  <button class="frame" type="button" data-full="img/d-settings.jpg" data-cap="Settings" aria-label="Enlarge Settings">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-settings.jpg" alt="Settings screen" loading="lazy" width="1440" height="900">
+  </button>
+  <figcaption><strong>Settings</strong><span>Platform details, supplier defaults, team &amp; roles, pause bookings.</span></figcaption>
+</figure>
+<figure class="shot" id="s13">
+  <button class="frame" type="button" data-full="img/d-profile.jpg" data-cap="Edit profile" aria-label="Enlarge Edit profile">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-profile.jpg" alt="Edit profile screen" loading="lazy" width="1440" height="900">
+  </button>
+  <figcaption><strong>Edit profile</strong><span>Name, phone and password.</span></figcaption>
+</figure>
+<figure class="shot" id="s14">
+  <button class="frame" type="button" data-full="img/d-help.jpg" data-cap="Help &amp; support" aria-label="Enlarge Help &amp; support">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-help.jpg" alt="Help &amp; support screen" loading="lazy" width="1440" height="900">
+  </button>
+  <figcaption><strong>Help &amp; support</strong><span>Answers for the admin panel and platform support.</span></figcaption>
+</figure>
+<figure class="shot" id="s15">
+  <button class="frame" type="button" data-full="img/d-inbox.jpg" data-cap="Inbox" aria-label="Enlarge Inbox">
+    <span class="bar"><i></i><i></i><i></i></span>
+    <img src="img/d-inbox.jpg" alt="Inbox screen" loading="lazy" width="1440" height="900">
+  </button>
+  <figcaption><strong>Inbox</strong><span>Messages from the website and app contact form.</span></figcaption>
+</figure>
+  </div>
+  <p class="note">Click any screen to see it full size. Prices, bookings and balances are test data from sample suppliers; no real payments were made.</p>
+</div>
+
+<dialog id="lb" aria-label="Screen preview">
+  <div class="lb">
+    <div class="lb-head"><strong id="lb-cap"></strong><button type="button" id="lb-close">Close</button></div>
+    <div class="lb-body"><img id="lb-img" alt=""></div>
+  </div>
+</dialog>
+<script>
+(() => {
+  const d = document.getElementById('lb'), img = document.getElementById('lb-img'), cap = document.getElementById('lb-cap');
+  document.querySelectorAll('.frame').forEach((b) => b.addEventListener('click', () => {
+    img.src = b.dataset.full; img.alt = b.dataset.cap + ' screen'; cap.textContent = b.dataset.cap;
+    d.showModal(); d.querySelector('.lb-body').scrollTop = 0;
+  }));
+  document.getElementById('lb-close').addEventListener('click', () => d.close());
+  d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+})();
+</script>

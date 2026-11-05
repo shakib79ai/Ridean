@@ -1,0 +1,87 @@
+/* Ridean — Emerald & Pure Gold. Shared by the website and the PWA. */
+:root {
+  --bg: #071a14;
+  --bg-deep: #000b0c;
+  --surface: #0e2a22;
+  --surface-2: #12352b;
+  --line: #1f4537;
+  --gold: #d9a94f;
+  --cream: #f3eedf;
+  --muted: #9fb2a6;
+  --yellow: #f6c428;
+  --active: #1e5442;
+  --ok: #4cc38a;
+  --bad: #e5645a;
+  --info: #7fb3ff;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --btn: linear-gradient(180deg, #ffd43b, #f2b705);
+  --logo: linear-gradient(180deg, #f8dd8a 0%, #e2b04a 55%, #b9842a 100%);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--cream); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { font: inherit; }
+input, select, textarea { font: inherit; color: inherit; }
+::placeholder { color: var(--muted); }
+
+.rd-logo { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; background: var(--logo); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.rd-display { font-family: var(--font-display); font-weight: 600; line-height: 1.08; margin: 0; }
+.rd-eyebrow { font-size: 12.5px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
+.rd-muted { color: var(--muted); }
+.rd-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+.rd-stack { display: flex; flex-direction: column; gap: var(--gap, 14px); }
+.rd-row { display: flex; align-items: center; gap: var(--gap, 12px); }
+.rd-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+.rd-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+.rd-card-glass { background: linear-gradient(180deg, rgba(3, 41, 31, 0.94), rgba(1, 34, 26, 0.96)); border: 1px solid rgba(70, 130, 112, 0.55); border-radius: 16px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45); }
+
+.rd-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; padding: 0 22px; border-radius: 12px; border: 0; cursor: pointer; font-weight: 600; font-size: 16px; background: var(--btn); color: #0a1f18; transition: filter 0.15s; }
+.rd-btn:hover { filter: brightness(1.05); }
+.rd-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.rd-btn-ghost { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+.rd-btn-dark { background: var(--surface-2); color: var(--cream); border: 1px solid var(--line); }
+.rd-btn-block { width: 100%; }
+.rd-link { color: var(--gold); font-weight: 600; }
+
+.rd-field { display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 8px 14px; border-radius: 12px; background: #01201a; border: 1px solid rgba(160, 200, 185, 0.16); }
+.rd-field:focus-within { border-color: var(--gold); }
+.rd-field label, .rd-field .rd-field-label { display: block; font-size: 12px; color: #c9d3cd; }
+.rd-field input, .rd-field select, .rd-field textarea { all: unset; width: 100%; font-size: 15px; color: var(--cream); color-scheme: dark; }
+.rd-field-body { flex: 1; min-width: 0; }
+.rd-field-icon { color: var(--cream); flex-shrink: 0; display: flex; }
+.rd-field-action { all: unset; cursor: pointer; display: flex; padding: 6px; border-left: 1px solid rgba(160, 200, 185, 0.16); padding-left: 12px; }
+
+.rd-seg { display: flex; padding: 3px; border-radius: 12px; border: 1px solid rgba(160, 200, 185, 0.16); background: #01201a; }
+.rd-seg button { all: unset; flex: 1; text-align: center; padding: 9px 0; border-radius: 9px; font-size: 14px; color: #d2dad5; cursor: pointer; }
+.rd-seg button[aria-pressed='true'] { background: #124e3e; color: #fff; font-weight: 600; }
+
+.rd-tabs { display: flex; border-bottom: 1px solid rgba(160, 200, 185, 0.14); overflow-x: auto; scrollbar-width: none; }
+.rd-tabs button { all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 16px 18px; font-size: 15px; color: var(--cream); white-space: nowrap; border-bottom: 3px solid transparent; }
+.rd-tabs button[aria-selected='true'] { color: #fce910; border-bottom-color: #fce910; font-weight: 600; }
+
+.rd-chip { all: unset; cursor: pointer; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13.5px; }
+.rd-chip[aria-pressed='true'] { background: var(--yellow); color: #0a1f18; border-color: var(--yellow); font-weight: 600; }
+
+.rd-pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+.rd-pill-ok { background: rgba(76, 195, 138, 0.14); color: var(--ok); }
+.rd-pill-warn { background: rgba(246, 196, 40, 0.14); color: var(--yellow); }
+.rd-pill-bad { background: rgba(229, 100, 90, 0.14); color: var(--bad); }
+.rd-pill-info { background: rgba(127, 179, 255, 0.14); color: var(--info); }
+
+.rd-alert { padding: 12px 14px; border-radius: 12px; font-size: 14px; background: rgba(229, 100, 90, 0.12); color: #ffb3ab; border: 1px solid rgba(229, 100, 90, 0.35); }
+.rd-note { padding: 12px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; background: var(--surface-2); color: #c9d2cb; display: flex; gap: 10px; }
+.rd-divider { height: 1px; background: var(--line); }
+.rd-skeleton { background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%); background-size: 200% 100%; animation: rd-shimmer 1.2s infinite; border-radius: 16px; }
+@keyframes rd-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+.rd-quote { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; }
+.rd-price { font-family: var(--font-display); font-size: 28px; font-weight: 600; }
+.rd-hide-mobile { }
+@media (max-width: 720px) {
+  .rd-hide-mobile { display: none !important; }
+  .rd-grid-2 { grid-template-columns: 1fr; }
+  .rd-quote { grid-template-columns: 1fr; }
+}

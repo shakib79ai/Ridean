@@ -1,0 +1,64 @@
+/* Responsive layout for the service pages (Ride, Airport transfer, Hourly, Luxury, Rent).
+   The design is a 470px search card that overlaps the hero, next to the results column. */
+.layout {
+  display: grid;
+  grid-template-columns: 470px minmax(0, 1fr);
+  gap: 40px;
+  padding-bottom: 72px;
+}
+.formCol {
+  margin-top: -110px;
+  position: relative;
+  z-index: 5;
+  min-width: 0;
+}
+.resultsCol {
+  padding-top: 36px;
+  min-width: 0;
+}
+.confirmRow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.confirmBox {
+  width: 320px;
+  max-width: 100%;
+}
+.hourlyTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.hourlyBtn {
+  width: 280px;
+  max-width: 100%;
+}
+.heroTitle {
+  font-size: 54px;
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .resultsCol {
+    padding-top: 24px;
+  }
+}
+@media (max-width: 560px) {
+  .confirmBox,
+  .hourlyBtn {
+    width: 100%;
+  }
+  .heroTitle {
+    font-size: 40px;
+  }
+  .formCol {
+    margin-top: -90px;
+  }
+}

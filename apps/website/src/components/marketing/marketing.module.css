@@ -1,0 +1,29 @@
+/* Responsive helpers for marketing pages (Legal). */
+.legalGrid {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 32px;
+  padding-bottom: 72px;
+}
+.legalNav {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+}
+@media (max-width: 900px) {
+  .legalGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .legalNav {
+    position: static;
+  }
+  .legalNav nav {
+    flex-direction: row !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .legalNav nav a {
+    white-space: nowrap;
+  }
+}

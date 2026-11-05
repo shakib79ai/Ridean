@@ -1,0 +1,73 @@
+# Local / single-server stack: Postgres + API + website + PWA + admin.
+#   cp apps/api/.env.example apps/api/.env   # edit secrets
+#   docker compose up --build
+# Website http://localhost:3000 · PWA http://localhost:3001 · Admin http://localhost:3002 · API http://localhost:4000/docs
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ridean
+      POSTGRES_PASSWORD: ridean
+      POSTGRES_DB: ridean
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ridean"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    restart: unless-stopped
+    env_file: apps/api/.env
+    environment:
+      # Local stack defaults to development so mock suppliers and simulated payments are allowed.
+      # For production set API_NODE_ENV=production, PAYMENTS_MODE=stripe and SUPPLIER_MODE=live in apps/api/.env.
+      NODE_ENV: ${API_NODE_ENV:-development}
+      DATABASE_URL: postgres://ridean:ridean@db:5432/ridean
+      CORS_ORIGINS: http://localhost:3000,http://localhost:3001,http://localhost:3002
+    depends_on:
+      db: { condition: service_healthy }
+    ports:
+      - "4000:4000"
+
+  website:
+    build:
+      context: .
+      dockerfile: apps/website/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:4000}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+    restart: unless-stopped
+    depends_on: [api]
+    ports:
+      - "3000:3000"
+
+  pwa:
+    build:
+      context: .
+      dockerfile: apps/pwa/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:4000}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+    restart: unless-stopped
+    depends_on: [api]
+    ports:
+      - "3001:3001"
+
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:4000}
+    restart: unless-stopped
+    depends_on: [api]
+    ports:
+      - "3002:3002"
+
+volumes:
+  pgdata:

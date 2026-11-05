@@ -1,0 +1,18 @@
+/* Helpers for the PWA account screens (ported from the website's account kit). */
+.pa-select { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; font-size: 14.5px; color: #F3EEDF; margin-top: 2px; }
+.pa-select option { background: #0E2A22; color: #F3EEDF; }
+.pa-link { all: unset; cursor: pointer; box-sizing: border-box; }
+.pa-link:disabled { cursor: not-allowed; opacity: .6; }
+.pa-link:focus-visible, .pa-row-btn:focus-visible { outline: 2px solid #F6C428; outline-offset: 2px; border-radius: 8px; }
+.pa-row-btn { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; }
+.pa-row-btn:disabled { cursor: default; }
+.pa-screen { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+.pa-screen input::placeholder { color: #6F857A; }
+
+@media print {
+  .pw-tabbar, .no-print { display: none !important; }
+  .pw-app { max-width: none !important; }
+  .pa-screen { padding: 0 !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { margin: 14mm; }
+}
