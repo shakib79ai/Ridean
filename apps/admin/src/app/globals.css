@@ -136,7 +136,7 @@ input, select, textarea { font-family: var(--sans); color-scheme: dark; }
 .az-in { all: unset; box-sizing: border-box; width: 100%; height: 48px; padding: 0 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); font-size: 14.5px; color: var(--cream); }
 .az-in:focus { border-color: var(--gold); }
 textarea.az-in { height: auto; min-height: 90px; padding: 12px 14px; white-space: pre-wrap; }
-select.az-in { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239FB2A6' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+select.az-in { line-height: 46px; padding-top: 0; padding-bottom: 0; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239FB2A6' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
 .az-in-affix { display: flex; align-items: center; height: 48px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 0 14px; gap: 8px; }
 .az-in-affix:focus-within { border-color: var(--gold); }
 .az-in-affix input { all: unset; flex: 1; min-width: 0; font-size: 14.5px; color: var(--cream); }
@@ -238,4 +238,5 @@ select.az-in { appearance: none; background-image: url("data:image/svg+xml,%3Csv
   .az-form { grid-template-columns: minmax(0, 1fr); }
   .az-top h1 { font-size: 24px; }
   .az-kv { grid-template-columns: minmax(0, 1fr); }
+  .az-seg button { white-space: normal; padding: 10px 8px; }
 }

@@ -109,7 +109,7 @@ export default function SettlementsPage() {
         {rows.length === 0 ? (
           <Empty title={data.suppliers.length ? 'Nothing in this view' : 'No suppliers yet'}>{data.suppliers.length ? 'Try another filter.' : 'Add a supplier to start settling.'}</Empty>
         ) : (
-          <table className="az-t">
+          <table className="az-t compact">
             <thead>
               <tr>
                 <th>Supplier</th>
@@ -117,7 +117,6 @@ export default function SettlementsPage() {
                 <th>Trips</th>
                 <th className="num">Gross</th>
                 <th className="num">Commission</th>
-                <th className="num">Markup</th>
                 <th className="num">Net payout</th>
                 <th>Status</th>
                 <th aria-label="Actions" />
@@ -137,21 +136,21 @@ export default function SettlementsPage() {
                     <td>{t.bookings.toLocaleString()}</td>
                     <td className="num">{m(t.gross)}</td>
                     <td className="num">{m(t.commission)}</td>
-                    <td className="num">{m(t.markup)}</td>
                     <td className="num">
                       <strong>{m(t.owedToSuppliers)}</strong>
                       {t.owedToRidean > 0 && <span className="sub az-info">{m(t.owedToRidean)} due to us</span>}
                     </td>
                     <td>
-                      {st === 'pending' && <Pill tone="warn">Pending · {m(s.balance)}</Pill>}
-                      {st === 'owes' && <Pill tone="info">Owes us · {m(-s.balance)}</Pill>}
+                      {st === 'pending' && <Pill tone="warn">Pending</Pill>}
+                      {st === 'owes' && <Pill tone="info">Owes us</Pill>}
                       {st === 'settled' && <Pill tone="ok">Settled</Pill>}
+                      {st !== 'settled' && <span className="sub">Balance {m(Math.abs(s.balance))}</span>}
                     </td>
                     <td className="num">
                       <div className="az-row" style={{ justifyContent: 'flex-end', flexWrap: 'nowrap', gap: 14 }}>
                         <Link className="az-a" href={`/suppliers/${s.id}`}>Statement</Link>
                         {isFinance && st === 'pending' && <Btn kind="y" size="sm" onClick={() => setPay(s)}>Pay</Btn>}
-                        {isFinance && st === 'owes' && <Btn kind="g" size="sm" onClick={() => setPay(s)}>Record receipt</Btn>}
+                        {isFinance && st === 'owes' && <Btn kind="g" size="sm" onClick={() => setPay(s)}>Receive</Btn>}
                       </div>
                     </td>
                   </tr>

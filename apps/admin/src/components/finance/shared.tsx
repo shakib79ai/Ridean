@@ -68,7 +68,7 @@ export function PaidVia({ flow }: { flow: string }) {
 /** Small select styled like an outline button. */
 export function SelectBtn({ label, value, onChange, children, minWidth }: { label: string; value: string; onChange: (v: string) => void; children: React.ReactNode; minWidth?: number }) {
   return (
-    <select aria-label={label} className="az-in" value={value} onChange={(e) => onChange(e.target.value)} style={{ height: 44, width: 'auto', minWidth: minWidth ?? 150, backgroundColor: 'var(--card)', fontWeight: 600, fontSize: 14 }}>
+    <select aria-label={label} className="az-in" value={value} onChange={(e) => onChange(e.target.value)} style={{ height: 44, lineHeight: '42px', width: 'auto', minWidth: minWidth ?? 150, backgroundColor: 'var(--card)', fontWeight: 600, fontSize: 14 }}>
       {children}
     </select>
   );

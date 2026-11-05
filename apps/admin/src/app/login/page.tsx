@@ -3,11 +3,14 @@
 import { Suspense, useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useRidean } from '@ridean/web-core/src/api-context';
+import { Btn, Field, Icon } from '@/components/ui';
 
 function LoginForm() {
   const { login, logout } = useRidean();
   const router = useRouter();
-  const next = useSearchParams().get('next') || '/';
+  const raw = useSearchParams().get('next') || '/';
+  // Only follow local paths, never another site.
+  const next = raw.startsWith('/') && !raw.startsWith('//') ? raw : '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -32,20 +35,37 @@ function LoginForm() {
   }
 
   return (
-    <form onSubmit={submit} className="rd-card rd-stack" style={{ width: 380, padding: 28 }}>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--gold)' }}>Ridean <span style={{ fontSize: 14, color: '#8aa59a', letterSpacing: '.18em' }}>ADMIN</span></div>
-      <label className="rd-stack" style={{ ['--gap' as string]: '5px', fontSize: 13 }}>Email<input className="inp" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" /></label>
-      <label className="rd-stack" style={{ ['--gap' as string]: '5px', fontSize: 13 }}>Password<input className="inp" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" /></label>
-      {error && <div className="rd-alert">{error}</div>}
-      <button className="rd-btn" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+    <form onSubmit={submit} className="az-card az-stack" style={{ width: 'min(420px, 100%)', padding: 32, gap: 18 }}>
+      <div style={{ textAlign: 'center', marginBottom: 4 }}>
+        <div className="az-word" style={{ fontSize: 40 }}>Ridean</div>
+        <div className="az-gold" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.28em', marginTop: 2 }}>ADMIN</div>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <h1 className="az-serif" style={{ margin: 0, fontSize: 24, fontWeight: 600 }}>Sign in</h1>
+        <p className="az-muted" style={{ margin: '6px 0 0', fontSize: 13.5 }}>Use your Ridean staff account</p>
+      </div>
+      <Field label="Email">
+        <input className="az-in" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" autoFocus />
+      </Field>
+      <Field label="Password">
+        <input className="az-in" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />
+      </Field>
+      {error && <div className="az-alert" role="alert">{error}</div>}
+      <Btn kind="y" type="submit" block disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</Btn>
+      <div className="az-row az-muted" style={{ justifyContent: 'center', gap: 8, fontSize: 12.5 }}>
+        <Icon name="lock" size={14} />
+        Access is limited to Operations, Finance and Administrators
+      </div>
     </form>
   );
 }
 
 export default function LoginPage() {
   return (
-    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 16 }}>
-      <Suspense><LoginForm /></Suspense>
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 16, background: 'radial-gradient(ellipse at top, #0E2A22 0%, var(--bg) 60%)' }}>
+      <Suspense>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }

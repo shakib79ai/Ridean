@@ -31,11 +31,15 @@ export default function SettingsPage() {
   const [roleBusy, setRoleBusy] = useState<string | null>(null);
 
   const s = settings.data;
-  useEffect(() => {
-    if (!s) return;
-    setDraft(toForm(s));
-    const d = s.supplierDefaults;
+  const loadDraft = (x: PlatformSettings) => {
+    setDraft(toForm(x));
+    const d = x.supplierDefaults;
     setMarkupText(String(d.markupType === 'fixed' ? d.markupValue / 100 : d.markupValue));
+  };
+  // Fill the form once when settings first arrive (pausing bookings must not wipe unsaved edits).
+  useEffect(() => {
+    if (s && !draft) loadDraft(s);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s]);
 
   const markupValue = (() => {
@@ -56,7 +60,9 @@ export default function SettingsPage() {
     if (!Number.isFinite(d.commissionPct) || d.commissionPct < 0 || d.commissionPct > 100) return toast('Commission must be between 0 and 100%');
     setSaving(true);
     try {
-      settings.setData(await api.admin.updateSettings(next));
+      const saved = await api.admin.updateSettings(next);
+      settings.setData(saved);
+      loadDraft(saved);
       toast('Settings saved');
     } catch (e) {
       toast((e as Error).message);
