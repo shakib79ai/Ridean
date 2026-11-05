@@ -63,7 +63,7 @@ async function shoot() {
   const report = [];
   for (const [platform, device] of [['ios', devices['iPhone 13']], ['android', devices['Pixel 7']]]) {
     for (const [list, query] of [[routes, ''], [signedOut, '?signedout=1']]) {
-      const ctx = await browser.newContext({ ...device });
+      const ctx = await browser.newContext({ ...device, locale: 'en-US', timezoneId: 'America/New_York' });
       const page = await ctx.newPage();
       page.on('pageerror', (e) => report.push(`[${platform}] pageerror ${e.message}`));
       page.on('console', (m) => { if (m.type() === 'error') report.push(`[${platform}] console ${m.text().slice(0, 300)}`); });
