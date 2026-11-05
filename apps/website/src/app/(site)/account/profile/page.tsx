@@ -1,9 +1,87 @@
 'use client';
 
-// DESIGN-STATIC: generated from the design canvas board "Profile". Wire to the API and remove this marker.
-/* eslint-disable */
+import Link from 'next/link';
+import type { ReactNode } from 'react';
+import { useRidean } from '@ridean/web-core';
+import type { UserSettings } from '@ridean/shared';
+import { C, Skeleton, useToast } from '@/components/site/ui';
+import { ErrorNote, PageHead, S, SectionHead, ToggleRow, errMsg, fetchAllBookings, fmtMonthYear, isCancelled, languageLabel, useLoad } from '@/components/account/kit';
+
+type RideKey = keyof UserSettings['ride'];
+
 export default function ProfilePage() {
+  const { api, user } = useRidean();
+  const toast = useToast();
+  const stats = useLoad(async () => {
+    const [bookings, addresses] = await Promise.all([fetchAllBookings(api), api.addresses()]);
+    return { trips: bookings.filter((b) => b.status === 'completed' || (!isCancelled(b) && b.pickupAt && new Date(b.pickupAt).getTime() < Date.now())).length, addresses };
+  }, [api]);
+  const settings = useLoad(() => api.settings(), [api]);
+
+  async function setRide(key: RideKey, value: boolean) {
+    const prev = settings.data;
+    if (!prev) return;
+    settings.setData({ ...prev, ride: { ...prev.ride, [key]: value } });
+    try {
+      const next = await api.updateSettings({ ride: { [key]: value } as UserSettings['ride'] });
+      settings.setData(next);
+      toast('Saved');
+    } catch (e) {
+      settings.setData(prev);
+      toast(errMsg(e, 'Couldn’t save — please try again'));
+    }
+  }
+
+  const home = stats.data?.addresses.find((a) => a.label.trim().toLowerCase() === 'home');
+  const tile = (value: string | undefined, label: string) => (
+    <div style={{ ...S.panel, padding: 20 }}>
+      {value === undefined ? <Skeleton h={36} style={{ width: 70 }} /> : <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 30, fontWeight: 600 }}>{value}</div>}
+      <div style={{ fontSize: 13, color: C.muted, marginTop: 2 }}>{label}</div>
+    </div>
+  );
+  const detail = (label: string, value: ReactNode) => (
+    <div style={{ minWidth: 0 }}>
+      <div style={{ fontSize: 12.5, color: C.muted }}>{label}</div>
+      <div style={{ fontSize: 15.5, marginTop: 4, overflowWrap: 'anywhere' }}>{value}</div>
+    </div>
+  );
+  const r = settings.data?.ride;
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "22px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "20px" }}><div><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "40px", lineHeight: 1.06, color: "#F3EEDF" }}>Profile</h1></div></div><div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "16px" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "20px" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "30px", fontWeight: 600 }}>48</div><div style={{ fontSize: "13px", color: "#9FB2A6", marginTop: "2px" }}>Trips taken</div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "20px" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "30px", fontWeight: 600 }}>4.96</div><div style={{ fontSize: "13px", color: "#9FB2A6", marginTop: "2px" }}>Rider rating</div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "20px" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "30px", fontWeight: 600 }}>Gold</div><div style={{ fontSize: "13px", color: "#9FB2A6", marginTop: "2px" }}>Ridean+ tier</div></div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "22px" }}><div style={{ display: "flex", flexDirection: "column", gap: "16px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "20px", color: "#F3EEDF" }}>Personal details</h2><a href="/account/profile/edit" style={{ fontSize: "14px", fontWeight: 600, color: "#D9A94F" }}>Edit</a></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px" }}><div><div style={{ fontSize: "12.5px", color: "#9FB2A6" }}>Full name</div><div style={{ fontSize: "15.5px", marginTop: "4px" }}>Shakib Haider</div></div><div><div style={{ fontSize: "12.5px", color: "#9FB2A6" }}>Email</div><div style={{ fontSize: "15.5px", marginTop: "4px" }}>shakib@bestmyflight.com</div></div><div><div style={{ fontSize: "12.5px", color: "#9FB2A6" }}>Mobile</div><div style={{ fontSize: "15.5px", marginTop: "4px" }}>+1 (718) 555-0142</div></div><div><div style={{ fontSize: "12.5px", color: "#9FB2A6" }}>Member since</div><div style={{ fontSize: "15.5px", marginTop: "4px" }}>March 2024</div></div><div><div style={{ fontSize: "12.5px", color: "#9FB2A6" }}>Home</div><div style={{ fontSize: "15.5px", marginTop: "4px" }}>221B Baker Street, London</div></div><div><div style={{ fontSize: "12.5px", color: "#9FB2A6" }}>Language</div><div style={{ fontSize: "15.5px", marginTop: "4px" }}>English (UK)</div></div></div></div></div><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "22px", color: "#F3EEDF" }}>Ride preferences</h2></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "2px 18px" }}><div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", color: "#F3EEDF" }}>Ride receipts by email</div></div><button type="button" role="switch" aria-checked="true" aria-label="Ride receipts by email" className="dz-tg on" data-act="rdTg(this)"><span></span></button></div><div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", color: "#F3EEDF" }}>Quiet ride by default</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Chauffeur keeps conversation to a minimum</div></div><button type="button" role="switch" aria-checked="false" aria-label="Quiet ride by default" className="dz-tg" data-act="rdTg(this)"><span></span></button></div><div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 2px" }}><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", color: "#F3EEDF" }}>Share trip status with family</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Send a live link when a trip starts</div></div><button type="button" role="switch" aria-checked="true" aria-label="Share trip status with family" className="dz-tg on" data-act="rdTg(this)"><span></span></button></div></div></div>
+    <div style={S.page}>
+      <PageHead title="Profile" />
+      {stats.error && <ErrorNote>{stats.error}</ErrorNote>}
+      <div className="dz-cols-3">
+        {tile(stats.data ? String(stats.data.trips) : stats.error ? '—' : undefined, 'Trips taken')}
+        {tile(user?.createdAt ? new Date(user.createdAt).getFullYear().toString() : '—', 'Member since')}
+        {tile(stats.data ? String(stats.data.addresses.length) : stats.error ? '—' : undefined, 'Saved places')}
+      </div>
+
+      <div style={{ ...S.panel, padding: 22 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
+          <SectionHead title="Personal details" size={20} link={<Link href="/account/profile/edit" style={S.goldLink}>Edit</Link>} />
+          <div className="dz-split" style={{ gap: 18 }}>
+            {detail('Full name', user ? `${user.firstName} ${user.lastName}` : '')}
+            {detail('Email', user?.email)}
+            {detail('Mobile', user?.phone || <span style={{ color: C.muted }}>Not added</span>)}
+            {detail('Member since', fmtMonthYear(user?.createdAt))}
+            {detail('Home', stats.data ? home?.address ?? <Link href="/account/addresses" style={{ color: C.gold }}>Add a home address</Link> : '…')}
+            {detail('Language', settings.data ? languageLabel(settings.data.preferences.language) : '…')}
+          </div>
+        </div>
+      </div>
+
+      <SectionHead title="Ride preferences" />
+      {settings.error && <ErrorNote>{settings.error}</ErrorNote>}
+      {!r && settings.loading ? (
+        <Skeleton h={200} />
+      ) : r ? (
+        <div style={S.list}>
+          <ToggleRow title="Ride receipts by email" sub="We’ll use this when email receipts launch" on={r.receiptsByEmail} onChange={(v) => setRide('receiptsByEmail', v)} />
+          <ToggleRow title="Quiet ride by default" sub="Chauffeur keeps conversation to a minimum" on={r.quietRide} onChange={(v) => setRide('quietRide', v)} />
+          <ToggleRow title="Share trip status with family" sub="Send a live link when a trip starts" on={r.shareStatus} onChange={(v) => setRide('shareStatus', v)} last />
+        </div>
+      ) : null}
+    </div>
   );
 }

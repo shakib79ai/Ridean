@@ -1,7 +1,7 @@
 'use client';
 
-// DESIGN-STATIC: generated from the design canvas board "Services". Wire to the API and remove this marker.
-/* eslint-disable */
+import Link from 'next/link';
+
 export default function ServicesPage() {
   return (
     <>
@@ -20,7 +20,7 @@ export default function ServicesPage() {
           }}
         ></div>
         <div style={{ position: 'relative', height: '100%' }}>
-          <div style={{ maxWidth: '1344px', margin: '0 auto', padding: '0 48px', boxSizing: 'border-box' }}>
+          <div className="dz-container" style={{ paddingTop: 0 }}>
             <div
               style={{
                 display: 'flex',
@@ -35,7 +35,7 @@ export default function ServicesPage() {
               <div style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '.16em', textTransform: 'uppercase', color: '#D9A94F', marginBottom: '12px' }}>
                 Our services
               </div>
-              <h1 style={{ margin: '0', fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: '54px', lineHeight: 1.06, color: '#F3EEDF' }}>
+              <h1 style={{ margin: '0', fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: 'clamp(38px, 8vw, 54px)', lineHeight: 1.06, color: '#F3EEDF' }}>
                 Every way to arrive
               </h1>
               <div style={{ marginTop: '14px' }}>
@@ -47,10 +47,10 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
-      <div style={{ maxWidth: '1344px', margin: '0 auto', padding: '48px 48px 0', boxSizing: 'border-box' }}>
+      <div className="dz-container" style={{ paddingTop: 48, paddingBottom: 72 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', minWidth: '0' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '22px' }}>
-            <a
+          <div className="dz-cols-3" style={{ gap: '22px' }}>
+            <Link
               href="/ride"
               className="dz-card-link"
               style={{ display: 'flex', flexDirection: 'column', background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '18px', overflow: 'hidden' }}
@@ -61,7 +61,7 @@ export default function ServicesPage() {
               <div style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <span style={{ fontFamily: 'Playfair Display,serif', fontSize: '26px', fontWeight: 600 }}>Ride</span>
-                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>From $9.40</span>
+                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>Upfront prices</span>
                 </div>
                 <span style={{ fontSize: '14.5px', color: '#C9D2CB', lineHeight: 1.5 }}>On-demand and scheduled rides with upfront prices.</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14.5px', fontWeight: 600, color: '#F6C428', marginTop: '6px' }}>
@@ -82,8 +82,8 @@ export default function ServicesPage() {
                   </svg>
                 </span>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/airport-transfer"
               className="dz-card-link"
               style={{ display: 'flex', flexDirection: 'column', background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '18px', overflow: 'hidden' }}
@@ -94,7 +94,7 @@ export default function ServicesPage() {
               <div style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <span style={{ fontFamily: 'Playfair Display,serif', fontSize: '26px', fontWeight: 600 }}>Airport transfer</span>
-                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>From $64</span>
+                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>Meet & greet</span>
                 </div>
                 <span style={{ fontSize: '14.5px', color: '#C9D2CB', lineHeight: 1.5 }}>Flight-tracked pickups with meet & greet.</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14.5px', fontWeight: 600, color: '#F6C428', marginTop: '6px' }}>
@@ -115,8 +115,8 @@ export default function ServicesPage() {
                   </svg>
                 </span>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/hourly"
               className="dz-card-link"
               style={{ display: 'flex', flexDirection: 'column', background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '18px', overflow: 'hidden' }}
@@ -127,7 +127,7 @@ export default function ServicesPage() {
               <div style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <span style={{ fontFamily: 'Playfair Display,serif', fontSize: '26px', fontWeight: 600 }}>Hourly chauffeur</span>
-                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>From $65/h</span>
+                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>By the hour</span>
                 </div>
                 <span style={{ fontSize: '14.5px', color: '#C9D2CB', lineHeight: 1.5 }}>A dedicated car and driver by the hour.</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14.5px', fontWeight: 600, color: '#F6C428', marginTop: '6px' }}>
@@ -148,8 +148,8 @@ export default function ServicesPage() {
                   </svg>
                 </span>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/luxury"
               className="dz-card-link"
               style={{ display: 'flex', flexDirection: 'column', background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '18px', overflow: 'hidden' }}
@@ -160,9 +160,9 @@ export default function ServicesPage() {
               <div style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <span style={{ fontFamily: 'Playfair Display,serif', fontSize: '26px', fontWeight: 600 }}>Luxury chauffeur</span>
-                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>From $40</span>
+                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>First class</span>
                 </div>
-                <span style={{ fontSize: '14.5px', color: '#C9D2CB', lineHeight: 1.5 }}>S-Class, 7 Series and Range Rover.</span>
+                <span style={{ fontSize: '14.5px', color: '#C9D2CB', lineHeight: 1.5 }}>First-class cars such as the S-Class and 7 Series.</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14.5px', fontWeight: 600, color: '#F6C428', marginTop: '6px' }}>
                   Book now
                   <svg
@@ -181,8 +181,8 @@ export default function ServicesPage() {
                   </svg>
                 </span>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/rent"
               className="dz-card-link"
               style={{ display: 'flex', flexDirection: 'column', background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '18px', overflow: 'hidden' }}
@@ -193,9 +193,9 @@ export default function ServicesPage() {
               <div style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <span style={{ fontFamily: 'Playfair Display,serif', fontSize: '26px', fontWeight: 600 }}>Rent a car</span>
-                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>From $31/day</span>
+                  <span style={{ fontSize: '13.5px', color: '#D9A94F' }}>Compare partners</span>
                 </div>
-                <span style={{ fontSize: '14.5px', color: '#C9D2CB', lineHeight: 1.5 }}>Compare 8 rental partners in one search.</span>
+                <span style={{ fontSize: '14.5px', color: '#C9D2CB', lineHeight: 1.5 }}>Compare rental partners in one search.</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14.5px', fontWeight: 600, color: '#F6C428', marginTop: '6px' }}>
                   Book now
                   <svg
@@ -214,7 +214,7 @@ export default function ServicesPage() {
                   </svg>
                 </span>
               </div>
-            </a>
+            </Link>
             <div
               style={{
                 background: 'linear-gradient(135deg,#1E5442,#0E2A22)',
@@ -246,7 +246,7 @@ export default function ServicesPage() {
                 <p style={{ margin: '0', fontSize: '15px', lineHeight: 1.6, color: '#C9D2CB' }}>
                   One account for your whole team: monthly billing, travel policies and consolidated invoices.
                 </p>
-                <a
+                <Link
                   href="/account/business"
                   className="dz-cta"
                   style={{
@@ -277,14 +277,14 @@ export default function ServicesPage() {
                   >
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '16px' }}>
             <h2 style={{ margin: '0', fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: '32px', color: '#F3EEDF' }}>How it works</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '20px' }}>
+          <div className="dz-cols-3" style={{ gap: '20px' }}>
             <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '26px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
                 <span style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', color: '#D9A94F' }}>01</span>
@@ -303,7 +303,7 @@ export default function ServicesPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
                 <span style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', color: '#D9A94F' }}>03</span>
                 <span style={{ fontSize: '18px', fontWeight: 600 }}>Arrive exceptionally</span>
-                <p style={{ margin: '0', fontSize: '15px', lineHeight: 1.6, color: '#9FB2A6' }}>Track your chauffeur live and relax.</p>
+                <p style={{ margin: '0', fontSize: '15px', lineHeight: 1.6, color: '#9FB2A6' }}>Follow your booking from confirmation to drop-off.</p>
               </div>
             </div>
           </div>

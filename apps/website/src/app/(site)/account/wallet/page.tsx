@@ -1,9 +1,132 @@
 'use client';
 
-// DESIGN-STATIC: generated from the design canvas board "Wallet". Wire to the API and remove this marker.
-/* eslint-disable */
+import Link from 'next/link';
+import { useState } from 'react';
+import { useRidean } from '@ridean/web-core';
+import { C, Skeleton, useToast } from '@/components/site/ui';
+import {
+  EmptyCard, ErrorNote, Icon, ListRow, Muted, PageHead, RowChevron, S, SectionHead, StripeConfirm, cardLabel, errMsg, fmtDay, money, signedMoney, useLoad, type IconName,
+} from '@/components/account/kit';
+
+const AMOUNTS = [2500, 5000, 10000, 20000];
+
+const txIcon = (amount: number, description: string): IconName => (amount < 0 ? 'car' : description.startsWith('Refund') ? 'refund' : 'plus');
+
 export default function WalletPage() {
+  const { api, stripeKey } = useRidean();
+  const toast = useToast();
+  const [busy, setBusy] = useState<number | null>(null);
+  const [topUpError, setTopUpError] = useState('');
+  const [pending, setPending] = useState<{ secret: string; amount: number } | null>(null);
+
+  const wallet = useLoad(() => api.wallet(), [api]);
+  const cards = useLoad(() => api.paymentMethods().catch(() => []), [api]);
+  const def = cards.data?.find((c) => c.isDefault) ?? null;
+  const w = wallet.data;
+  const currency = w?.currency ?? 'USD';
+
+  async function topUp(amount: number) {
+    setTopUpError('');
+    setBusy(amount);
+    try {
+      const r = await api.topUpWallet(amount);
+      if (r.clientSecret && stripeKey) {
+        setPending({ secret: r.clientSecret, amount });
+      } else {
+        await wallet.reload();
+        toast(`Added ${money(amount, currency)} to your wallet`);
+      }
+    } catch (e) {
+      setTopUpError(errMsg(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "22px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "20px" }}><div><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "40px", lineHeight: 1.06, color: "#F3EEDF" }}>Wallet</h1></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}><div style={{ position: "relative", borderRadius: "20px", overflow: "hidden", padding: "28px", background: "linear-gradient(135deg,#1E5442 0%,#0E2A22 60%,#0A1F18 100%)", border: "1px solid rgba(217,169,79,.35)" }}><div style={{ position: "absolute", right: "-50px", top: "-50px", width: "220px", height: "220px", borderRadius: "110px", background: "radial-gradient(circle,rgba(242,210,122,.25),transparent 70%)" }}></div><div style={{ fontSize: "14px", color: "#9FB2A6" }}>Ridean Wallet balance</div><div data-bal="" style={{ fontFamily: "Playfair Display,serif", fontSize: "52px", fontWeight: 600, marginTop: "4px" }}>$64.20</div><div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "12px" }}><span style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "4px 9px", borderRadius: "999px", background: "rgba(217,169,79,.14)", color: "#D9A94F", fontSize: "11.5px", fontWeight: 600 }}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z" /></svg> Ridean+ member</span><span style={{ fontSize: "13px", color: "#9FB2A6" }}>5% back on every ride</span></div></div><div style={{ display: "flex", flexDirection: "column", gap: "16px", minWidth: "0" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "22px" }}><div style={{ display: "flex", flexDirection: "column", gap: "12px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "20px", color: "#F3EEDF" }}>Add funds</h2></div><div style={{ display: "flex", gap: "10px" }}><button type="button" className="dz-chip" data-v="25" data-act="rdTopup(this)" style={{ flex: 1, textAlign: "center" }}>+$25</button><button type="button" className="dz-chip" data-v="50" data-act="rdTopup(this)" style={{ flex: 1, textAlign: "center" }}>+$50</button><button type="button" className="dz-chip" data-v="100" data-act="rdTopup(this)" style={{ flex: 1, textAlign: "center" }}>+$100</button><button type="button" className="dz-chip" data-v="200" data-act="rdTopup(this)" style={{ flex: 1, textAlign: "center" }}>+$200</button></div><div style={{ fontSize: "13px", color: "#9FB2A6" }}>Charged to Visa •••• 4242</div></div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "2px 16px" }}><a href="/account/payment-methods" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="5.5" width="18" height="13" rx="2" /><path d="M3 10h18M7 15h3" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Payment methods</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Visa •••• 4242 · default</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3.5" y="9" width="17" height="11.5" rx="1.5" /><path d="M3.5 13h17M12 9v11.5M12 9C10 5 6.5 5.5 7 7.5S12 9 12 9zm0 0c2-4 5.5-3.5 5-1.5S12 9 12 9z" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Promotions</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>1 active · RIDEAN10</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></a></div></div></div><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "24px", color: "#F3EEDF" }}>Recent activity</h2><a href="/account/invoices" style={{ fontSize: "14px", fontWeight: 600, color: "#D9A94F" }}>Invoices</a></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "2px 18px" }}><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 15l1.6-4.6A2 2 0 0 1 6.5 9h11a2 2 0 0 1 1.9 1.4L21 15v3a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1h-9v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" /><path d="M6.5 13.5h.01M17.5 13.5h.01" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Ride · Sketch</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>3 Nov · Visa 4242</div></div><span style={{ fontSize: "15px", fontWeight: 600, color: "#F3EEDF" }}>−$21.40</span></a><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 5v14M5 12h14" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Wallet top-up</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>1 Nov</div></div><span style={{ fontSize: "15px", fontWeight: 600, color: "#4CC38A" }}>+$100.00</span></a><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" /><rect x="3" y="11" width="18" height="6" rx="2" /><path d="M6 17v2M18 17v2M7 14h.01M17 14h.01" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Hertz · C-Class</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>28 Oct</div></div><span style={{ fontSize: "15px", fontWeight: 600, color: "#F3EEDF" }}>−$162.00</span></a><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3.5" y="9" width="17" height="11.5" rx="1.5" /><path d="M3.5 13h17M12 9v11.5M12 9C10 5 6.5 5.5 7 7.5S12 9 12 9zm0 0c2-4 5.5-3.5 5-1.5S12 9 12 9z" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Referral credit</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>20 Oct</div></div><span style={{ fontSize: "15px", fontWeight: 600, color: "#4CC38A" }}>+$15.00</span></a><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M10.5 13.5L3 11l1.5-1.5 7.5 1L16.5 6c1-1 2.5-1.5 3-1s0 2-1 3l-4.5 4.5 1 7.5L13.5 21 11 13.5" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Airport transfer · LHR</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>14 Oct</div></div><span style={{ fontSize: "15px", fontWeight: 600, color: "#F3EEDF" }}>−$64.00</span></a></div></div>
+    <div style={S.page}>
+      <PageHead title="Wallet" />
+
+      {wallet.error && <ErrorNote>{wallet.error}</ErrorNote>}
+
+      <div className="dz-split" style={{ gap: 20 }}>
+        <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', padding: 28, background: 'linear-gradient(135deg,#1E5442 0%,#0E2A22 60%,#0A1F18 100%)', border: '1px solid rgba(217,169,79,.35)', minHeight: 160 }}>
+          <div style={{ position: 'absolute', right: -50, top: -50, width: 220, height: 220, borderRadius: 110, background: 'radial-gradient(circle,rgba(242,210,122,.25),transparent 70%)' }} />
+          <div style={{ fontSize: 14, color: C.muted }}>Ridean Wallet balance</div>
+          {w ? (
+            <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 52, fontWeight: 600, marginTop: 4, position: 'relative' }}>{money(w.balance, currency)}</div>
+          ) : (
+            <Skeleton h={56} style={{ width: 200, marginTop: 8 }} />
+          )}
+          <div style={{ fontSize: 13, color: C.muted, marginTop: 12, position: 'relative' }}>Use your balance at checkout for rides, transfers and rentals.</div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
+          <div style={{ ...S.panel, padding: 22 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
+              <SectionHead title="Add funds" size={20} />
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {AMOUNTS.map((a) => (
+                  <button key={a} type="button" className="dz-chip" disabled={busy !== null || !!pending || !w} onClick={() => topUp(a)} style={{ flex: 1, textAlign: 'center', opacity: busy !== null && busy !== a ? 0.6 : 1 }}>
+                    {busy === a ? '…' : `+${money(a, currency).replace(/\.00$/, '')}`}
+                  </button>
+                ))}
+              </div>
+              <div style={{ fontSize: 13, color: C.muted }}>{def ? `Charged to ${cardLabel(def)}` : 'Charged to your card at checkout'}</div>
+              {topUpError && <ErrorNote>{topUpError}</ErrorNote>}
+              {pending && stripeKey && (
+                <div style={{ borderTop: `1px solid ${C.line}`, paddingTop: 14 }}>
+                  <div style={{ fontSize: 14, marginBottom: 10 }}>Confirm your {money(pending.amount, currency)} top-up</div>
+                  <StripeConfirm
+                    stripeKey={stripeKey}
+                    clientSecret={pending.secret}
+                    mode="pay"
+                    submitLabel={`Add ${money(pending.amount, currency)}`}
+                    onCancel={() => setPending(null)}
+                    onDone={() => {
+                      setPending(null);
+                      toast('Top-up received');
+                      // The webhook credits the wallet; give it a moment.
+                      setTimeout(() => wallet.reload(), 2500);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={{ ...S.panel, padding: '2px 16px' }}>
+            <ListRow
+              icon="card"
+              href="/account/payment-methods"
+              title="Payment methods"
+              sub={cards.loading ? ' ' : def ? `${cardLabel(def)} · default` : cards.data?.length ? `${cards.data.length} saved` : 'No saved cards yet'}
+              right={<RowChevron />}
+              last
+            />
+          </div>
+        </div>
+      </div>
+
+      <SectionHead title="Recent activity" size={24} link={<Link href="/account/invoices" style={S.goldLink}>Invoices</Link>} />
+      {wallet.loading && !w ? (
+        <Skeleton h={220} />
+      ) : w && w.transactions.length === 0 ? (
+        <EmptyCard text="No wallet activity yet. Add funds to get started." />
+      ) : w ? (
+        <div style={{ ...S.panel, padding: '2px 18px' }}>
+          {w.transactions.map((t, i) => (
+            <ListRow
+              key={t.id}
+              icon={txIcon(t.amount, t.description)}
+              title={t.description}
+              sub={fmtDay(t.createdAt)}
+              last={i === w.transactions.length - 1}
+              right={<span style={{ fontSize: 15, fontWeight: 600, color: t.amount > 0 ? C.ok : C.cream, whiteSpace: 'nowrap' }}>{signedMoney(t.amount, currency)}</span>}
+            />
+          ))}
+        </div>
+      ) : null}
+      {!stripeKey && <Muted><Icon name="lock" size={13} color={C.muted} style={{ verticalAlign: '-2px', marginRight: 6 }} />Test mode — top-ups are added instantly and no card is charged.</Muted>}
+    </div>
   );
 }

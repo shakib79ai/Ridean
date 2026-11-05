@@ -1,9 +1,106 @@
 'use client';
 
-// DESIGN-STATIC: generated from the design canvas board "SignIn". Wire to the API and remove this marker.
-/* eslint-disable */
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState, type FormEvent } from 'react';
+import { useRidean } from '@ridean/web-core';
+import { Arrow, C, ErrorNote, Field } from '@/components/site/ui';
+import { AuthShell, PasswordField, authH1, authLead, safeNext } from '@/components/auth/AuthShell';
+import { IconMail, IconPhone } from '@/components/checkout/parts';
+
 export default function SignInPage() {
   return (
-    <><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "900px" }}><div style={{ position: "relative", minHeight: "900px", overflow: "hidden" }}><img src="/img/design/signin-hero.png" alt="" style={{ position: "absolute", inset: "0", width: "100%", height: "100%", objectFit: "cover", objectPosition: "78% center" }} /><div style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg,rgba(7,26,20,.55) 0%,rgba(7,26,20,.1) 40%,rgba(7,26,20,.9) 100%)" }}></div><a href="/" style={{ position: "absolute", top: "36px", left: "48px", fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: "-.01em", background: "linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", fontSize: "40px" }}>Ridean</a><div style={{ position: "absolute", left: "48px", right: "48px", bottom: "56px" }}><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "56px", lineHeight: 1.06, color: "#F3EEDF" }}>Arrive exceptionally.</h1><div style={{ marginTop: "12px" }}><p style={{ margin: "0", fontSize: "18px", lineHeight: 1.6, color: "#D7DED6" }}>Premium mobility for wherever life takes you.</p></div></div></div><div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px" }}><div style={{ width: "100%", maxWidth: "440px" }}><div style={{ display: "flex", flexDirection: "column", gap: "16px", minWidth: "0" }}><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "40px", lineHeight: 1.06, color: "#F3EEDF" }}>Welcome back</h1><p style={{ margin: "0", fontSize: "15px", lineHeight: 1.6, color: "#9FB2A6" }}>Sign in to book, track and manage your trips.</p><div className="dz-segw" data-g="via"><button type="button" className="dz-seg on" data-v="email" data-act="rdSeg(this)">Email</button><button type="button" className="dz-seg" data-v="phone" data-act="rdSeg(this)">Phone</button></div><div data-show-via="email"><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6l8.5 7 8.5-7" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Email</div><input name="email" type="email" defaultValue="" placeholder="you@example.com" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><div data-show-via="phone" className="dz-hide"><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Phone number</div><input name="phone" type="tel" defaultValue="" placeholder="+1 (555) 000-0000" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Password</div><input name="pw" type="password" defaultValue="" placeholder="Your password" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div><div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "48px", alignSelf: "stretch", borderLeft: "1px solid #1F4537" }}><button type="button" data-act="rdPw(this)" aria-label="Show password" style={{ all: "unset", cursor: "pointer", display: "flex" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9FB2A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="3" /></svg></button></div></label><div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}><label style={{ display: "flex", gap: "8px", alignItems: "center", color: "#9FB2A6" }}><input type="checkbox" defaultChecked style={{ accentColor: "#F6C428", width: "16px", height: "16px", margin: "0" }} />Keep me signed in</label><a href="#" style={{ color: "#D9A94F" }}>Forgot password?</a></div><a href="/account" className="dz-cta" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", height: "54px", borderRadius: "12px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "17px", fontWeight: 600 }}><span>Sign in</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A1F18" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 12h14M13 6l6 6-6 6" /></svg></a><div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "13px", color: "#9FB2A6" }}><div style={{ flex: 1, height: "1px", background: "#1F4537" }}></div>or continue with<div style={{ flex: 1, height: "1px", background: "#1F4537" }}></div></div><div style={{ display: "flex", gap: "10px" }}><a href="/account" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", height: "52px", borderRadius: "12px", border: "1px solid #1F4537", background: "#0E2A22", fontSize: "15px" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="#F3EEDF" aria-hidden="true"><path d="M16.4 12.6c0-2.5 2-3.6 2.1-3.7-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.8-1.1-2.8-4.3zM14 5.1c.7-.9 1.2-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4z" /></svg>Apple</a><a href="/account" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", height: "52px", borderRadius: "12px", border: "1px solid #1F4537", background: "#0E2A22", fontSize: "15px" }}><span style={{ fontWeight: 700, fontSize: "18px", color: "#D9A94F" }}>G</span>Google</a></div><div style={{ textAlign: "center", fontSize: "14.5px", color: "#9FB2A6" }}>New to Ridean? <a href="/signup" style={{ color: "#D9A94F", fontWeight: 600 }}>Create an account</a></div></div></div></div></div></>
+    <AuthShell>
+      <Suspense fallback={null}>
+        <SignInForm />
+      </Suspense>
+    </AuthShell>
+  );
+}
+
+function SignInForm() {
+  const { login, loginWithPhone, user, ready } = useRidean();
+  const router = useRouter();
+  const nextParam = useSearchParams().get('next');
+  const next = safeNext(nextParam);
+
+  const [via, setVia] = useState<'email' | 'phone'>('email');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  // Already signed in (or just signed in): continue
+  useEffect(() => {
+    if (ready && user) router.replace(next);
+  }, [ready, user, next, router]);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (busy) return;
+    setError('');
+    const id = via === 'email' ? email.trim() : phone.trim();
+    if (!id) return setError(via === 'email' ? 'Enter your email address.' : 'Enter your phone number.');
+    if (!password) return setError('Enter your password.');
+    setBusy(true);
+    try {
+      if (via === 'email') await login(id, password);
+      else await loginWithPhone(id, password);
+      router.replace(next);
+    } catch (err) {
+      setError((err as Error).message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
+      <h1 style={authH1}>Welcome back</h1>
+      <p style={authLead}>Sign in to book, track and manage your trips.</p>
+      <div className="dz-segw" role="tablist" aria-label="Sign in with">
+        {(['email', 'phone'] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            role="tab"
+            aria-selected={via === v}
+            className={`dz-seg ${via === v ? 'on' : ''}`}
+            onClick={() => {
+              setVia(v);
+              setError('');
+            }}
+          >
+            {v === 'email' ? 'Email' : 'Phone'}
+          </button>
+        ))}
+      </div>
+      {via === 'email' ? (
+        <Field icon={<IconMail />} label="Email">
+          <input className="dz-input" name="email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoFocus />
+        </Field>
+      ) : (
+        <Field icon={<IconPhone />} label="Phone number">
+          <input className="dz-input" name="phone" type="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" autoFocus />
+        </Field>
+      )}
+      <PasswordField value={password} onChange={setPassword} placeholder="Your password" autoComplete="current-password" />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 14 }}>
+        <Link href="/help#account" style={{ color: C.gold }}>
+          Forgot password?
+        </Link>
+      </div>
+      {error && <ErrorNote>{error}</ErrorNote>}
+      <button type="submit" className="dz-cta" disabled={busy} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, height: 54, borderRadius: 12, background: 'linear-gradient(180deg,#FFD43B,#F2B705)', color: '#0A1F18', fontSize: 17, fontWeight: 600, width: '100%' }}>
+        <span>{busy ? 'Signing in…' : 'Sign in'}</span>
+        {!busy && <Arrow />}
+      </button>
+      <div style={{ textAlign: 'center', fontSize: 14.5, color: C.muted }}>
+        New to Ridean?{' '}
+        <Link href={nextParam ? `/signup?next=${encodeURIComponent(next)}` : '/signup'} style={{ color: C.gold, fontWeight: 600 }}>
+          Create an account
+        </Link>
+      </div>
+    </form>
   );
 }

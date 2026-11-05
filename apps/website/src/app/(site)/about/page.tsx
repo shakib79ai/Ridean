@@ -1,7 +1,5 @@
 'use client';
 
-// DESIGN-STATIC: generated from the design canvas board "About". Wire to the API and remove this marker.
-/* eslint-disable */
 export default function AboutPage() {
   return (
     <>
@@ -20,7 +18,7 @@ export default function AboutPage() {
           }}
         ></div>
         <div style={{ position: 'relative', height: '100%' }}>
-          <div style={{ maxWidth: '1344px', margin: '0 auto', padding: '0 48px', boxSizing: 'border-box' }}>
+          <div className="dz-container" style={{ paddingTop: 0 }}>
             <div
               style={{
                 display: 'flex',
@@ -35,7 +33,7 @@ export default function AboutPage() {
               <div style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '.16em', textTransform: 'uppercase', color: '#D9A94F', marginBottom: '12px' }}>
                 About Ridean
               </div>
-              <h1 style={{ margin: '0', fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: '54px', lineHeight: 1.06, color: '#F3EEDF' }}>
+              <h1 style={{ margin: '0', fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: 'clamp(38px, 8vw, 54px)', lineHeight: 1.06, color: '#F3EEDF' }}>
                 A higher standard of getting there
               </h1>
               <div style={{ marginTop: '14px' }}>
@@ -45,9 +43,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      <div style={{ maxWidth: '1344px', margin: '0 auto', padding: '56px 48px 0', boxSizing: 'border-box' }}>
+      <div className="dz-container" style={{ paddingTop: 56, paddingBottom: 72 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '36px', minWidth: '0' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'center' }}>
+          <div className="dz-split" style={{ gap: '40px', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: '0' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '16px' }}>
                 <h2 style={{ margin: '0', fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: '32px', color: '#F3EEDF' }}>Our story</h2>
@@ -64,28 +62,28 @@ export default function AboutPage() {
               <img src="/img/design/signin-hero.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '18px' }}>
+          <div className="dz-cols-4" style={{ gap: '18px' }}>
             <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '24px' }}>
-              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', fontWeight: 600, color: '#D9A94F' }}>8+</div>
-              <div style={{ fontSize: '14px', color: '#C9D2CB', marginTop: '4px' }}>Supplier networks</div>
+              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', fontWeight: 600, color: '#D9A94F' }}>Partners</div>
+              <div style={{ fontSize: '14px', color: '#C9D2CB', marginTop: '4px' }}>Trusted supplier networks, compared in one search</div>
             </div>
             <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '24px' }}>
-              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', fontWeight: 600, color: '#D9A94F' }}>24/7</div>
-              <div style={{ fontSize: '14px', color: '#C9D2CB', marginTop: '4px' }}>Human support</div>
+              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', fontWeight: 600, color: '#D9A94F' }}>People</div>
+              <div style={{ fontSize: '14px', color: '#C9D2CB', marginTop: '4px' }}>Real support from our team when you need it</div>
             </div>
             <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '24px' }}>
-              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', fontWeight: 600, color: '#D9A94F' }}>0%</div>
-              <div style={{ fontSize: '14px', color: '#C9D2CB', marginTop: '4px' }}>Surge pricing</div>
+              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', fontWeight: 600, color: '#D9A94F' }}>No surge</div>
+              <div style={{ fontSize: '14px', color: '#C9D2CB', marginTop: '4px' }}>One upfront price before you book</div>
             </div>
             <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '24px' }}>
-              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', fontWeight: 600, color: '#D9A94F' }}>60 min</div>
-              <div style={{ fontSize: '14px', color: '#C9D2CB', marginTop: '4px' }}>Free airport waiting</div>
+              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '40px', fontWeight: 600, color: '#D9A94F' }}>Meet & greet</div>
+              <div style={{ fontSize: '14px', color: '#C9D2CB', marginTop: '4px' }}>Flight-tracked airport pickups</div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '16px' }}>
             <h2 style={{ margin: '0', fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: '32px', color: '#F3EEDF' }}>What we stand for</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '18px' }}>
+          <div className="dz-cols-3" style={{ gap: '18px' }}>
             <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '18px' }}>
               <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                 <div
@@ -119,7 +117,7 @@ export default function AboutPage() {
                 <div>
                   <div style={{ fontSize: '16px', fontWeight: 600 }}>Honest prices</div>
                   <div style={{ fontSize: '13.5px', color: '#9FB2A6', marginTop: '4px', lineHeight: 1.5 }}>
-                    One upfront price, including fees. No surge, ever.
+                    One upfront price, shown before you book. No surge.
                   </div>
                 </div>
               </div>
@@ -157,7 +155,7 @@ export default function AboutPage() {
                 <div>
                   <div style={{ fontSize: '16px', fontWeight: 600 }}>Trusted chauffeurs</div>
                   <div style={{ fontSize: '13.5px', color: '#9FB2A6', marginTop: '4px', lineHeight: 1.5 }}>
-                    Licensed, background-checked and rated after every trip.
+                    Licensed professionals from partners we vet before they join Ridean.
                   </div>
                 </div>
               </div>

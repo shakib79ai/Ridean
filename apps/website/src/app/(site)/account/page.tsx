@@ -1,9 +1,147 @@
 'use client';
 
-// DESIGN-STATIC: generated from the design canvas board "Dashboard". Wire to the API and remove this marker.
-/* eslint-disable */
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useRidean } from '@ridean/web-core';
+import type { Booking, BookingStatus } from '@ridean/shared';
+import { C, Skeleton } from '@/components/site/ui';
+import {
+  EmptyCard, ErrorNote, Icon, ListRow, S, SectionHead, TripCard, fetchAllBookings, fmtDay, isCancelled, isUpcoming, money, serviceMeta, signedMoney, tripTime, useLoad, type IconName,
+} from '@/components/account/kit';
+
+const SHORTCUTS = [
+  { href: '/ride', img: '/img/design/seat.png', title: 'Ride', text: 'Premium rides for every occasion.' },
+  { href: '/airport-transfer', img: '/img/design/airport.png', title: 'Airport transfer', text: 'Seamless journeys to and from the airport.' },
+  { href: '/rent', img: '/img/design/business.png', title: 'Rent a car', text: 'Freedom to move on your terms.' },
+];
+const NEXT_STATUSES: BookingStatus[] = ['confirmed', 'driver_assigned', 'payment_authorised'];
+
+function greeting(h: number) {
+  if (h < 5) return 'Good evening';
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+interface Activity { key: string; icon: IconName; title: string; date: string; amount: number; currency: string; href?: string }
+
 export default function DashboardPage() {
+  const { api, user } = useRidean();
+  const [hello, setHello] = useState('Welcome back');
+  useEffect(() => setHello(greeting(new Date().getHours())), []);
+
+  const { data, error, loading } = useLoad(async () => {
+    const [bookings, wallet] = await Promise.all([fetchAllBookings(api), api.wallet()]);
+    return { bookings, wallet };
+  }, [api]);
+
+  const now = Date.now();
+  const year = new Date().getFullYear();
+  const bookings = data?.bookings ?? [];
+  const thisYear = bookings.filter((b) => !isCancelled(b) && new Date(b.pickupAt ?? b.createdAt).getFullYear() === year);
+  const airport = thisYear.filter((b) => b.service === 'airport_transfer').length;
+  const upcoming = bookings.filter((b) => isUpcoming(b, now));
+  const next = bookings
+    .filter((b) => NEXT_STATUSES.includes(b.status) && b.pickupAt && new Date(b.pickupAt).getTime() > now)
+    .sort((a, b) => tripTime(a) - tripTime(b))[0] as Booking | undefined;
+
+  const activity: Activity[] = [];
+  if (data) {
+    const refs = new Set(bookings.map((b) => b.reference));
+    for (const b of bookings) {
+      if (b.status === 'failed' || b.status === 'pending_payment') continue;
+      const m = serviceMeta(b.service);
+      activity.push({ key: `b-${b.id}`, icon: m.icon, title: `${m.label} · ${b.dropoff?.address ?? b.vehicle?.name ?? b.supplierName}`, date: b.createdAt, amount: -b.price.customerPrice, currency: b.price.currency, href: `/bookings/${b.id}` });
+    }
+    for (const t of data.wallet.transactions) {
+      // Wallet debits for bookings are already listed as the booking itself.
+      const m = /^Booking (\S+)$/.exec(t.description);
+      if (t.amount < 0 && m && refs.has(m[1])) continue;
+      activity.push({ key: `w-${t.id}`, icon: t.amount >= 0 ? (t.description.startsWith('Refund') ? 'refund' : 'plus') : 'minus', title: t.description, date: t.createdAt, amount: t.amount, currency: data.wallet.currency, href: '/account/wallet' });
+    }
+    activity.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+  const recent = activity.slice(0, 5);
+
+  const tile = (label: string, value: string, sub?: string) => (
+    <div style={{ ...S.panel, padding: 20 }}>
+      <div style={{ fontSize: 13, color: C.muted }}>{label}</div>
+      <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 32, fontWeight: 600, marginTop: 4 }}>{value}</div>
+      {sub && <div style={{ fontSize: 12.5, color: C.gold, marginTop: 2 }}>{sub}</div>}
+    </div>
+  );
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "22px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "20px" }}><div><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "40px", lineHeight: 1.06, color: "#F3EEDF" }}>Good evening, Shakib</h1><div style={{ marginTop: "6px" }}><p style={{ margin: "0", fontSize: "15px", lineHeight: 1.6, color: "#9FB2A6" }}>Where would you like to go today?</p></div></div></div><div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "16px" }}><a href="/ride" className="dz-card-link" style={{ display: "flex", alignItems: "center", background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "14px", overflow: "hidden", height: "112px" }}><div style={{ width: "104px", height: "100%", flexShrink: 0 }}><img src="/img/design/seat.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0", padding: "0 12px 0 14px" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "19px", fontWeight: 600, lineHeight: 1.15 }}>Ride</div><div style={{ fontSize: "12.5px", color: "#C9D2CB", marginTop: "4px", lineHeight: 1.35 }}>Premium rides for every occasion.</div></div><div style={{ paddingRight: "14px" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></div></a><a href="/airport-transfer" className="dz-card-link" style={{ display: "flex", alignItems: "center", background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "14px", overflow: "hidden", height: "112px" }}><div style={{ width: "104px", height: "100%", flexShrink: 0 }}><img src="/img/design/airport.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0", padding: "0 12px 0 14px" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "19px", fontWeight: 600, lineHeight: 1.15 }}>Airport transfer</div><div style={{ fontSize: "12.5px", color: "#C9D2CB", marginTop: "4px", lineHeight: 1.35 }}>Seamless journeys to and from the airport.</div></div><div style={{ paddingRight: "14px" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></div></a><a href="/rent" className="dz-card-link" style={{ display: "flex", alignItems: "center", background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "14px", overflow: "hidden", height: "112px" }}><div style={{ width: "104px", height: "100%", flexShrink: 0 }}><img src="/img/design/business.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0", padding: "0 12px 0 14px" }}><div style={{ fontFamily: "Playfair Display,serif", fontSize: "19px", fontWeight: 600, lineHeight: 1.15 }}>Rent a car</div><div style={{ fontSize: "12.5px", color: "#C9D2CB", marginTop: "4px", lineHeight: 1.35 }}>Freedom to move on your terms.</div></div><div style={{ paddingRight: "14px" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg></div></a></div><div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "16px" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "20px" }}><div style={{ fontSize: "13px", color: "#9FB2A6" }}>Trips this year</div><div style={{ fontFamily: "Playfair Display,serif", fontSize: "32px", fontWeight: 600, marginTop: "4px" }}>48</div><div style={{ fontSize: "12.5px", color: "#D9A94F", marginTop: "2px" }}>12 airport transfers</div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "20px" }}><div style={{ fontSize: "13px", color: "#9FB2A6" }}>Wallet balance</div><div style={{ fontFamily: "Playfair Display,serif", fontSize: "32px", fontWeight: 600, marginTop: "4px" }}>$64.20</div><div style={{ fontSize: "12.5px", color: "#D9A94F", marginTop: "2px" }}>5% back with Ridean+</div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "20px" }}><div style={{ fontSize: "13px", color: "#9FB2A6" }}>Your rating</div><div style={{ fontFamily: "Playfair Display,serif", fontSize: "32px", fontWeight: 600, marginTop: "4px" }}>4.96</div><div style={{ fontSize: "12.5px", color: "#D9A94F", marginTop: "2px" }}>Top 5% of riders</div></div></div><div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "20px" }}><div style={{ display: "flex", flexDirection: "column", gap: "12px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "22px", color: "#F3EEDF" }}>Next trip</h2><a href="/account/trips" style={{ fontSize: "14px", fontWeight: 600, color: "#D9A94F" }}>All trips</a></div><a href="/bookings/BOOKING" style={{ display: "block" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "14px" }}><div style={{ display: "flex", gap: "12px" }}><div style={{ width: "64px", height: "64px", borderRadius: "12px", overflow: "hidden", flexShrink: 0 }}><img src="/img/design/airport.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#D9A94F" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M10.5 13.5L3 11l1.5-1.5 7.5 1L16.5 6c1-1 2.5-1.5 3-1s0 2-1 3l-4.5 4.5 1 7.5L13.5 21 11 13.5" /></svg>Airport transfer</span><span style={{ fontSize: "12px", color: "#4CC38A", fontWeight: 600 }}>Confirmed</span></div><div style={{ fontSize: "15px", fontWeight: 600, marginTop: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Heathrow Terminal 5</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>From Hotel Verde</div></div></div><div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px", paddingTop: "10px", borderTop: "1px solid #1F4537", fontSize: "13px" }}><span style={{ color: "#9FB2A6" }}>Fri, 14 Nov · 6:30 AM</span><span style={{ fontWeight: 600 }}>$64.00</span></div></div></a></div><div style={{ display: "flex", flexDirection: "column", gap: "12px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "22px", color: "#F3EEDF" }}>Recent activity</h2><a href="/account/wallet" style={{ fontSize: "14px", fontWeight: 600, color: "#D9A94F" }}>Wallet</a></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "2px 16px" }}><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 15l1.6-4.6A2 2 0 0 1 6.5 9h11a2 2 0 0 1 1.9 1.4L21 15v3a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1h-9v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" /><path d="M6.5 13.5h.01M17.5 13.5h.01" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Ride · Sketch</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>3 Nov</div></div><span style={{ fontSize: "15px", fontWeight: 600, color: "#F3EEDF" }}>−$21.40</span></a><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px", borderBottom: "1px solid #1F4537" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 5v14M5 12h14" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Wallet top-up</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>1 Nov</div></div><span style={{ fontSize: "15px", fontWeight: 600, color: "#4CC38A" }}>+$100.00</span></a><a href="#" style={{ display: "flex", alignItems: "center", gap: "14px", padding: "14px 2px" }}><div style={{ width: "38px", height: "38px", borderRadius: "11px", background: "#12352B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" /><rect x="3" y="11" width="18" height="6" rx="2" /><path d="M6 17v2M18 17v2M7 14h.01M17 14h.01" /></svg></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: 500, color: "#F3EEDF" }}>Hertz · C-Class</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>28 Oct</div></div><span style={{ fontSize: "15px", fontWeight: 600, color: "#F3EEDF" }}>−$162.00</span></a></div></div></div></div>
+    <div style={S.page}>
+      <div className="dz-acct-head" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20 }}>
+        <div>
+          <h1 style={S.h1}>{hello}{user?.firstName ? `, ${user.firstName}` : ''}</h1>
+          <div style={{ marginTop: 6 }}><p style={S.sub}>Where would you like to go today?</p></div>
+        </div>
+      </div>
+
+      <div className="dz-cols-3">
+        {SHORTCUTS.map((s) => (
+          <Link key={s.href} href={s.href} className="dz-card-link" style={{ display: 'flex', alignItems: 'center', background: C.panel, border: `1px solid ${C.line}`, borderRadius: 14, overflow: 'hidden', height: 112 }}>
+            <div style={{ width: 104, height: '100%', flexShrink: 0 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={s.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0, padding: '0 12px 0 14px' }}>
+              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 19, fontWeight: 600, lineHeight: 1.15 }}>{s.title}</div>
+              <div style={{ fontSize: 12.5, color: C.soft, marginTop: 4, lineHeight: 1.35 }}>{s.text}</div>
+            </div>
+            <div style={{ paddingRight: 14 }}><Icon name="right" size={20} color={C.cream} /></div>
+          </Link>
+        ))}
+      </div>
+
+      {error && <ErrorNote>{error}</ErrorNote>}
+
+      {loading && !data ? (
+        <div className="dz-cols-3"><Skeleton h={112} /><Skeleton h={112} /><Skeleton h={112} /></div>
+      ) : data ? (
+        <div className="dz-cols-3">
+          {tile('Trips this year', String(thisYear.length), `${airport} airport transfer${airport === 1 ? '' : 's'}`)}
+          {tile('Wallet balance', money(data.wallet.balance, data.wallet.currency))}
+          {tile('Upcoming trips', String(upcoming.length), upcoming.length ? undefined : 'Nothing booked yet')}
+        </div>
+      ) : null}
+
+      <div className="dz-acct-dash">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
+          <SectionHead title="Next trip" link={<Link href="/account/trips" style={S.goldLink}>All trips</Link>} />
+          {loading && !data ? (
+            <Skeleton h={130} />
+          ) : next ? (
+            <TripCard b={next} />
+          ) : data ? (
+            <EmptyCard text="No upcoming trips." action={<Link href="/ride" style={S.goldLink}>Book a ride</Link>} />
+          ) : null}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
+          <SectionHead title="Recent activity" link={<Link href="/account/wallet" style={S.goldLink}>Wallet</Link>} />
+          {loading && !data ? (
+            <Skeleton h={200} />
+          ) : data && recent.length === 0 ? (
+            <EmptyCard text="No activity yet — your trips and wallet top-ups will show here." />
+          ) : data ? (
+            <div style={{ ...S.panel, padding: '2px 16px' }}>
+              {recent.map((a, i) => (
+                <ListRow
+                  key={a.key}
+                  icon={a.icon}
+                  href={a.href}
+                  title={a.title}
+                  sub={fmtDay(a.date)}
+                  last={i === recent.length - 1}
+                  right={<span style={{ fontSize: 15, fontWeight: 600, color: a.amount > 0 ? C.ok : C.cream, whiteSpace: 'nowrap' }}>{signedMoney(a.amount, a.currency)}</span>}
+                />
+              ))}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 }

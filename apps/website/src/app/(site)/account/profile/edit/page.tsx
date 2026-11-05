@@ -1,9 +1,110 @@
 'use client';
 
-// DESIGN-STATIC: generated from the design canvas board "ProfileEdit". Wire to the API and remove this marker.
-/* eslint-disable */
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useRidean } from '@ridean/web-core';
+import type { UserSettings } from '@ridean/shared';
+import { C, initials, useToast } from '@/components/site/ui';
+import { CURRENCIES, ErrorNote, InputField, LANGUAGES, Muted, PageHead, S, errMsg, useLoad } from '@/components/account/kit';
+
+const inputStyle = { all: 'unset', boxSizing: 'border-box', width: '100%', fontSize: 14.5, color: C.cream, marginTop: 2 } as const;
+
 export default function ProfileEditPage() {
+  const { api, user, refresh } = useRidean();
+  const router = useRouter();
+  const toast = useToast();
+  const settings = useLoad(() => api.settings(), [api]);
+  const [f, setF] = useState({ firstName: '', lastName: '', phone: '' });
+  const [prefs, setPrefs] = useState({ language: 'en-US', currency: 'USD' });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (user) setF({ firstName: user.firstName ?? '', lastName: user.lastName ?? '', phone: user.phone ?? '' });
+  }, [user]);
+  useEffect(() => {
+    if (settings.data) setPrefs({ language: settings.data.preferences.language, currency: settings.data.preferences.currency });
+  }, [settings.data]);
+
+  async function save(e: FormEvent) {
+    e.preventDefault();
+    if (!f.firstName.trim() || !f.lastName.trim()) return setError('Please enter your first and last name.');
+    setError('');
+    setBusy(true);
+    try {
+      await api.updateMe({ firstName: f.firstName.trim(), lastName: f.lastName.trim(), phone: f.phone.trim() || undefined });
+      const p = settings.data?.preferences;
+      if (!p || p.language !== prefs.language || p.currency !== prefs.currency) await api.updateSettings({ preferences: prefs as UserSettings['preferences'] });
+      await refresh();
+      toast('Profile saved');
+      router.push('/account/profile');
+    } catch (err) {
+      setError(errMsg(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const langs = LANGUAGES.some((l) => l.value === prefs.language) ? LANGUAGES : [...LANGUAGES, { value: prefs.language, label: prefs.language, short: '' }];
+  const curs = CURRENCIES.some((c) => c.value === prefs.currency) ? CURRENCIES : [...CURRENCIES, { value: prefs.currency, label: prefs.currency }];
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "22px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "20px" }}><div><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "40px", lineHeight: 1.06, color: "#F3EEDF" }}>Edit profile</h1></div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "24px" }}><div style={{ display: "flex", flexDirection: "column", gap: "20px", minWidth: "0" }}><div style={{ display: "flex", alignItems: "center", gap: "18px" }}><div style={{ width: "80px", height: "80px", borderRadius: "40px", background: "linear-gradient(135deg,#E2B04A,#9C6F1F)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display',serif", fontWeight: 700, fontSize: "30px", color: "#0A1F18", flexShrink: 0 }}>SH</div><div style={{ display: "flex", flexDirection: "column", gap: "6px" }}><button type="button" data-act="rdToast(this,'Photo picker opens here')" style={{ all: "unset", cursor: "pointer", fontSize: "15px", fontWeight: 600, color: "#D9A94F" }}>Change photo</button><span style={{ fontSize: "13px", color: "#9FB2A6" }}>JPG or PNG, up to 5 MB</span></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>First name</div><input name="fn" type="text" defaultValue="Shakib" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Last name</div><input name="ln" type="text" defaultValue="Haider" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6l8.5 7 8.5-7" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Email</div><input name="email" type="email" defaultValue="shakib@bestmyflight.com" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Mobile</div><input name="phone" type="tel" defaultValue="+1 (718) 555-0142" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Language</div><input name="lang" type="text" defaultValue="English (UK)" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 12V4h8l10 10-8 8z" /><circle cx="7.5" cy="8.5" r="1.5" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Currency</div><input name="cur" type="text" defaultValue="USD" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}><a href="/account/profile" style={{ display: "flex", alignItems: "center", padding: "0 22px", height: "50px", borderRadius: "12px", border: "1px solid #1F4537", fontSize: "15px" }}>Cancel</a><div style={{ width: "220px" }}><a href="#" data-act="rdSave(this,'Profile saved');return false;" className="dz-cta" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", height: "54px", borderRadius: "12px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "17px", fontWeight: 600 }}><span>Save changes</span></a></div></div></div></div></div>
+    <div style={S.page}>
+      <PageHead title="Edit profile" />
+      <form onSubmit={save} style={{ ...S.panel, padding: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <div style={{ width: 80, height: 80, borderRadius: 40, background: 'linear-gradient(135deg,#E2B04A,#9C6F1F)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Playfair Display',serif", fontWeight: 700, fontSize: 30, color: '#0A1F18', flexShrink: 0 }}>
+              {initials(user)}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+              <span style={{ fontSize: 15, fontWeight: 600, color: C.cream }}>{user ? `${user.firstName} ${user.lastName}` : ''}</span>
+              <span style={{ fontSize: 13, color: C.muted, overflowWrap: 'anywhere' }}>{user?.email}</span>
+            </div>
+          </div>
+
+          <div className="dz-split" style={{ gap: 12 }}>
+            <InputField icon="user" label="First name">
+              <input name="fn" type="text" autoComplete="given-name" required value={f.firstName} onChange={(e) => setF({ ...f, firstName: e.target.value })} style={inputStyle} />
+            </InputField>
+            <InputField icon="user" label="Last name">
+              <input name="ln" type="text" autoComplete="family-name" required value={f.lastName} onChange={(e) => setF({ ...f, lastName: e.target.value })} style={inputStyle} />
+            </InputField>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+              <InputField icon="mail" label="Email" style={{ opacity: 0.6 }}>
+                <input name="email" type="email" value={user?.email ?? ''} disabled readOnly aria-describedby="email-hint" style={{ ...inputStyle, cursor: 'not-allowed' }} />
+              </InputField>
+              <Muted><span id="email-hint">Contact support to change your email</span></Muted>
+            </div>
+            <InputField icon="phone" label="Mobile">
+              <input name="phone" type="tel" autoComplete="tel" placeholder="+1 212 555 0100" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} style={inputStyle} />
+            </InputField>
+            <InputField icon="globe" label="Language">
+              <select className="dz-acct-select" value={prefs.language} disabled={!settings.data} onChange={(e) => setPrefs({ ...prefs, language: e.target.value })}>
+                {langs.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
+              </select>
+            </InputField>
+            <InputField icon="tag" label="Currency">
+              <select className="dz-acct-select" value={prefs.currency} disabled={!settings.data} onChange={(e) => setPrefs({ ...prefs, currency: e.target.value })}>
+                {curs.map((c) => <option key={c.value} value={c.value}>{c.value} · {c.label}</option>)}
+              </select>
+            </InputField>
+          </div>
+
+          {settings.error && <ErrorNote>{settings.error}</ErrorNote>}
+          {error && <ErrorNote>{error}</ErrorNote>}
+
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+            <Link href="/account/profile" style={S.plain}>Cancel</Link>
+            <div style={{ width: 220, maxWidth: '100%' }}>
+              <button type="submit" className="dz-cta" disabled={busy || !user} style={S.cta}>
+                <span>{busy ? 'Saving…' : 'Save changes'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }

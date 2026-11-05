@@ -1,15 +1,38 @@
-import { Suspense } from 'react';
-import { QuoteResults } from '@ridean/web-core';
+'use client';
 
-export const metadata = { title: 'Choose your ride' };
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
+import { SERVICES, type CoreServiceKey } from '@ridean/shared';
+import { decodeSearch } from '@ridean/web-core';
+import { Skeleton } from '@/components/site/ui';
 
+/** Old results URL (the home search posts here): forwards to the matching service page, keeping ?s=. */
 export default function QuotesPage() {
   return (
-    <div className="rd-container" style={{ maxWidth: 960 }}>
-      <div className="page-head"><h1 className="rd-display">Choose your ride</h1></div>
-      <Suspense fallback={<div className="rd-skeleton" style={{ height: 300 }} />}>
-        <QuoteResults />
-      </Suspense>
+    <Suspense fallback={null}>
+      <QuotesRedirect />
+    </Suspense>
+  );
+}
+
+function QuotesRedirect() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const s = params.get('s');
+
+  useEffect(() => {
+    const req = decodeSearch(s);
+    const def = req ? SERVICES[req.service as CoreServiceKey] : undefined;
+    if (!req || !def) {
+      router.replace('/ride');
+      return;
+    }
+    router.replace(`/${def.slug}?s=${s}`);
+  }, [router, s]);
+
+  return (
+    <div className="dz-container" style={{ paddingBottom: 64 }}>
+      <Skeleton h={300} />
     </div>
   );
 }
