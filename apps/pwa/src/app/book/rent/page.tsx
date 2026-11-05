@@ -1,9 +1,196 @@
 'use client';
 
-// DESIGN-STATIC: generated from the PWA design canvas board "RentCompare". Wire to the API and remove this marker.
-/* eslint-disable */
+import { Suspense, useMemo, useState } from 'react';
+import { formatMoney, type Quote, type QuoteSearchRequest } from '@ridean/shared';
+import { C, ErrorNote, Field, Toggle } from '@/components/site/ui';
+import { CalendarIcon } from '@/components/booking/icons';
+import { Column, Cta, FormError, HeroHeader, PlaceField, SectionTitle, ServiceTabs, SupplierErrors, panel, screenStyle } from '@/components/booking/parts';
+import { classLabel, classThumb, dateTimeToIso, defaultDateTime, isoToDateTime, placeFrom, price, toGeo, useQuoteSearch, validAddress, type Place } from '@/components/booking/useQuoteSearch';
+
 export default function RentComparePage() {
   return (
-    <><div style={{ paddingBottom: "24px" }}><div style={{ position: "relative", height: "190px", overflow: "hidden" }}><img src="/img/design/business.png" alt="" style={{ position: "absolute", inset: "0", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} /><div style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg,rgba(7,26,20,.25) 0%,rgba(7,26,20,.15) 40%,#071A14 100%)" }}></div><a href="/" aria-label="Back" style={{ position: "absolute", top: "12px", left: "16px", width: "40px", height: "40px", borderRadius: "20px", background: "rgba(6,20,15,.6)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M15 18l-6-6 6-6" /></svg></a><div style={{ position: "absolute", left: "20px", right: "20px", bottom: "18px" }}><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "30px", lineHeight: 1.08, color: "#F3EEDF" }}>Rent a car</h1><p style={{ margin: "6px 0 0", fontSize: "14px", color: "#D7DED6" }}>Freedom to move on your terms.</p></div></div><div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "0 20px" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "16px" }}><div style={{ display: "flex", borderBottom: "1px solid #1F4537", margin: "0 -16px 14px", padding: "0 10px" }}><a href="/book/ride" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "14px 4px 12px", borderBottom: "2.5px solid transparent" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 15l1.6-4.6A2 2 0 0 1 6.5 9h11a2 2 0 0 1 1.9 1.4L21 15v3a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1h-9v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" /><path d="M6.5 13.5h.01M17.5 13.5h.01" /></svg><span style={{ fontSize: "13.5px", color: "#F3EEDF", whiteSpace: "nowrap" }}>Ride</span></a><a href="/book/airport-transfer" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "14px 4px 12px", borderBottom: "2.5px solid transparent" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M10.5 13.5L3 11l1.5-1.5 7.5 1L16.5 6c1-1 2.5-1.5 3-1s0 2-1 3l-4.5 4.5 1 7.5L13.5 21 11 13.5" /></svg><span style={{ fontSize: "13.5px", color: "#F3EEDF", whiteSpace: "nowrap" }}>Airport transfer</span></a><a href="/book/rent" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "14px 4px 12px", borderBottom: "2.5px solid #F6C428" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6C428" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" /><rect x="3" y="11" width="18" height="6" rx="2" /><path d="M6 17v2M18 17v2M7 14h.01M17 14h.01" /></svg><span style={{ fontSize: "13.5px", color: "#F6C428", whiteSpace: "nowrap" }}>Rent a car</span></a></div><div style={{ display: "flex", flexDirection: "column", gap: "12px" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Pickup location</div><input name="pickup" type="text" defaultValue="London Heathrow Airport (LHR)" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><label style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13.5px", color: "#F3EEDF" }}><button type="button" className="dz-tg on" role="switch" aria-checked="true" aria-label="Return to same location" data-act="rdTg(this);rdShow(this,'ret',this.classList.contains('on')?'same':'diff')"><span></span></button>Return to same location</label><div data-show-ret="diff" className="dz-hide"><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Return location</div><input name="ret" type="text" placeholder="Enter a different return address" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><div style={{ display: "flex", gap: "10px" }}><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Pick-up</div><input name="d1" type="date" defaultValue="2026-11-14" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Return</div><input name="d2" type="date" defaultValue="2026-11-17" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div></div></div></div><a href="#" className="dz-cta" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", height: "54px", borderRadius: "12px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "17px", fontWeight: 600 }}><span>Search 8 rental partners</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A1F18" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 12h14M13 6l6 6-6 6" /></svg></a><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "4px 0 -2px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontSize: "19px", fontWeight: 600, color: "#F3EEDF" }}>4 cars · best prices</h2><a href="#" style={{ fontSize: "12.5px", fontWeight: 600, color: "#D9A94F" }}>Sort: Price</a></div><div className="dz-chipw" data-g="filter" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}><button type="button" className="dz-chip on" data-v="all" data-act="rdChip(this)">All</button><button type="button" className="dz-chip" data-v="economy" data-act="rdChip(this)">Economy</button><button type="button" className="dz-chip" data-v="suv" data-act="rdChip(this)">SUV</button><button type="button" className="dz-chip" data-v="lux" data-act="rdChip(this)">Luxury</button></div><div data-cat="lux economy"><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "14px" }}><div style={{ display: "flex", gap: "12px" }}><div style={{ width: "96px", height: "72px", borderRadius: "12px", overflow: "hidden", flexShrink: 0 }}><img src="/img/design/business.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15.5px", fontWeight: 600 }}>Mercedes C-Class</div><div style={{ fontSize: "12.5px", color: "#D9A94F", marginTop: "2px" }}>Hertz · Heathrow T5</div><div style={{ fontSize: "12px", color: "#9FB2A6", marginTop: "4px", lineHeight: 1.35 }}>Auto · 5 seats · Unlimited miles</div></div></div><div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #1F4537" }}><div><span style={{ fontFamily: "Playfair Display,serif", fontSize: "21px", fontWeight: 600 }}>$54</span><span style={{ fontSize: "12.5px", color: "#9FB2A6" }}>/day</span></div><a href="/checkout/QUOTE" style={{ padding: "9px 18px", borderRadius: "10px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "14px", fontWeight: 600 }}>Select</a></div></div></div><div data-cat="economy"><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "14px" }}><div style={{ display: "flex", gap: "12px" }}><div style={{ width: "96px", height: "72px", borderRadius: "12px", overflow: "hidden", flexShrink: 0 }}><img src="/img/design/night-car.jpg" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15.5px", fontWeight: 600 }}>Volkswagen Golf</div><div style={{ fontSize: "12.5px", color: "#D9A94F", marginTop: "2px" }}>SIXT · Heathrow T5</div><div style={{ fontSize: "12px", color: "#9FB2A6", marginTop: "4px", lineHeight: 1.35 }}>Manual · 5 seats · 1,500 km</div></div></div><div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #1F4537" }}><div><span style={{ fontFamily: "Playfair Display,serif", fontSize: "21px", fontWeight: 600 }}>$31</span><span style={{ fontSize: "12.5px", color: "#9FB2A6" }}>/day</span></div><a href="/checkout/QUOTE" style={{ padding: "9px 18px", borderRadius: "10px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "14px", fontWeight: 600 }}>Select</a></div></div></div><div data-cat="suv lux"><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "14px" }}><div style={{ display: "flex", gap: "12px" }}><div style={{ width: "96px", height: "72px", borderRadius: "12px", overflow: "hidden", flexShrink: 0 }}><img src="/img/design/seat.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15.5px", fontWeight: 600 }}>BMW X5</div><div style={{ fontSize: "12.5px", color: "#D9A94F", marginTop: "2px" }}>Avis · Heathrow T5</div><div style={{ fontSize: "12px", color: "#9FB2A6", marginTop: "4px", lineHeight: 1.35 }}>Auto · 5 seats · Unlimited miles</div></div></div><div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #1F4537" }}><div><span style={{ fontFamily: "Playfair Display,serif", fontSize: "21px", fontWeight: 600 }}>$89</span><span style={{ fontSize: "12.5px", color: "#9FB2A6" }}>/day</span></div><a href="/checkout/QUOTE" style={{ padding: "9px 18px", borderRadius: "10px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "14px", fontWeight: 600 }}>Select</a></div></div></div><div data-cat="suv"><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "14px" }}><div style={{ display: "flex", gap: "12px" }}><div style={{ width: "96px", height: "72px", borderRadius: "12px", overflow: "hidden", flexShrink: 0 }}><img src="/img/design/night-car.jpg" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15.5px", fontWeight: 600 }}>Toyota RAV4 Hybrid</div><div style={{ fontSize: "12.5px", color: "#D9A94F", marginTop: "2px" }}>Enterprise · Heathrow T5</div><div style={{ fontSize: "12px", color: "#9FB2A6", marginTop: "4px", lineHeight: 1.35 }}>Auto · 5 seats · Unlimited miles</div></div></div><div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #1F4537" }}><div><span style={{ fontFamily: "Playfair Display,serif", fontSize: "21px", fontWeight: 600 }}>$47</span><span style={{ fontSize: "12.5px", color: "#9FB2A6" }}>/day</span></div><a href="/checkout/QUOTE" style={{ padding: "9px 18px", borderRadius: "10px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "14px", fontWeight: 600 }}>Select</a></div></div></div></div></div></>
+    <Suspense fallback={null}>
+      <RentCompare />
+    </Suspense>
+  );
+}
+
+/** Filter chips → Ridean vehicle classes (rental partners' ACRISS codes are mapped to these by the API). */
+const FILTERS = [
+  { key: 'all', label: 'All', classes: [] as string[] },
+  { key: 'economy', label: 'Economy', classes: ['sedan', 'extra_comfort'] },
+  { key: 'suv', label: 'SUV', classes: ['xl'] },
+  { key: 'lux', label: 'Luxury', classes: ['business', 'black'] },
+] as const;
+type FilterKey = (typeof FILTERS)[number]['key'];
+
+const RENT_TIME = '10:00';
+
+function days(req: QuoteSearchRequest | null): number {
+  if (!req?.rentalPickupAt || !req.rentalReturnAt) return 1;
+  return Math.max(1, Math.ceil((Date.parse(req.rentalReturnAt) - Date.parse(req.rentalPickupAt)) / 86_400_000));
+}
+
+function RentCompare() {
+  const qs = useQuoteSearch('rent');
+  const init = qs.initial;
+  const from = isoToDateTime(init?.rentalPickupAt) ?? defaultDateTime(24);
+  const to = isoToDateTime(init?.rentalReturnAt) ?? defaultDateTime(24 * 4);
+  const [pickup, setPickup] = useState<Place>(placeFrom(init?.pickup));
+  const [sameReturn, setSameReturn] = useState(!init?.returnLocation);
+  const [returnLocation, setReturnLocation] = useState<Place>(placeFrom(init?.returnLocation));
+  const [d1, setD1] = useState(from.date);
+  const [d2, setD2] = useState(to.date);
+  const [error, setError] = useState('');
+  const [filter, setFilter] = useState<FilterKey>('all');
+  const [sort, setSort] = useState<'price' | 'seats'>('price');
+
+  function submit() {
+    setError('');
+    if (!validAddress(pickup)) return setError('Enter a pick-up location');
+    const rentalPickupAt = dateTimeToIso(d1, RENT_TIME);
+    const rentalReturnAt = dateTimeToIso(d2, RENT_TIME);
+    if (!rentalPickupAt || !rentalReturnAt) return setError('Choose pick-up and return dates');
+    if (rentalReturnAt <= rentalPickupAt) return setError('Return must be after pick-up');
+    const req: QuoteSearchRequest = { service: 'rent', pickup: toGeo(pickup), rentalPickupAt, rentalReturnAt };
+    if (!sameReturn) {
+      if (!validAddress(returnLocation)) return setError('Enter a return location');
+      req.returnLocation = toGeo(returnLocation);
+    }
+    qs.search(req);
+  }
+
+  const n = days(qs.last);
+  const shown = useMemo(() => {
+    const f = FILTERS.find((x) => x.key === filter)!;
+    const list = (qs.quotes ?? []).filter((q) => !f.classes.length || (f.classes as readonly string[]).includes(q.vehicle.class));
+    return [...list].sort((a, b) => (sort === 'price' ? a.price.customerPrice - b.price.customerPrice : b.vehicle.passengers - a.vehicle.passengers));
+  }, [qs.quotes, filter, sort]);
+  const place = qs.last?.pickup.address ?? '';
+
+  const heading = qs.loading ? 'Searching…' : qs.quotes ? `${shown.length} ${shown.length === 1 ? 'car' : 'cars'} · ${sort === 'price' ? 'best prices' : 'most seats'}` : 'Compare rental cars';
+
+  return (
+    <div style={screenStyle}>
+      <HeroHeader img="/img/design/business.png" objectPosition="center 30%" height={190} title="Rent a car" text="Freedom to move on your terms." />
+      <Column>
+        <form
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit();
+          }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+        >
+          <div style={panel(16)}>
+            <ServiceTabs active="rent" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <PlaceField label="Pickup location" name="pickup" value={pickup} onChange={setPickup} placeholder="Airport, city or address" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13.5, color: C.cream }}>
+                <Toggle on={sameReturn} onChange={setSameReturn} label="Return to same location" />
+                <span aria-hidden="true" onClick={() => setSameReturn(!sameReturn)} style={{ cursor: 'pointer' }}>
+                  Return to same location
+                </span>
+              </div>
+              {!sameReturn && <PlaceField label="Return location" name="ret" value={returnLocation} onChange={setReturnLocation} placeholder="Enter a different return address" />}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Field icon={<CalendarIcon />} label="Pick-up">
+                    <input name="d1" type="date" className="dz-input" value={d1} onChange={(e) => setD1(e.target.value)} />
+                  </Field>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Field icon={<CalendarIcon />} label="Return">
+                    <input name="d2" type="date" className="dz-input" value={d2} min={d1} onChange={(e) => setD2(e.target.value)} />
+                  </Field>
+                </div>
+              </div>
+              <FormError message={error} />
+            </div>
+          </div>
+          <Cta type="submit" disabled={qs.loading}>
+            {qs.loading ? 'Searching partners…' : 'Search rental partners'}
+          </Cta>
+        </form>
+        <SectionTitle
+          right={
+            <button
+              type="button"
+              className="dz-btn-reset"
+              onClick={() => setSort(sort === 'price' ? 'seats' : 'price')}
+              style={{ fontSize: 12.5, fontWeight: 600, color: C.gold, whiteSpace: 'nowrap' }}
+              aria-label={`Sort by ${sort === 'price' ? 'seats' : 'price'}`}
+            >
+              Sort: {sort === 'price' ? 'Price' : 'Seats'}
+            </button>
+          }
+        >
+          {heading}
+        </SectionTitle>
+        <div role="group" aria-label="Filter by category" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {FILTERS.map((f) => (
+            <button key={f.key} type="button" className={`dz-chip ${filter === f.key ? 'on' : ''}`} aria-pressed={filter === f.key} onClick={() => setFilter(f.key)}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+        {qs.loading ? (
+          [0, 1, 2].map((i) => <div key={i} className="dz-skel" style={{ height: 160 }} />)
+        ) : qs.error ? (
+          <ErrorNote>{qs.error}</ErrorNote>
+        ) : !qs.quotes ? (
+          <EmptyCard text="Enter a pick-up location and your dates to compare prices from our rental partners." />
+        ) : !qs.quotes.length ? (
+          <EmptyCard text="No cars are available for these dates. Try different dates or a nearby location." />
+        ) : !shown.length ? (
+          <EmptyCard text="No cars in this category for your dates. Try another category." />
+        ) : (
+          shown.map((q) => <RentalCard key={q.id} q={q} days={n} place={place} onSelect={() => qs.confirm(q)} />)
+        )}
+        {!qs.loading && <SupplierErrors errors={qs.errors} />}
+      </Column>
+    </div>
+  );
+}
+
+function EmptyCard({ text }: { text: string }) {
+  return <div style={{ ...panel('18px 16px'), fontSize: 14, color: C.muted, lineHeight: 1.5 }}>{text}</div>;
+}
+
+function RentalCard({ q, days: n, place, onSelect }: { q: Quote; days: number; place: string; onSelect: () => void }) {
+  const details = [classLabel(q.vehicle.class), `${q.vehicle.passengers} seats`, `${q.vehicle.bags} bags`, ...q.inclusions.slice(0, 1)].join(' · ');
+  return (
+    <div style={panel(14)}>
+      <div style={{ display: 'flex', gap: 12 }}>
+        <div style={{ width: 96, height: 72, borderRadius: 12, overflow: 'hidden', flexShrink: 0 }}>
+          <img src={classThumb(q)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 15.5, fontWeight: 600 }}>{q.vehicle.name}</div>
+          <div style={{ fontSize: 12.5, color: C.gold, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {q.supplierName}
+            {place ? ` · ${place}` : ''}
+          </div>
+          <div style={{ fontSize: 12, color: C.muted, marginTop: 4, lineHeight: 1.35 }}>{details}</div>
+          {q.cancellation && <div style={{ fontSize: 12, color: C.muted, marginTop: 2, lineHeight: 1.35 }}>{q.cancellation}</div>}
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.line}` }}>
+        <div style={{ minWidth: 0 }}>
+          <span style={{ fontFamily: 'Playfair Display,serif', fontSize: 21, fontWeight: 600 }}>{formatMoney(Math.round(q.price.customerPrice / n), q.price.currency)}</span>
+          <span style={{ fontSize: 12.5, color: C.muted }}>
+            /day · {price(q)} for {n} {n === 1 ? 'day' : 'days'}
+          </span>
+        </div>
+        <button
+          type="button"
+          className="dz-btn-reset"
+          onClick={onSelect}
+          style={{ padding: '9px 18px', borderRadius: 10, background: 'linear-gradient(180deg,#FFD43B,#F2B705)', color: '#0A1F18', fontSize: 14, fontWeight: 600, flexShrink: 0 }}
+        >
+          Select
+        </button>
+      </div>
+    </div>
   );
 }

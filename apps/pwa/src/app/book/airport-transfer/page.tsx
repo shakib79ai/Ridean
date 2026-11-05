@@ -1,9 +1,142 @@
 'use client';
 
-// DESIGN-STATIC: generated from the PWA design canvas board "AirportTransfer". Wire to the API and remove this marker.
-/* eslint-disable */
+import { Suspense, useCallback, useState } from 'react';
+import type { QuoteSearchRequest } from '@ridean/shared';
+import { C, Field } from '@/components/site/ui';
+import { FlightIcon, GlobeIcon, ShieldIcon } from '@/components/booking/icons';
+import { Column, Cta, DateTimeRow, FormError, HeroHeader, PaymentHint, PlaceField, QuoteOptions, SectionTitle, ServiceTabs, StepperRow, panel, screenStyle } from '@/components/booking/parts';
+import { classLabel, dateTimeToIso, defaultDateTime, isoToDateTime, placeFrom, price, toGeo, useLocate, useQuoteSearch, validAddress, type Place } from '@/components/booking/useQuoteSearch';
+
 export default function AirportTransferPage() {
   return (
-    <><div style={{ paddingBottom: "24px" }}><div style={{ position: "relative", height: "210px", overflow: "hidden" }}><img src="/img/design/airport.png" alt="" style={{ position: "absolute", inset: "0", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 60%" }} /><div style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg,rgba(7,26,20,.25) 0%,rgba(7,26,20,.15) 40%,#071A14 100%)" }}></div><a href="/" aria-label="Back" style={{ position: "absolute", top: "12px", left: "16px", width: "40px", height: "40px", borderRadius: "20px", background: "rgba(6,20,15,.6)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M15 18l-6-6 6-6" /></svg></a><div style={{ position: "absolute", left: "20px", right: "20px", bottom: "18px" }}><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "30px", lineHeight: 1.08, color: "#F3EEDF" }}>Airport transfer</h1><p style={{ margin: "6px 0 0", fontSize: "14px", color: "#D7DED6" }}>Airport, hotel and city-to-city transfers.</p></div></div><div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "0 20px" }}><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "16px" }}><div style={{ display: "flex", borderBottom: "1px solid #1F4537", margin: "0 -16px 14px", padding: "0 10px" }}><a href="/book/ride" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "14px 4px 12px", borderBottom: "2.5px solid transparent" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 15l1.6-4.6A2 2 0 0 1 6.5 9h11a2 2 0 0 1 1.9 1.4L21 15v3a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1h-9v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" /><path d="M6.5 13.5h.01M17.5 13.5h.01" /></svg><span style={{ fontSize: "13.5px", color: "#F3EEDF", whiteSpace: "nowrap" }}>Ride</span></a><a href="/book/airport-transfer" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "14px 4px 12px", borderBottom: "2.5px solid #F6C428" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6C428" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M10.5 13.5L3 11l1.5-1.5 7.5 1L16.5 6c1-1 2.5-1.5 3-1s0 2-1 3l-4.5 4.5 1 7.5L13.5 21 11 13.5" /></svg><span style={{ fontSize: "13.5px", color: "#F6C428", whiteSpace: "nowrap" }}>Airport transfer</span></a><a href="/book/rent" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "14px 4px 12px", borderBottom: "2.5px solid transparent" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" /><rect x="3" y="11" width="18" height="6" rx="2" /><path d="M6 17v2M18 17v2M7 14h.01M17 14h.01" /></svg><span style={{ fontSize: "13.5px", color: "#F3EEDF", whiteSpace: "nowrap" }}>Rent a car</span></a></div><div style={{ display: "flex", flexDirection: "column", gap: "12px" }}><div className="dz-segw" data-g="trip"><button type="button" className="dz-seg on" data-v="one" data-act="rdSeg(this)">One way</button><button type="button" className="dz-seg" data-v="ret" data-act="rdSeg(this)">Return</button></div><div style={{ display: "flex", gap: "10px", alignItems: "flex-start", padding: "12px 14px", borderRadius: "12px", background: "#12352B", fontSize: "13px", lineHeight: 1.5, color: "#C9D2CB" }}><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" /></svg><span>Transfer between any two places: airport to hotel, hotel to city, or city to city.</span></div><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Pickup</div><input name="pickup" type="text" defaultValue="Hotel Verde, 12 Oak Street, London" placeholder="Airport, hotel or address" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div><div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "48px", alignSelf: "stretch", borderLeft: "1px solid #1F4537" }}><button type="button" data-act="rdLocate(this)" aria-label="Use current location" style={{ all: "unset", cursor: "pointer", display: "flex" }}><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="3" /><circle cx="12" cy="12" r="7.5" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22" /></svg></button></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Drop-off</div><input name="dest" type="text" defaultValue="London Heathrow (LHR) \u00b7 Terminal 5" placeholder="Airport, hotel, city or address" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div><div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "48px", alignSelf: "stretch", borderLeft: "1px solid #1F4537" }}><button type="button" data-act="rdSwap(this)" aria-label="Swap pickup and drop-off" style={{ all: "unset", cursor: "pointer", display: "flex" }}><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4" /></svg></button></div></label><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M3 17h18M6 13l-2-5h2.5l2 3h5L11 4h3l4.5 7H21a1.5 1.5 0 0 1 0 3H8z" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Flight number (optional)</div><input name="flight" type="text" defaultValue="" placeholder="e.g. BA 117 \u2014 for airport pickups" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><div style={{ display: "flex", gap: "10px" }}><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Pickup date</div><input name="date" type="date" defaultValue="2026-11-14" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Pickup time</div><input name="time" type="time" defaultValue="18:30" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div></div><div data-show-trip="ret" className="dz-hide" style={{ display: "flex", flexDirection: "column", gap: "8px" }}><div style={{ fontSize: "12.5px", fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: "#D9A94F", paddingTop: "2px" }}>Return journey</div><div style={{ display: "flex", gap: "10px" }}><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Return date</div><input name="rdate" type="date" defaultValue="2026-11-21" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Return time</div><input name="rtime" type="time" defaultValue="18:00" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div></div></div></div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "14px" }}><div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 0", borderBottom: "1px solid #1F4537" }}><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", color: "#F3EEDF" }}>Passengers</div><div style={{ fontSize: "12px", color: "#9FB2A6" }}>Including you</div></div><button type="button" className="dz-step" aria-label="Decrease Passengers" data-act="rdStep(this,-1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 12h14" /></svg></button><output className="dz-stepv" style={{ minWidth: "26px", textAlign: "center", fontSize: "16px", fontWeight: 600, color: "#F3EEDF" }}>2</output><button type="button" className="dz-step" aria-label="Increase Passengers" data-act="rdStep(this,1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 5v14M5 12h14" /></svg></button></div><div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 0" }}><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15px", color: "#F3EEDF" }}>Luggage</div><div style={{ fontSize: "12px", color: "#9FB2A6" }}>Large suitcases</div></div><button type="button" className="dz-step" aria-label="Decrease Luggage" data-act="rdStep(this,-1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 12h14" /></svg></button><output className="dz-stepv" style={{ minWidth: "26px", textAlign: "center", fontSize: "16px", fontWeight: 600, color: "#F3EEDF" }}>2</output><button type="button" className="dz-step" aria-label="Increase Luggage" data-act="rdStep(this,1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 5v14M5 12h14" /></svg></button></div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "14px" }}><div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9A94F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 3l7.5 3v6c0 4.5-3.2 8-7.5 9-4.3-1-7.5-4.5-7.5-9V6z" /><path d="M9 12l2 2 4-4" /></svg><div><div style={{ fontSize: "14.5px", fontWeight: 600 }}>Flight tracking included</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "3px", lineHeight: 1.45 }}>Your chauffeur adjusts to delays and waits 60 minutes free after landing.</div></div></div></div><a href="/checkout/QUOTE" className="dz-cta" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", height: "54px", borderRadius: "12px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "17px", fontWeight: 600 }}><span>Find a transfer</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A1F18" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div></div></>
+    <Suspense fallback={null}>
+      <AirportTransfer />
+    </Suspense>
+  );
+}
+
+function AirportTransfer() {
+  const qs = useQuoteSearch('airport_transfer');
+  const init = qs.initial;
+  const out = isoToDateTime(init?.pickupAt) ?? defaultDateTime(24);
+  const back = isoToDateTime(init?.returnAt) ?? defaultDateTime(24 * 8);
+  const [tripType, setTripType] = useState<'one_way' | 'return'>(init?.tripType ?? 'one_way');
+  const [pickup, setPickup] = useState<Place>(placeFrom(init?.pickup));
+  const [dropoff, setDropoff] = useState<Place>(placeFrom(init?.dropoff));
+  const [flight, setFlight] = useState(init?.flightNumber ?? '');
+  const [date, setDate] = useState(out.date);
+  const [time, setTime] = useState(out.time);
+  const [rdate, setRdate] = useState(back.date);
+  const [rtime, setRtime] = useState(back.time);
+  const [passengers, setPassengers] = useState(init?.passengers ?? 1);
+  const [luggage, setLuggage] = useState(init?.luggage ?? 1);
+  const [error, setError] = useState('');
+  const { locate, locating } = useLocate(useCallback((p: Place) => setPickup(p), []));
+
+  function submit() {
+    setError('');
+    if (!validAddress(pickup)) return setError('Enter a pickup location');
+    if (!validAddress(dropoff)) return setError('Enter a drop-off');
+    const pickupAt = dateTimeToIso(date, time);
+    if (!pickupAt) return setError('Choose a pickup date and time');
+    if (Date.parse(pickupAt) < Date.now()) return setError('Pickup time is in the past');
+    const req: QuoteSearchRequest = { service: 'airport_transfer', tripType, pickup: toGeo(pickup), dropoff: toGeo(dropoff), pickupAt, passengers, luggage };
+    if (flight.trim()) req.flightNumber = flight.trim().toUpperCase();
+    if (tripType === 'return') {
+      const returnAt = dateTimeToIso(rdate, rtime);
+      if (!returnAt) return setError('Choose a return date and time');
+      if (returnAt <= pickupAt) return setError('Return must be after the outbound pickup');
+      req.returnAt = returnAt;
+    }
+    qs.search(req);
+  }
+
+  const q = qs.selected;
+  const showResults = qs.loading || !!qs.error || qs.quotes !== null;
+
+  return (
+    <div style={screenStyle}>
+      <HeroHeader img="/img/design/airport.png" objectPosition="center 60%" height={210} title="Airport transfer" text="Airport, hotel and city-to-city transfers." />
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
+      >
+        <Column>
+          <div style={panel(16)}>
+            <ServiceTabs active="airport" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="dz-segw" role="group" aria-label="Trip type">
+                <button type="button" className={`dz-seg ${tripType === 'one_way' ? 'on' : ''}`} aria-pressed={tripType === 'one_way'} onClick={() => setTripType('one_way')}>
+                  One way
+                </button>
+                <button type="button" className={`dz-seg ${tripType === 'return' ? 'on' : ''}`} aria-pressed={tripType === 'return'} onClick={() => setTripType('return')}>
+                  Return
+                </button>
+              </div>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '12px 14px', borderRadius: 12, background: C.panel2, fontSize: 13, lineHeight: 1.5, color: C.soft }}>
+                <GlobeIcon />
+                <span>Transfer between any two places: airport to hotel, hotel to city, or city to city.</span>
+              </div>
+              <PlaceField label="Pickup" name="pickup" value={pickup} onChange={setPickup} placeholder="Airport, hotel or address" onLocate={locate} locating={locating} />
+              <PlaceField
+                label="Drop-off"
+                name="dest"
+                value={dropoff}
+                onChange={setDropoff}
+                placeholder="Airport, hotel, city or address"
+                swapLabel="Swap pickup and drop-off"
+                onSwap={() => {
+                  setPickup(dropoff);
+                  setDropoff(pickup);
+                }}
+              />
+              <Field icon={<FlightIcon />} label="Flight number (optional)">
+                <input name="flight" type="text" className="dz-input" value={flight} maxLength={12} onChange={(e) => setFlight(e.target.value)} placeholder="e.g. BA 117 — for airport pickups" />
+              </Field>
+              <DateTimeRow date={date} time={time} onDate={setDate} onTime={setTime} dateLabel="Pickup date" timeLabel="Pickup time" />
+              {tripType === 'return' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: C.gold, paddingTop: 2 }}>Return journey</div>
+                  <DateTimeRow date={rdate} time={rtime} onDate={setRdate} onTime={setRtime} dateLabel="Return date" timeLabel="Return time" />
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={panel(14)}>
+            <StepperRow label="Passengers" hint="Including you" value={passengers} min={1} max={14} onChange={setPassengers} />
+            <StepperRow label="Luggage" hint="Large suitcases" value={luggage} min={0} max={12} onChange={setLuggage} last />
+          </div>
+          <div style={panel(14)}>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <ShieldIcon />
+              <div>
+                <div style={{ fontSize: 14.5, fontWeight: 600 }}>Flight tracking included</div>
+                <div style={{ fontSize: 12.5, color: C.muted, marginTop: 3, lineHeight: 1.45 }}>Add your flight number and your chauffeur adjusts to delays. Included waiting time is shown on each quote.</div>
+              </div>
+            </div>
+          </div>
+          <FormError message={error} />
+          <Cta type="submit" disabled={qs.loading}>
+            {qs.loading ? 'Finding transfers…' : 'Find a transfer'}
+          </Cta>
+
+          {showResults && (
+            <>
+              <SectionTitle>Choose your transfer</SectionTitle>
+              <QuoteOptions state={qs} idleText="" />
+              {q && !qs.loading && (
+                <>
+                  <PaymentHint />
+                  <Cta onClick={() => qs.confirm()}>{`Confirm ${classLabel(q.vehicle.class)} · ${price(q)}`}</Cta>
+                </>
+              )}
+            </>
+          )}
+        </Column>
+      </form>
+    </div>
   );
 }

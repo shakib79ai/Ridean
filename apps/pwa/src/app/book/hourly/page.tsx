@@ -1,9 +1,143 @@
 'use client';
 
-// DESIGN-STATIC: generated from the PWA design canvas board "HourlyChauffeur". Wire to the API and remove this marker.
-/* eslint-disable */
+import { Suspense, useState } from 'react';
+import { formatMoney, type QuoteSearchRequest } from '@ridean/shared';
+import { C, Field } from '@/components/site/ui';
+import { PinIcon } from '@/components/booking/icons';
+import { Column, Cta, DateTimeRow, FormError, HeroHeader, QuoteOptions, SectionTitle, panel, screenStyle } from '@/components/booking/parts';
+import { classLabel, dateTimeToIso, defaultDateTime, isoToDateTime, placeFrom, price, toGeo, useQuoteSearch, validAddress, type Place } from '@/components/booking/useQuoteSearch';
+
 export default function HourlyChauffeurPage() {
   return (
-    <><div style={{ paddingBottom: "24px" }}><div style={{ position: "relative", height: "200px", overflow: "hidden" }}><img src="/img/design/card-sm.png" alt="" style={{ position: "absolute", inset: "0", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%" }} /><div style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg,rgba(7,26,20,.25) 0%,rgba(7,26,20,.15) 40%,#071A14 100%)" }}></div><a href="/" aria-label="Back" style={{ position: "absolute", top: "12px", left: "16px", width: "40px", height: "40px", borderRadius: "20px", background: "rgba(6,20,15,.6)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M15 18l-6-6 6-6" /></svg></a><div style={{ position: "absolute", left: "20px", right: "20px", bottom: "18px" }}><h1 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "30px", lineHeight: 1.08, color: "#F3EEDF" }}>Hourly chauffeur</h1><p style={{ margin: "6px 0 0", fontSize: "14px", color: "#D7DED6" }}>Your time. Our chauffeur.</p></div></div><div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "0 20px" }}><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "4px 0 -2px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontSize: "19px", fontWeight: 600, color: "#F3EEDF" }}>How many hours?</h2></div><div className="dz-chipw" data-g="hours" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}><button type="button" className="dz-chip" data-v="2" data-act="rdChip(this)">2 h</button><button type="button" className="dz-chip on" data-v="3" data-act="rdChip(this)">3 h</button><button type="button" className="dz-chip" data-v="4" data-act="rdChip(this)">4 h</button><button type="button" className="dz-chip" data-v="6" data-act="rdChip(this)">6 h</button><button type="button" className="dz-chip" data-v="8" data-act="rdChip(this)">8 h</button><button type="button" className="dz-chip" data-v="10" data-act="rdChip(this)">10 h</button></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "16px" }}><div style={{ display: "flex", flexDirection: "column", gap: "12px" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Start location</div><input name="pickup" type="text" defaultValue="Hotel Verde, 12 Oak Street, London" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label><div style={{ display: "flex", gap: "10px" }}><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Date</div><input name="date" type="date" defaultValue="2026-11-14" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div><div style={{ flex: 1, minWidth: "0" }}><label style={{ display: "flex", alignItems: "center", background: "#071A14", border: "1px solid #1F4537", borderRadius: "12px", minHeight: "58px", overflow: "hidden" }}><div style={{ width: "46px", display: "flex", justifyContent: "center" }}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></div><div style={{ flex: 1, minWidth: "0", padding: "8px 8px 8px 0" }}><div style={{ fontSize: "11.5px", color: "#9FB2A6" }}>Start time</div><input name="time" type="time" defaultValue="18:30" placeholder="" style={{ all: "unset", width: "100%", fontSize: "14.5px", color: "#F3EEDF", marginTop: "2px" }} /></div></label></div></div><label style={{ display: "block" }}><span style={{ fontSize: "12px", color: "#9FB2A6" }}>Notes for your chauffeur</span><textarea rows={2} placeholder="Stops, meeting points, preferences" style={{ all: "unset", boxSizing: "border-box", display: "block", width: "100%", marginTop: "6px", padding: "12px", border: "1px solid #1F4537", borderRadius: "12px", background: "#071A14", fontSize: "14px", color: "#F3EEDF" }} /></label></div></div><div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "4px 0 -2px" }}><h2 style={{ margin: "0", fontFamily: "'Playfair Display',serif", fontSize: "19px", fontWeight: 600, color: "#F3EEDF" }}>Vehicle class</h2></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "8px" }}><div style={{ display: "flex", flexDirection: "column", gap: "6px" }}><button type="button" className="dz-opt on" data-v="Business" data-p="$65/h" data-act="rdOpt(this)" style={{ all: "unset", boxSizing: "border-box", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "10px 12px", borderRadius: "14px" }}><div style={{ width: "78px", height: "52px", borderRadius: "10px", overflow: "hidden", flexShrink: 0 }}><img src="/img/design/business.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15.5px", fontWeight: 600, color: "#F3EEDF" }}>Business</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Mercedes E-Class or similar</div></div><div style={{ textAlign: "right" }}><div style={{ fontSize: "16px", fontWeight: 600, color: "#F3EEDF" }}>$65/h</div><div style={{ fontSize: "12px", color: "#9FB2A6", marginTop: "2px" }}>Up to 3</div></div></button><button type="button" className="dz-opt" data-v="First" data-p="$95/h" data-act="rdOpt(this)" style={{ all: "unset", boxSizing: "border-box", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "10px 12px", borderRadius: "14px" }}><div style={{ width: "78px", height: "52px", borderRadius: "10px", overflow: "hidden", flexShrink: 0 }}><img src="/img/design/night-car.jpg" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15.5px", fontWeight: 600, color: "#F3EEDF" }}>First</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Mercedes S-Class or similar</div></div><div style={{ textAlign: "right" }}><div style={{ fontSize: "16px", fontWeight: 600, color: "#F3EEDF" }}>$95/h</div><div style={{ fontSize: "12px", color: "#9FB2A6", marginTop: "2px" }}>Up to 3</div></div></button><button type="button" className="dz-opt" data-v="Van" data-p="$85/h" data-act="rdOpt(this)" style={{ all: "unset", boxSizing: "border-box", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "10px 12px", borderRadius: "14px" }}><div style={{ width: "78px", height: "52px", borderRadius: "10px", overflow: "hidden", flexShrink: 0 }}><img src="/img/design/seat.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><div style={{ flex: 1, minWidth: "0" }}><div style={{ fontSize: "15.5px", fontWeight: 600, color: "#F3EEDF" }}>Van</div><div style={{ fontSize: "12.5px", color: "#9FB2A6", marginTop: "2px" }}>Mercedes V-Class or similar</div></div><div style={{ textAlign: "right" }}><div style={{ fontSize: "16px", fontWeight: 600, color: "#F3EEDF" }}>$85/h</div><div style={{ fontSize: "12px", color: "#9FB2A6", marginTop: "2px" }}>Up to 6</div></div></button></div></div><div style={{ background: "#0E2A22", border: "1px solid #1F4537", borderRadius: "16px", padding: "16px" }}><div data-rate="65" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: "12.5px", color: "#9FB2A6" }}>Estimated total · <span data-hrs="">3 hours</span></div><div data-total="" style={{ fontFamily: "'Playfair Display',serif", fontSize: "28px", fontWeight: 600, color: "#F3EEDF", marginTop: "2px" }}>$195.00</div></div><span style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "4px 9px", borderRadius: "999px", background: "rgba(217,169,79,.14)", color: "#D9A94F", fontSize: "11.5px", fontWeight: 600 }}>Free waiting</span></div></div><a href="/checkout/QUOTE" className="dz-cta" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", height: "54px", borderRadius: "12px", background: "linear-gradient(180deg,#FFD43B,#F2B705)", color: "#0A1F18", fontSize: "17px", fontWeight: 600 }}><span>Continue</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A1F18" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div></div></>
+    <Suspense fallback={null}>
+      <HourlyChauffeur />
+    </Suspense>
+  );
+}
+
+const HOURS = [2, 3, 4, 6, 8, 10];
+
+function HourlyChauffeur() {
+  const qs = useQuoteSearch('hourly');
+  const init = qs.initial;
+  const start = isoToDateTime(init?.pickupAt) ?? defaultDateTime(24);
+  const [hours, setHours] = useState(init?.hours ?? 3);
+  const [pickup, setPickup] = useState<Place>(placeFrom(init?.pickup));
+  const [date, setDate] = useState(start.date);
+  const [time, setTime] = useState(start.time);
+  const [notes, setNotes] = useState('');
+  const [error, setError] = useState('');
+  const [dirty, setDirty] = useState(false);
+
+  function submit(h = hours) {
+    setError('');
+    if (!validAddress(pickup)) return setError('Enter a start location');
+    const pickupAt = dateTimeToIso(date, time);
+    if (!pickupAt) return setError('Choose a date and start time');
+    if (Date.parse(pickupAt) < Date.now()) return setError('Start time is in the past');
+    const req: QuoteSearchRequest = { service: 'hourly', pickup: toGeo(pickup), pickupAt, hours: h };
+    // Keep a final drop-off that came in through a shared ?s= link (this screen has no field for it).
+    if (init?.dropoff?.address) req.dropoff = init.dropoff;
+    setDirty(false);
+    qs.search(req);
+  }
+
+  function pickHours(h: number) {
+    setHours(h);
+    // Prices depend on the hours, so refresh them when prices are already showing.
+    if (qs.last) submit(h);
+  }
+
+  const q = qs.selected;
+  const shownHours = qs.last?.hours ?? hours;
+  const canConfirm = !!q && !dirty && !qs.loading;
+  const perHour = (x: NonNullable<typeof q>) => `${formatMoney(Math.round(x.price.customerPrice / shownHours), x.price.currency)}/h`;
+
+  return (
+    <div style={screenStyle}>
+      <HeroHeader img="/img/design/card-sm.png" objectPosition="center 40%" height={200} title="Hourly chauffeur" text="Your time. Our chauffeur." />
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (canConfirm) qs.confirm(null, { notes });
+          else submit();
+        }}
+      >
+        <Column>
+          <SectionTitle>
+            <span id="hours-label">How many hours?</span>
+          </SectionTitle>
+          <div role="group" aria-labelledby="hours-label" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {HOURS.map((h) => (
+              <button key={h} type="button" className={`dz-chip ${hours === h ? 'on' : ''}`} aria-pressed={hours === h} disabled={qs.loading} onClick={() => pickHours(h)}>
+                {h} h
+              </button>
+            ))}
+          </div>
+          <div style={panel(16)}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <Field icon={<PinIcon />} label="Start location">
+                <input
+                  name="pickup"
+                  type="text"
+                  className="dz-input"
+                  autoComplete="off"
+                  value={pickup.address}
+                  placeholder="Hotel, office or address"
+                  onChange={(e) => {
+                    setPickup({ address: e.target.value });
+                    setDirty(true);
+                  }}
+                />
+              </Field>
+              <DateTimeRow
+                date={date}
+                time={time}
+                onDate={(v) => (setDate(v), setDirty(true))}
+                onTime={(v) => (setTime(v), setDirty(true))}
+                timeLabel="Start time"
+              />
+              <label style={{ display: 'block' }}>
+                <span style={{ fontSize: 12, color: C.muted }}>Notes for your chauffeur</span>
+                <textarea
+                  rows={2}
+                  maxLength={500}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Stops, meeting points, preferences"
+                  style={{ all: 'unset', boxSizing: 'border-box', display: 'block', width: '100%', marginTop: 6, padding: 12, border: `1px solid ${C.line}`, borderRadius: 12, background: C.bg, fontSize: 14, color: C.cream, whiteSpace: 'pre-wrap' }}
+                />
+              </label>
+              <FormError message={error} />
+            </div>
+          </div>
+          <SectionTitle>Vehicle class</SectionTitle>
+          <QuoteOptions
+            state={qs}
+            idleText="Choose how many hours, your start location and time to see prices for a dedicated chauffeur."
+            sub={(x) => `${x.vehicle.name} · ${x.supplierName}`}
+            amount={perHour}
+            meta={(x) => `Up to ${x.vehicle.passengers}`}
+          />
+          <div style={panel(16)}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 12.5, color: C.muted }}>
+                  {q ? `${classLabel(q.vehicle.class)} · ` : ''}Estimated total · {shownHours} hours
+                </div>
+                <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 28, fontWeight: 600, color: C.cream, marginTop: 2 }}>{qs.loading ? '…' : q ? price(q) : '—'}</div>
+              </div>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 9px', borderRadius: 999, background: 'rgba(217,169,79,.14)', color: C.gold, fontSize: 11.5, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                Free waiting
+              </span>
+            </div>
+          </div>
+          <Cta type="submit" disabled={qs.loading}>
+            {qs.loading ? 'Finding chauffeurs…' : canConfirm ? 'Continue' : 'See prices'}
+          </Cta>
+        </Column>
+      </form>
+    </div>
   );
 }
