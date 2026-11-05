@@ -148,7 +148,7 @@ export function BookingDetail({ id }: { id: string }) {
   );
   return (
     <div className="rd-stack">
-      {isNew && b.status !== 'failed' && <div className="rd-note" style={{ background: 'rgba(76,195,138,.12)', color: '#9fe3c0' }}>Thank you — your booking {b.reference} is {b.status === 'confirmed' ? 'confirmed' : 'being confirmed'}. A confirmation email is on its way.</div>}
+      {isNew && b.status !== 'failed' && <div className="rd-note" style={{ background: 'rgba(76,195,138,.12)', color: '#9fe3c0' }}>Thank you — your booking {b.reference} is {b.status === 'confirmed' ? 'confirmed' : 'being confirmed'}.</div>}
       {b.status === 'failed' && <div className="rd-alert">The supplier could not confirm this booking. You have not been charged.</div>}
       <div className="rd-card rd-stack">
         <div className="rd-row" style={{ justifyContent: 'space-between' }}>
