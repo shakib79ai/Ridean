@@ -62,22 +62,22 @@ async function shoot() {
   const browser = await chromium.launch();
   const report = [];
   for (const [platform, device] of [['ios', devices['iPhone 13']], ['android', devices['Pixel 7']]]) {
-    for (const [list, query] of [[routes, ''], [signedOut, '?signedout=1']]) {
+    for (const [list, signedOutFlag] of [[routes, ''], [signedOut, '&signedout=1']]) {
       const ctx = await browser.newContext({ ...device, locale: 'en-US', timezoneId: 'America/New_York' });
       const page = await ctx.newPage();
       page.on('pageerror', (e) => report.push(`[${platform}] pageerror ${e.message}`));
       page.on('console', (m) => { if (m.type() === 'error') report.push(`[${platform}] console ${m.text().slice(0, 300)}`); });
       for (const [name, route] of list) {
-        await page.goto(`${WEB}/${query}#${route}`, { waitUntil: 'networkidle' }).catch(() => {});
+        // A fresh document per screen so each one starts from its own deep link.
+        await page.setViewportSize(device.viewport);
+        await page.goto(`${WEB}/?platform=${platform}${signedOutFlag}#${route}`, { waitUntil: 'networkidle' }).catch(() => {});
+        await page.reload({ waitUntil: 'networkidle' }).catch(() => {});
         await page.waitForTimeout(name === 'home' ? 5000 : 3500);
         await page.screenshot({ path: `screens/${platform}-${name}.png` });
-        // Full scroll capture: scroll the Flutter view in steps.
-        for (let i = 1; i <= 3; i++) {
-          await page.mouse.move(device.viewport.width / 2, device.viewport.height / 2);
-          await page.mouse.wheel(0, device.viewport.height * 0.8);
-          await page.waitForTimeout(700);
-          await page.screenshot({ path: `screens/${platform}-${name}-${i}.png` });
-        }
+        // Tall viewport: the whole scrolling page in one image.
+        await page.setViewportSize({ width: device.viewport.width, height: 2600 });
+        await page.waitForTimeout(1500);
+        await page.screenshot({ path: `screens/${platform}-${name}-full.png` });
         console.log('shot', platform, name);
       }
       await ctx.close();
