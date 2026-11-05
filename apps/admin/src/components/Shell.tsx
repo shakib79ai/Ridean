@@ -50,7 +50,7 @@ export function Shell({ children }: { children: ReactNode }) {
     if (!staff) return;
     let live = true;
     api.admin
-      .contactMessages({ handled: false })
+      .contactMessages({ handled: 'false' })
       .then((m) => live && setUnread(m.length))
       .catch(() => {});
     return () => {
