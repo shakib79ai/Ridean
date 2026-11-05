@@ -13,6 +13,7 @@ const NAV = [
   ['/settlements', 'Settlements'],
   ['/suppliers', 'Supplier accounts'],
   ['/users', 'Users'],
+  ['/inbox', 'Inbox'],
 ] as const;
 
 export function Shell({ children }: { children: ReactNode }) {

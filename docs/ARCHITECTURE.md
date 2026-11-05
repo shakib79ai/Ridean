@@ -68,6 +68,23 @@ owedToSupplier = supplierPayable   (Ridean collects)        owedToRidean = earni
 
 Every booking stores the full breakdown, so reports never recompute history after terms change.
 
+## Customer features beyond booking
+
+| Feature | How it works |
+|---|---|
+| Promo codes | `PROMO_CODES=CODE:percent,…` on the API. Checked with `POST /quotes/:id/promo`, applied at booking. The discount comes out of Ridean's earnings and is capped at them, so the supplier is always paid in full. Only for bookings Ridean charges. |
+| Chauffeur tip | Sent with the booking (`tip`, cents). Added to the customer price and to what Ridean owes the supplier. |
+| Business accounts | `business_accounts` + `business_members`. Members can bill trips to the company (`payWithBusiness`); the travel policy (trip purpose required, business class only, approval over an amount) is enforced by the API. Spend this month is computed from bookings. |
+| Edit booking | `PATCH /bookings/:id` — time, flight, passengers, luggage, notes, passenger contact, up to 1 hour before pickup. Route changes need a new booking (the price depends on the route). Adapters implement `liveAmend`; partners without it return a clear "contact support" error. |
+| Trip status & chauffeur | `GET /bookings/:id/status` merges our booking state with the supplier's status API (driver, vehicle, plate, ETA) into a timeline. |
+| Messages to the chauffeur | `GET/POST /bookings/:id/messages`, relayed through the adapter's `liveMessage` when the partner supports it; otherwise the customer is told to call. Staff can read threads in the admin. |
+| Invoices | Generated on the fly from paid bookings (`GET /invoices`, `/invoices/:bookingId`); printable from the website. |
+| Settings & privacy | `users.settings` (notifications, ride preferences, privacy choices, display), password change, data export (JSON) and account deletion (personal data removed, financial records kept anonymised). |
+| Contact form | `POST /contact` → `contact_messages`, shown in **Admin → Inbox**. |
+| Saved cards | Stripe customer payment methods (SetupIntent + Elements). In `PAYMENTS_MODE=simulated`, test cards (last 4 digits only) can be stored for development. |
+
+Customer-facing endpoints never return Ridean's cost, commission, markup or earnings — those fields are zeroed (`common/redact.ts`); the full breakdown is only on `/admin/*`.
+
 ## Supplier ledger
 
 `ledger_entries` is a per-supplier double-column ledger:
@@ -94,4 +111,4 @@ JWT bearer tokens (`JWT_SECRET`, `JWT_EXPIRES_IN`). Roles: `customer`, `ops`, `f
 
 ## Data model (PostgreSQL)
 
-`users`, `addresses`, `suppliers` (code, adapter, services[], terms jsonb, config jsonb), `quotes`, `bookings` (full price breakdown, payment flow, supplier reference), `payments`, `ledger_entries`, `wallet_transactions`, `webhook_events`. Schema: `apps/api/src/db/schema.ts`; migrations: `apps/api/drizzle/`.
+`users` (incl. `settings` jsonb), `addresses`, `suppliers` (code, adapter, services[], terms jsonb, config jsonb), `quotes`, `bookings` (full price breakdown, payment flow and method, tip, promo discount, supplier reference), `booking_messages`, `payments`, `ledger_entries`, `wallet_transactions`, `business_accounts`, `business_members`, `contact_messages`, `webhook_events`. Schema: `apps/api/src/db/schema.ts`; migrations: `apps/api/drizzle/`.

@@ -14,9 +14,12 @@ export const users = pgTable(
     phone: text('phone'),
     role: text('role').$type<'customer' | 'ops' | 'finance' | 'admin'>().notNull().default('customer'),
     stripeCustomerId: text('stripe_customer_id'),
+    /** Notification, ride, privacy and display preferences (see UserSettings in @ridean/shared) */
+    settings: jsonb('settings').$type<Record<string, unknown>>().notNull().default({}),
+    deletedAt: ts('deleted_at'),
     createdAt: ts('created_at').notNull().defaultNow(),
   },
-  (t) => [uniqueIndex('users_email_uq').on(t.email)],
+  (t) => [uniqueIndex('users_email_uq').on(t.email), index('users_phone_idx').on(t.phone)],
 );
 
 export const addresses = pgTable('addresses', {
@@ -104,6 +107,16 @@ export const bookings = pgTable(
     paymentFlow: text('payment_flow').notNull(),
     stripePaymentIntentId: text('stripe_payment_intent_id'),
     paidWithWallet: boolean('paid_with_wallet').notNull().default(false),
+    /** card | wallet | business | supplier */
+    paymentMethod: text('payment_method').notNull().default('card'),
+    businessAccountId: uuid('business_account_id'),
+    passengers: integer('passengers'),
+    luggage: integer('luggage'),
+    /** Tip for the chauffeur (minor units), included in customer_price and owed to the supplier */
+    tip: integer('tip').notNull().default(0),
+    /** Promo discount (minor units), already deducted from customer_price and earnings */
+    discount: integer('discount').notNull().default(0),
+    promoCode: text('promo_code'),
     notes: text('notes'),
     cancelReason: text('cancel_reason'),
     supplierMeta: jsonb('supplier_meta').$type<Record<string, unknown>>().notNull().default({}),
@@ -164,6 +177,56 @@ export const webhookEvents = pgTable('webhook_events', {
   provider: text('provider').notNull(),
   type: text('type').notNull(),
   receivedAt: ts('received_at').notNull().defaultNow(),
+});
+
+export const bookingMessages = pgTable(
+  'booking_messages',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    bookingId: uuid('booking_id').notNull().references(() => bookings.id, { onDelete: 'cascade' }),
+    sender: text('sender').$type<'customer' | 'chauffeur' | 'system'>().notNull(),
+    body: text('body').notNull(),
+    createdAt: ts('created_at').notNull().defaultNow(),
+  },
+  (t) => [index('booking_messages_booking_idx').on(t.bookingId, t.createdAt)],
+);
+
+export const businessAccounts = pgTable('business_accounts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  ownerId: uuid('owner_id').notNull().references(() => users.id),
+  /** Monthly spend budget in minor units (0 = no budget) */
+  monthlyBudget: integer('monthly_budget').notNull().default(0),
+  /** { requirePurpose, businessClassOnly, approvalOver } */
+  policy: jsonb('policy').$type<{ requirePurpose?: boolean; businessClassOnly?: boolean; approvalOver?: number }>().notNull().default({}),
+  billingEmail: text('billing_email'),
+  createdAt: ts('created_at').notNull().defaultNow(),
+});
+
+export const businessMembers = pgTable(
+  'business_members',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    accountId: uuid('account_id').notNull().references(() => businessAccounts.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+    email: text('email').notNull(),
+    name: text('name'),
+    role: text('role').$type<'admin' | 'member'>().notNull().default('member'),
+    status: text('status').$type<'active' | 'invited'>().notNull().default('invited'),
+    createdAt: ts('created_at').notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex('business_members_uq').on(t.accountId, t.email)],
+);
+
+export const contactMessages = pgTable('contact_messages', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  topic: text('topic').notNull(),
+  message: text('message').notNull(),
+  handled: boolean('handled').notNull().default(false),
+  createdAt: ts('created_at').notNull().defaultNow(),
 });
 
 export type UserRow = typeof users.$inferSelect;

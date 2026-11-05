@@ -28,6 +28,7 @@ Two supported routes: **A. VPS with PM2 + Nginx** or **B. Docker / Docker Compos
 | `SUPPLIER_MODE` | `live` (`mock` is refused in production) |
 | `SUPPLIER_<CODE>_*` | each supplier's base URL and keys — see [SUPPLIER_INTEGRATION.md](SUPPLIER_INTEGRATION.md#credentials) |
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | first admin account, used once by `db:seed` |
+| `PROMO_CODES` | optional, e.g. `RIDEAN10:10,WELCOME15:15` (code:percent off) |
 
 ### Web apps — build-time (`NEXT_PUBLIC_*` are inlined at build, rebuild after changing)
 
@@ -36,6 +37,7 @@ Two supported routes: **A. VPS with PM2 + Nginx** or **B. Docker / Docker Compos
 | `NEXT_PUBLIC_API_URL` = `https://api.ridean.com` | ✓ | ✓ | ✓ |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` = `pk_live_…` | ✓ | ✓ | |
 | `NEXT_PUBLIC_SITE_URL` = `https://ridean.com` (Open Graph URLs) | ✓ | | |
+| `NEXT_PUBLIC_APP_STORE_URL` / `NEXT_PUBLIC_PLAY_STORE_URL` (footer badges, optional) | ✓ | | |
 
 Put them in `apps/<app>/.env.production` on the build machine (never commit it).
 
@@ -130,6 +132,8 @@ flutter build ipa       --dart-define=API_URL=https://api.ridean.com --dart-defi
 - [ ] Strong `JWT_SECRET`; `CORS_ORIGINS` lists only your domains
 - [ ] Admin password changed after first sign-in; staff roles assigned
 - [ ] Database backups scheduled; TLS on every domain
-- [ ] Legal page (`apps/website/src/app/legal`) replaced with counsel-approved terms and privacy policy
-- [ ] Contact emails in `apps/website/src/app/contact` and footer address updated
+- [ ] Legal page (`apps/website/src/app/(site)/legal`) replaced with counsel-approved terms and privacy policy
+- [ ] Contact emails on the website contact page and footer address confirmed
+- [ ] Someone owns **Admin → Inbox** (website contact form messages)
+- [ ] Email/SMS provider chosen if you want booking confirmations, receipts and password resets (not built yet)
 - [ ] Mobile: bundle IDs, icons, Apple Pay merchant ID, store listings

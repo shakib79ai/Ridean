@@ -12,6 +12,8 @@ interface AuthState {
   user: User | null;
   ready: boolean;
   login: (email: string, password: string) => Promise<User>;
+  /** Sign in with a phone number instead of an email address. */
+  loginWithPhone: (phone: string, password: string) => Promise<User>;
   register: (input: { email: string; password: string; firstName: string; lastName: string; phone?: string }) => Promise<User>;
   logout: () => void;
   refresh: () => Promise<void>;
@@ -81,6 +83,13 @@ export function ApiProvider({ baseUrl, stripeKey = '', children }: { baseUrl: st
     ready,
     login: async (email, password) => {
       const r = await api.login(email, password);
+      writeToken(r.accessToken);
+      setToken(r.accessToken);
+      setUser(r.user);
+      return r.user;
+    },
+    loginWithPhone: async (phone, password) => {
+      const r = await api.loginWithPhone(phone, password);
       writeToken(r.accessToken);
       setToken(r.accessToken);
       setUser(r.user);

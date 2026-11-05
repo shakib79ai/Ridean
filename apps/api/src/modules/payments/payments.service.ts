@@ -1,3 +1,4 @@
+import type { SavedCard } from '@ridean/shared';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { eq } from 'drizzle-orm';
@@ -102,19 +103,65 @@ export class PaymentsService {
     return { clientSecret: si.client_secret! };
   }
 
-  async listMethods(userId: string) {
-    if (!this.stripe) return [];
+  /** Saved cards. In simulated mode, test cards are kept in the user's settings (last 4 digits only). */
+  async listMethods(userId: string): Promise<SavedCard[]> {
+    const settings = await this.userSettings(userId);
+    const def = settings.defaultPaymentMethod as string | undefined;
+    if (!this.stripe) {
+      const cards = ((settings.simCards as SavedCard[]) ?? []).map((c) => ({ ...c, isDefault: c.id === def }));
+      if (cards.length && !cards.some((c) => c.isDefault)) cards[0].isDefault = true;
+      return cards;
+    }
     const customer = await this.ensureCustomer(userId);
     const list = await this.stripe.paymentMethods.list({ customer: customer!, type: 'card' });
-    return list.data.map((m) => ({ id: m.id, brand: m.card?.brand ?? 'card', last4: m.card?.last4 ?? '••••', expMonth: m.card?.exp_month ?? 0, expYear: m.card?.exp_year ?? 0 }));
+    const cards = list.data.map((m) => ({ id: m.id, brand: m.card?.brand ?? 'card', last4: m.card?.last4 ?? '••••', expMonth: m.card?.exp_month ?? 0, expYear: m.card?.exp_year ?? 0, isDefault: m.id === def }));
+    if (cards.length && !cards.some((c) => c.isDefault)) cards[0].isDefault = true;
+    return cards;
+  }
+
+  async setDefaultMethod(userId: string, id: string) {
+    const cards = await this.listMethods(userId);
+    if (!cards.some((c) => c.id === id)) throw new BadRequestException('Card not found');
+    if (this.stripe) {
+      const customer = await this.ensureCustomer(userId);
+      await this.stripe.customers.update(customer!, { invoice_settings: { default_payment_method: id } });
+    }
+    await this.patchSettings(userId, { defaultPaymentMethod: id });
+  }
+
+  /** PAYMENTS_MODE=simulated only: store a test card so the card flows can be exercised without Stripe. */
+  async addSimulatedCard(userId: string, input: { number: string; expMonth: number; expYear: number; makeDefault?: boolean }): Promise<SavedCard> {
+    if (this.stripe || !this.simulated) throw new BadRequestException('Cards are added with Stripe in this environment');
+    const digits = input.number.replace(/\D/g, '');
+    if (digits.length < 12 || digits.length > 19) throw new BadRequestException('Enter a valid card number');
+    const brand = digits.startsWith('4') ? 'visa' : /^5[1-5]|^2[2-7]/.test(digits) ? 'mastercard' : digits.startsWith('3') ? 'amex' : 'card';
+    const card: SavedCard = { id: `sim_pm_${Date.now().toString(36)}`, brand, last4: digits.slice(-4), expMonth: input.expMonth, expYear: input.expYear };
+    const settings = await this.userSettings(userId);
+    const simCards = [...((settings.simCards as SavedCard[]) ?? []), card];
+    await this.patchSettings(userId, { simCards, ...(input.makeDefault || simCards.length === 1 ? { defaultPaymentMethod: card.id } : {}) });
+    return card;
   }
 
   async detachMethod(userId: string, id: string) {
-    if (!this.stripe) return;
+    const settings = await this.userSettings(userId);
+    if (!this.stripe) {
+      await this.patchSettings(userId, { simCards: ((settings.simCards as SavedCard[]) ?? []).filter((c) => c.id !== id) });
+      return;
+    }
     const customer = await this.ensureCustomer(userId);
     const pm = await this.stripe.paymentMethods.retrieve(id);
     if (pm.customer !== customer) throw new BadRequestException('Card not found');
     await this.stripe.paymentMethods.detach(id);
+  }
+
+  private async userSettings(userId: string): Promise<Record<string, unknown>> {
+    const [u] = await this.db.select({ settings: users.settings }).from(users).where(eq(users.id, userId));
+    return (u?.settings as Record<string, unknown>) ?? {};
+  }
+
+  private async patchSettings(userId: string, patch: Record<string, unknown>) {
+    const cur = await this.userSettings(userId);
+    await this.db.update(users).set({ settings: { ...cur, ...patch } }).where(eq(users.id, userId));
   }
 
   constructEvent(rawBody: Buffer, signature: string): Stripe.Event {

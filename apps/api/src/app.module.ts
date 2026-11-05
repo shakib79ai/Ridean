@@ -7,7 +7,10 @@ import { AuthGuard } from './common/auth';
 import { validateEnv } from './config/env';
 import { DbModule } from './db/db.module';
 import { IntegrationsModule } from './integrations/integrations.module';
+import { AccountModule } from './modules/account/account.module';
 import { AddressesModule } from './modules/account/addresses.module';
+import { BusinessModule } from './modules/business/business.module';
+import { InvoicesModule } from './modules/invoices/invoices.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
@@ -33,6 +36,9 @@ import { QuotesModule } from './modules/quotes/quotes.module';
     CatalogModule,
     AuthModule,
     AddressesModule,
+    AccountModule,
+    BusinessModule,
+    InvoicesModule,
     QuotesModule,
     PaymentsModule,
     BookingsModule,

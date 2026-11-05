@@ -54,7 +54,8 @@ export interface SupplierBookingResult {
 
 export interface SupplierStatusResult {
   status: BookingStatus;
-  driver?: { name?: string; phone?: string; vehicle?: string; plate?: string; location?: GeoPoint };
+  driver?: { name?: string; phone?: string; vehicle?: string; plate?: string; rating?: number; location?: GeoPoint };
+  etaMinutes?: number;
   meta?: Record<string, unknown>;
 }
 
@@ -71,6 +72,21 @@ export interface SupplierAdapter {
   book(input: SupplierBookingInput, ctx: AdapterContext): Promise<SupplierBookingResult>;
   cancel(supplierReference: string, ctx: AdapterContext): Promise<{ cancelled: boolean; fee?: number }>;
   status?(supplierReference: string, ctx: AdapterContext): Promise<SupplierStatusResult>;
+  /** Change time, flight, passengers or notes on an existing booking (route changes need a new booking). */
+  amend?(supplierReference: string, changes: SupplierAmendment, ctx: AdapterContext): Promise<{ amended: boolean; finalPrice?: number }>;
+  /** Relay a customer message to the chauffeur. */
+  message?(supplierReference: string, body: string, ctx: AdapterContext): Promise<{ delivered: boolean }>;
+  /** Whether message() is available for this supplier in the current mode. */
+  supportsMessaging?(ctx: AdapterContext): boolean;
+}
+
+export interface SupplierAmendment {
+  pickupAt?: string;
+  flightNumber?: string;
+  passengers?: number;
+  luggage?: number;
+  notes?: string;
+  passenger?: Partial<Passenger>;
 }
 
 export class SupplierError extends Error {

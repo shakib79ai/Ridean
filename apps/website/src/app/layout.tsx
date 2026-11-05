@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import '@ridean/web-core/src/styles.css';
 import './globals.css';
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
+import './design.css';
+import { ToastProvider } from '@/components/site/ui';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
@@ -24,11 +24,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body>
+      <body className="dz">
         <Providers>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <ToastProvider>{children}</ToastProvider>
         </Providers>
       </body>
     </html>

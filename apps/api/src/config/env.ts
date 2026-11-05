@@ -16,6 +16,7 @@ const EnvSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   SUPPLIER_MODE: z.enum(['live', 'sandbox', 'mock']).default('mock'),
   SUPPLIER_TIMEOUT_MS: z.coerce.number().default(8000),
+  PROMO_CODES: z.string().default(''),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

@@ -51,6 +51,8 @@ export default function BookingAdmin({ params }: { params: Promise<{ id: string 
             <dt>Pickup time</dt><dd>{b.pickupAt ? dt(b.pickupAt) : 'As soon as possible'}</dd>
             {b.tripType && <><dt>Trip type</dt><dd>{b.tripType === 'return' ? `Return · ${dt(b.returnAt)}` : 'One way'}</dd></>}
             {b.flightNumber && <><dt>Flight</dt><dd>{b.flightNumber}</dd></>}
+            {(b.passengers || b.luggage) && <><dt>Party</dt><dd>{b.passengers ?? '—'} passengers · {b.luggage ?? '—'} bags</dd></>}
+            {b.notes && <><dt>Notes</dt><dd style={{ whiteSpace: 'pre-wrap' }}>{b.notes}</dd></>}
             <dt>Vehicle</dt><dd>{b.vehicle.name} ({b.vehicle.class})</dd>
             <dt>Passenger</dt><dd>{b.passenger.firstName} {b.passenger.lastName}<br />{b.passenger.email} · {b.passenger.phone}</dd>
             <dt>Created</dt><dd>{dt(b.createdAt)}</dd>
@@ -61,6 +63,9 @@ export default function BookingAdmin({ params }: { params: Promise<{ id: string 
             <h3 style={{ margin: 0 }}>Money</h3>
             <dl className="kv">
               <dt>Payment flow</dt><dd>{FLOW_LABEL[b.paymentFlow]} · collected by {p.collectedBy === 'ridean' ? 'Ridean' : 'supplier'}</dd>
+              {b.paymentMethod && <><dt>Paid with</dt><dd style={{ textTransform: 'capitalize' }}>{b.paymentMethod}</dd></>}
+              {!!b.discount && <><dt>Promo discount</dt><dd>−{m(b.discount, c)}{b.promoCode ? ` (${b.promoCode})` : ''} · funded from earnings</dd></>}
+              {!!b.tip && <><dt>Chauffeur tip</dt><dd>{m(b.tip, c)} · owed to supplier</dd></>}
               <dt>Supplier price</dt><dd>{m(p.supplierPrice, c)}</dd>
               <dt>Commission</dt><dd>{m(p.commission, c)}</dd>
               <dt>Markup</dt><dd>{m(p.markup, c)}</dd>

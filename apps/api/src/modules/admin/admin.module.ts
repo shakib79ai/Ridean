@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Header, Module, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { count, desc, ilike, or, sql } from 'drizzle-orm';
+import { count, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import type { BookingStatus } from '@ridean/shared';
 import { CurrentUser, Roles, type AuthUser } from '../../common/auth';
 import { ZodPipe } from '../../common/zod.pipe';
 import { InjectDb, type Db } from '../../db/db.module';
-import { bookings, users } from '../../db/schema';
+import { bookingMessages, bookings, contactMessages, users } from '../../db/schema';
 import { toUser } from '../auth/auth.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { BookingsService } from '../bookings/bookings.service';
@@ -105,6 +105,26 @@ export class AdminController {
   status(@Param('id', ParseUUIDPipe) id: string, @Body(new ZodPipe(StatusSchema)) body: { status: BookingStatus }) {
     if (body.status === 'cancelled') return this.bookingsSvc.cancel(null, id, 'Cancelled by operations');
     return this.bookingsSvc.setStatus(id, body.status);
+  }
+
+  @Get('bookings/:id/messages')
+  async bookingMessages(@Param('id', ParseUUIDPipe) id: string) {
+    const rows = await this.db.select().from(bookingMessages).where(eq(bookingMessages.bookingId, id)).orderBy(bookingMessages.createdAt);
+    return rows.map((m) => ({ id: m.id, sender: m.sender, body: m.body, createdAt: m.createdAt.toISOString() }));
+  }
+
+  // ---- contact form inbox
+  @Get('contact-messages')
+  async contactMessages(@Query('handled') handled?: string) {
+    const where = handled === 'true' ? eq(contactMessages.handled, true) : handled === 'false' ? eq(contactMessages.handled, false) : undefined;
+    const rows = await this.db.select().from(contactMessages).where(where).orderBy(desc(contactMessages.createdAt)).limit(200);
+    return rows.map((m) => ({ ...m, createdAt: m.createdAt.toISOString() }));
+  }
+
+  @Patch('contact-messages/:id')
+  async markContact(@Param('id', ParseUUIDPipe) id: string, @Body(new ZodPipe(z.object({ handled: z.boolean() }))) body: { handled: boolean }) {
+    const [m] = await this.db.update(contactMessages).set({ handled: body.handled }).where(eq(contactMessages.id, id)).returning();
+    return { ...m, createdAt: m.createdAt.toISOString() };
   }
 
   // ---- users

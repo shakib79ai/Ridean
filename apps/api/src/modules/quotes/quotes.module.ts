@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Module, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Module, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
-import type { QuoteSearchRequest } from '@ridean/shared';
+import type { PromoResult, QuoteSearchRequest } from '@ridean/shared';
+import { promoDiscount, promoPercent } from '../../common/promo';
+import { publicQuote } from '../../common/redact';
 import { CurrentUser, Public, type AuthUser } from '../../common/auth';
 import { ZodPipe } from '../../common/zod.pipe';
 import { SuppliersModule } from '../suppliers/suppliers.module';
@@ -42,14 +44,27 @@ export class QuotesController {
   /** Public so visitors can see prices before signing in; the quote is linked to the user when logged in. */
   @Public()
   @Post('search')
-  search(@Body(new ZodPipe(QuoteSearchSchema)) body: QuoteSearchRequest, @CurrentUser() user?: AuthUser) {
-    return this.quotes.search(body, user?.id);
+  async search(@Body(new ZodPipe(QuoteSearchSchema)) body: QuoteSearchRequest, @CurrentUser() user?: AuthUser) {
+    const r = await this.quotes.search(body, user?.id);
+    return { ...r, quotes: r.quotes.map(publicQuote) };
+  }
+
+  /** Checks a promo code against a quote and returns the discounted price (applied for real at booking). */
+  @Public()
+  @Post(':id/promo')
+  async promo(@Param('id', ParseUUIDPipe) id: string, @Body(new ZodPipe(z.object({ code: z.string().trim().min(1).max(40) }))) body: { code: string }): Promise<PromoResult> {
+    const { quote, supplier } = await this.quotes.get(id);
+    if (supplier.paymentFlow === 'supplier_collects') throw new BadRequestException('Promo codes cannot be used when the partner takes payment directly');
+    const percentOff = promoPercent(body.code);
+    if (!percentOff) throw new BadRequestException("That code isn't valid");
+    const discount = promoDiscount(quote.price.customerPrice, quote.price.earnings, percentOff);
+    return { code: body.code.toUpperCase(), percentOff, discount, customerPrice: quote.price.customerPrice - discount };
   }
 
   @Public()
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string) {
-    return (await this.quotes.get(id)).quote;
+    return publicQuote((await this.quotes.get(id)).quote);
   }
 }
 

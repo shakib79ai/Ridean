@@ -138,6 +138,17 @@ export interface Booking {
   vehicle: Vehicle;
   price: PriceBreakdown;
   paymentFlow: PaymentFlow;
+  /** How the customer paid: card, wallet, business account, or directly to the supplier */
+  paymentMethod?: 'card' | 'wallet' | 'business' | 'supplier';
+  passengers?: number;
+  luggage?: number;
+  /** Chauffeur tip included in price.customerPrice (minor units) */
+  tip?: number;
+  /** Promo discount already deducted from price.customerPrice (minor units) */
+  discount?: number;
+  promoCode?: string;
+  notes?: string;
+  cancelReason?: string;
   createdAt: string;
 }
 
@@ -149,6 +160,13 @@ export interface CreateBookingRequest {
   /** Stripe payment method id to charge (saved card); omit to collect with Payment Element */
   paymentMethodId?: string;
   payWithWallet?: boolean;
+  /** Bill the user's Ridean Business account (monthly invoice) */
+  payWithBusiness?: boolean;
+  /** Required when the business travel policy asks for a trip purpose */
+  tripPurpose?: string;
+  promoCode?: string;
+  /** Chauffeur tip in minor units (only when Ridean collects payment) */
+  tip?: number;
 }
 
 export interface CreateBookingResponse {
@@ -251,4 +269,124 @@ export interface Paginated<T> {
   total: number;
   page: number;
   pageSize: number;
+}
+
+// ---- Website account features
+
+export interface UserSettings {
+  notifications: { tripUpdates: boolean; flightAlerts: boolean; offers: boolean };
+  ride: { quietRide: boolean; receiptsByEmail: boolean; shareStatus: boolean };
+  privacy: { shareLocation: boolean; personalisedOffers: boolean; analytics: boolean };
+  preferences: { language: string; currency: string; appearance: 'dark' | 'light' | 'system' };
+  defaultPaymentMethod?: string;
+}
+
+export const DEFAULT_USER_SETTINGS: UserSettings = {
+  notifications: { tripUpdates: true, flightAlerts: true, offers: false },
+  ride: { quietRide: false, receiptsByEmail: true, shareStatus: false },
+  privacy: { shareLocation: true, personalisedOffers: false, analytics: false },
+  preferences: { language: 'en-US', currency: 'USD', appearance: 'dark' },
+};
+
+export interface SavedCard {
+  id: string;
+  brand: string;
+  last4: string;
+  expMonth: number;
+  expYear: number;
+  isDefault?: boolean;
+}
+
+export interface Driver {
+  name?: string;
+  phone?: string;
+  vehicle?: string;
+  plate?: string;
+  rating?: number;
+  photoUrl?: string;
+}
+
+export interface BookingLiveStatus {
+  status: BookingStatus;
+  driver?: Driver;
+  etaMinutes?: number;
+  /** Timeline of what has happened so far */
+  events: { key: 'confirmed' | 'driver_assigned' | 'on_the_way' | 'arrived' | 'in_progress' | 'completed' | 'cancelled'; label: string; at?: string; done: boolean }[];
+  /** Whether messages can be relayed to the chauffeur for this booking */
+  messaging: boolean;
+}
+
+export interface BookingMessage {
+  id: string;
+  sender: 'customer' | 'chauffeur' | 'system';
+  body: string;
+  createdAt: string;
+}
+
+export interface UpdateBookingRequest {
+  pickupAt?: string;
+  flightNumber?: string;
+  passengers?: number;
+  luggage?: number;
+  notes?: string;
+  passenger?: Partial<Passenger>;
+}
+
+export interface PromoResult {
+  code: string;
+  percentOff: number;
+  discount: number;
+  customerPrice: number;
+}
+
+export interface Invoice {
+  id: string;
+  number: string;
+  bookingId: string;
+  reference: string;
+  issuedAt: string;
+  service: ServiceKey;
+  description: string;
+  paidWith: string;
+  currency: string;
+  lines: { label: string; amount: number }[];
+  total: number;
+  billedTo: { name: string; email: string; company?: string };
+}
+
+export interface BusinessPolicy {
+  requirePurpose: boolean;
+  businessClassOnly: boolean;
+  /** Bookings above this amount (minor units) need an account admin; 0 = no limit */
+  approvalOver: number;
+}
+
+export interface BusinessMember {
+  id: string;
+  name?: string;
+  email: string;
+  role: 'admin' | 'member';
+  status: 'active' | 'invited';
+  tripsThisMonth: number;
+  spendThisMonth: number;
+}
+
+export interface BusinessAccount {
+  id: string;
+  name: string;
+  role: 'admin' | 'member';
+  monthlyBudget: number;
+  spendThisMonth: number;
+  tripsThisMonth: number;
+  currency: string;
+  policy: BusinessPolicy;
+  billingEmail?: string;
+  members: BusinessMember[];
+}
+
+export interface ContactRequest {
+  name: string;
+  email: string;
+  topic: string;
+  message: string;
 }

@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import * as bcrypt from 'bcryptjs';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import type { AuthResponse, User } from '@ridean/shared';
 import { CurrentUser, Public, type AuthUser } from '../../common/auth';
@@ -18,7 +18,17 @@ const RegisterSchema = z.object({
   lastName: z.string().min(1).max(80),
   phone: z.string().max(32).optional(),
 });
-const LoginSchema = z.object({ email: z.string().email().transform((e) => e.toLowerCase().trim()), password: z.string().min(1) });
+/** Sign in with an email address or a phone number, plus password. */
+const LoginSchema = z
+  .object({
+    email: z.string().email().transform((e) => e.toLowerCase().trim()).optional(),
+    phone: z.string().min(5).max(32).optional(),
+    password: z.string().min(1),
+  })
+  .refine((v) => v.email || v.phone, 'Enter your email or phone number');
+
+/** Digits only, so "+1 (718) 555-0142" and "17185550142" match. */
+export const normalisePhone = (p?: string | null) => (p ?? '').replace(/\D/g, '');
 const UpdateMeSchema = z.object({ firstName: z.string().min(1).max(80).optional(), lastName: z.string().min(1).max(80).optional(), phone: z.string().max(32).optional() });
 
 export function toUser(u: UserRow): User {
@@ -37,20 +47,27 @@ export class AuthService {
     if (exists.length) throw new ConflictException('An account with this email already exists');
     const [u] = await this.db
       .insert(users)
-      .values({ email: input.email, passwordHash: await bcrypt.hash(input.password, 12), firstName: input.firstName, lastName: input.lastName, phone: input.phone })
+      .values({ email: input.email, passwordHash: await bcrypt.hash(input.password, 12), firstName: input.firstName, lastName: input.lastName, phone: input.phone?.trim() || null })
       .returning();
     return this.issue(u);
   }
 
-  async login(email: string, password: string): Promise<AuthResponse> {
-    const [u] = await this.db.select().from(users).where(eq(users.email, email));
-    if (!u || !(await bcrypt.compare(password, u.passwordHash))) throw new UnauthorizedException('Email or password is incorrect');
+  async login(input: { email?: string; phone?: string; password: string }): Promise<AuthResponse> {
+    const digits = normalisePhone(input.phone);
+    if (!input.email && digits.length < 7) throw new UnauthorizedException('Phone number or password is incorrect');
+    const where = input.email
+      ? and(eq(users.email, input.email), isNull(users.deletedAt))
+      : and(sql`regexp_replace(coalesce(${users.phone}, ''), '[^0-9]', '', 'g') = ${digits}`, isNull(users.deletedAt));
+    const [u] = await this.db.select().from(users).where(where).limit(1);
+    if (!u || !(await bcrypt.compare(input.password, u.passwordHash))) {
+      throw new UnauthorizedException(input.email ? 'Email or password is incorrect' : 'Phone number or password is incorrect');
+    }
     return this.issue(u);
   }
 
   async me(id: string): Promise<User> {
     const [u] = await this.db.select().from(users).where(eq(users.id, id));
-    if (!u) throw new UnauthorizedException();
+    if (!u || u.deletedAt) throw new UnauthorizedException();
     return toUser(u);
   }
 
@@ -81,7 +98,7 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('auth/login')
   login(@Body(new ZodPipe(LoginSchema)) body: z.infer<typeof LoginSchema>) {
-    return this.auth.login(body.email, body.password);
+    return this.auth.login(body);
   }
 
   @ApiBearerAuth()

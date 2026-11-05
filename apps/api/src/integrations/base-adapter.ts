@@ -8,8 +8,21 @@ import {
   SupplierBookingResult,
   SupplierError,
   SupplierOffer,
+  SupplierAmendment,
   SupplierStatusResult,
 } from './supplier-adapter';
+
+const MOCK_DRIVERS = [
+  { name: 'James Mitchell', vehicle: 'Black Mercedes E-Class', plate: 'LX24 RDN', rating: 4.97 },
+  { name: 'Amara Okafor', vehicle: 'Black BMW 5 Series', plate: 'T 7841 NY', rating: 4.95 },
+  { name: 'Luis Ortega', vehicle: 'Black Cadillac Escalade', plate: 'T 2290 NY', rating: 4.92 },
+];
+
+/** Sample chauffeur details for SUPPLIER_MODE=mock, stable per booking reference. */
+function mockStatus(ref: string): SupplierStatusResult {
+  const i = [...ref].reduce((a, c) => a + c.charCodeAt(0), 0) % MOCK_DRIVERS.length;
+  return { status: 'driver_assigned', driver: { ...MOCK_DRIVERS[i], phone: '+1 212 555 0100' }, etaMinutes: 12 };
+}
 
 /**
  * Base class for HTTP suppliers. Subclasses implement the `live*` methods that map Ridean's
@@ -27,6 +40,10 @@ export abstract class BaseSupplierAdapter implements SupplierAdapter {
   protected abstract liveBook(input: SupplierBookingInput, ctx: AdapterContext): Promise<SupplierBookingResult>;
   protected abstract liveCancel(ref: string, ctx: AdapterContext): Promise<{ cancelled: boolean; fee?: number }>;
   protected liveStatus?(ref: string, ctx: AdapterContext): Promise<SupplierStatusResult>;
+  /** Implement when the partner API supports changing a booking. */
+  protected liveAmend?(ref: string, changes: SupplierAmendment, ctx: AdapterContext): Promise<{ amended: boolean; finalPrice?: number }>;
+  /** Implement when the partner API can relay messages to the chauffeur. */
+  protected liveMessage?(ref: string, body: string, ctx: AdapterContext): Promise<{ delivered: boolean }>;
 
   /**
    * Mock offers are served only when SUPPLIER_MODE=mock. In live/sandbox mode a supplier with
@@ -69,8 +86,25 @@ export abstract class BaseSupplierAdapter implements SupplierAdapter {
   }
 
   async status(ref: string, ctx: AdapterContext): Promise<SupplierStatusResult> {
-    if (this.useMock(ctx) || !this.liveStatus) return { status: 'confirmed' };
+    if (this.useMock(ctx)) return mockStatus(ref);
+    if (!this.liveStatus) return { status: 'confirmed' };
     return this.liveStatus(ref, ctx);
+  }
+
+  async amend(ref: string, changes: SupplierAmendment, ctx: AdapterContext): Promise<{ amended: boolean; finalPrice?: number }> {
+    if (this.useMock(ctx)) return { amended: true };
+    if (!this.liveAmend) throw new SupplierError(ctx.supplier.code, 'This partner does not accept online changes — cancel and rebook, or contact support', false);
+    return this.liveAmend(ref, changes, ctx);
+  }
+
+  supportsMessaging(ctx: AdapterContext): boolean {
+    return ctx.mode === 'mock' || !!this.liveMessage;
+  }
+
+  async message(ref: string, body: string, ctx: AdapterContext): Promise<{ delivered: boolean }> {
+    if (this.useMock(ctx)) return { delivered: true };
+    if (!this.liveMessage) return { delivered: false };
+    return this.liveMessage(ref, body, ctx);
   }
 
   /** Helper: throws a SupplierError for non-2xx responses. */

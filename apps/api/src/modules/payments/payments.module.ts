@@ -10,6 +10,8 @@ import { InjectDb, type Db } from '../../db/db.module';
 import { walletTransactions } from '../../db/schema';
 import { PaymentsService } from './payments.service';
 
+const SimCardSchema = z.object({ number: z.string().min(12).max(23), expMonth: z.number().int().min(1).max(12), expYear: z.number().int().min(2024).max(2100), makeDefault: z.boolean().optional() });
+
 @ApiTags('payments')
 @ApiBearerAuth()
 @Controller('payments')
@@ -24,6 +26,17 @@ export class PaymentMethodsController {
   @Post('setup-intent')
   setupIntent(@CurrentUser() user: AuthUser) {
     return this.payments.setupIntent(user.id);
+  }
+
+  @Post('methods/:id/default')
+  @HttpCode(204)
+  setDefault(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.payments.setDefaultMethod(user.id, id);
+  }
+
+  @Post('methods/simulated')
+  addSimulated(@CurrentUser() user: AuthUser, @Body(new ZodPipe(SimCardSchema)) body: z.infer<typeof SimCardSchema>) {
+    return this.payments.addSimulatedCard(user.id, body);
   }
 
   @Delete('methods/:id')

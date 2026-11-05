@@ -13,6 +13,16 @@ import type {
   TransactionReport,
   User,
   WalletSummary,
+  UpdateBookingRequest,
+  BookingLiveStatus,
+  BookingMessage,
+  PromoResult,
+  Invoice,
+  UserSettings,
+  SavedCard,
+  BusinessAccount,
+  BusinessPolicy,
+  ContactRequest,
 } from './types';
 
 export class ApiError extends Error {
@@ -65,6 +75,9 @@ export class RideanApi {
   login(email: string, password: string) {
     return this.request<AuthResponse>('POST', '/auth/login', { email, password });
   }
+  loginWithPhone(phone: string, password: string) {
+    return this.request<AuthResponse>('POST', '/auth/login', { phone, password });
+  }
   me() {
     return this.request<User>('GET', '/me');
   }
@@ -108,7 +121,7 @@ export class RideanApi {
     return this.request<void>('DELETE', `/me/addresses/${id}`);
   }
   paymentMethods() {
-    return this.request<{ id: string; brand: string; last4: string; expMonth: number; expYear: number }[]>('GET', '/payments/methods');
+    return this.request<SavedCard[]>('GET', '/payments/methods');
   }
   createSetupIntent() {
     return this.request<{ clientSecret: string }>('POST', '/payments/setup-intent');
@@ -135,6 +148,77 @@ export class RideanApi {
     return res.text();
   }
 
+  // ---- booking extras
+  updateBooking(id: string, input: UpdateBookingRequest) {
+    return this.request<Booking>('PATCH', `/bookings/${id}`, input);
+  }
+  bookingStatus(id: string) {
+    return this.request<BookingLiveStatus>('GET', `/bookings/${id}/status`);
+  }
+  bookingMessages(id: string) {
+    return this.request<BookingMessage[]>('GET', `/bookings/${id}/messages`);
+  }
+  sendBookingMessage(id: string, body: string) {
+    return this.request<BookingMessage>('POST', `/bookings/${id}/messages`, { body });
+  }
+  applyPromo(quoteId: string, code: string) {
+    return this.request<PromoResult>('POST', `/quotes/${quoteId}/promo`, { code });
+  }
+
+  // ---- invoices
+  invoices(params: { month?: string } = {}) {
+    return this.request<Invoice[]>('GET', '/invoices', undefined, params);
+  }
+  invoice(bookingId: string) {
+    return this.request<Invoice>('GET', `/invoices/${bookingId}`);
+  }
+
+  // ---- settings & account
+  settings() {
+    return this.request<UserSettings>('GET', '/me/settings');
+  }
+  updateSettings(input: Partial<UserSettings>) {
+    return this.request<UserSettings>('PATCH', '/me/settings', input);
+  }
+  changePassword(currentPassword: string, newPassword: string) {
+    return this.request<void>('POST', '/me/password', { currentPassword, newPassword });
+  }
+  exportData() {
+    return this.request<Record<string, unknown>>('GET', '/me/export');
+  }
+  deleteAccount(password: string) {
+    return this.request<void>('POST', '/me/delete', { password });
+  }
+  setDefaultPaymentMethod(id: string) {
+    return this.request<void>('POST', `/payments/methods/${id}/default`);
+  }
+  /** Development only (PAYMENTS_MODE=simulated): store a test card without Stripe. */
+  addSimulatedCard(input: { number: string; expMonth: number; expYear: number; makeDefault?: boolean }) {
+    return this.request<SavedCard>('POST', '/payments/methods/simulated', input);
+  }
+
+  // ---- business
+  business() {
+    return this.request<BusinessAccount | null>('GET', '/business');
+  }
+  createBusiness(input: { name: string; monthlyBudget?: number; billingEmail?: string }) {
+    return this.request<BusinessAccount>('POST', '/business', input);
+  }
+  updateBusiness(input: { name?: string; monthlyBudget?: number; billingEmail?: string; policy?: Partial<BusinessPolicy> }) {
+    return this.request<BusinessAccount>('PATCH', '/business', input);
+  }
+  inviteBusinessMember(input: { email: string; name?: string; role?: 'admin' | 'member' }) {
+    return this.request<BusinessAccount>('POST', '/business/members', input);
+  }
+  removeBusinessMember(id: string) {
+    return this.request<BusinessAccount>('DELETE', `/business/members/${id}`);
+  }
+
+  // ---- public
+  contact(input: ContactRequest) {
+    return this.request<{ ok: true }>('POST', '/contact', input);
+  }
+
   admin = {
     dashboard: () => this.request<Record<string, unknown>>('GET', '/admin/dashboard'),
     bookings: (params: { status?: string; service?: string; supplierId?: string; q?: string; page?: number } = {}) =>
@@ -158,6 +242,10 @@ export class RideanApi {
     earnings: (params: { from?: string; to?: string } = {}) => this.request<Record<string, unknown>>('GET', '/admin/reports/earnings', undefined, params),
     transactionReport: (params: { from?: string; to?: string; groupBy?: 'supplier' | 'service'; supplierId?: string; service?: string } = {}) =>
       this.request<TransactionReport>('GET', '/admin/reports/transactions', undefined, params),
+    bookingMessages: (id: string) => this.request<BookingMessage[]>('GET', `/admin/bookings/${id}/messages`),
+    contactMessages: (params: { handled?: 'true' | 'false' } = {}) =>
+      this.request<{ id: string; name: string; email: string; topic: string; message: string; handled: boolean; userId: string | null; createdAt: string }[]>('GET', '/admin/contact-messages', undefined, params),
+    markContactMessage: (id: string, handled: boolean) => this.request<unknown>('PATCH', `/admin/contact-messages/${id}`, { handled }),
     transactions: (params: { from?: string; to?: string; supplierId?: string; service?: string; page?: number } = {}) =>
       this.request<Paginated<Booking>>('GET', '/admin/reports/transactions/rows', undefined, params),
   };
