@@ -16,9 +16,10 @@ class ProfileScreen extends ConsumerWidget {
     final ok = await rdConfirm(context, title: 'Sign out', message: 'Are you sure you want to sign out of Ridean?', confirm: 'Sign out', danger: true);
     if (!ok) return;
     if (!context.mounted) return;
-    await ref.read(authProvider).logout();
-    if (!context.mounted) return;
+    // Leave the protected tab first so the auth redirect doesn't send us to Sign in.
+    final auth = ref.read(authProvider);
     context.go('/');
+    await auth.logout();
   }
 
   @override
