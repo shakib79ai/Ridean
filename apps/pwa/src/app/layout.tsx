@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import '@ridean/web-core/src/styles.css';
 import './globals.css';
-import { Providers } from './providers';
-import { TabBar } from '@/components/TabBar';
+import './design.css';
 import { RegisterSW } from '@/components/RegisterSW';
+import { ToastProvider } from '@/components/site/ui';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: { default: 'Ridean', template: '%s · Ridean' },
@@ -23,10 +23,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body>
+      <body className="dz" style={{ margin: 0, background: '#071A14', color: '#F3EEDF', fontFamily: "'Inter', sans-serif" }}>
         <Providers>
-          <main className="app-main">{children}</main>
-          <TabBar />
+          <ToastProvider>
+            <div className="pw-app" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>{children}</div>
+          </ToastProvider>
         </Providers>
         <RegisterSW />
       </body>
