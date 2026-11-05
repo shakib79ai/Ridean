@@ -1,0 +1,22 @@
+{
+  "name": "Ridean",
+  "short_name": "Ridean",
+  "description": "Rides, airport transfers, chauffeurs and car rental.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#071A14",
+  "theme_color": "#071A14",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Book a ride", "url": "/book/ride" },
+    { "name": "Airport transfer", "url": "/book/airport-transfer" },
+    { "name": "My trips", "url": "/trips" }
+  ]
+}

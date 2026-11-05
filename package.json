@@ -1,0 +1,30 @@
+{
+  "name": "ridean",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Ridean — premium mobility platform: API, website, PWA, admin and mobile app",
+  "workspaces": [
+    "packages/shared",
+    "packages/web-core",
+    "apps/api",
+    "apps/website",
+    "apps/pwa",
+    "apps/admin"
+  ],
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "build:shared": "npm run build -w @ridean/shared",
+    "build": "npm run build:shared && npm run build -w @ridean/api && npm run build -w @ridean/website && npm run build -w @ridean/pwa && npm run build -w @ridean/admin",
+    "dev:api": "npm run start:dev -w @ridean/api",
+    "dev:website": "npm run dev -w @ridean/website",
+    "dev:pwa": "npm run dev -w @ridean/pwa",
+    "dev:admin": "npm run dev -w @ridean/admin",
+    "typecheck": "npm run build:shared && npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run build:shared && npm run test -w @ridean/shared && npm run test -w @ridean/api",
+    "db:migrate": "npm run db:migrate -w @ridean/api",
+    "db:seed": "npm run db:seed -w @ridean/api"
+  }
+}
