@@ -212,7 +212,7 @@ class _BookingDetailsScreenState extends ConsumerState<BookingDetailsScreen> {
               onTap: () => context.push('/bookings/${b.id}/status'),
             ),
           ]),
-        if (hasDriver && driver != null) _driverCard(b, driver, live),
+        if (hasDriver) _driverCard(b, driver, live),
         // Price — what was actually charged
         RdCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

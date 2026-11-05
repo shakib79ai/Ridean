@@ -172,7 +172,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         title: c.$2,
         subtitle: c.$3,
         value: s == null ? c.$4 : s.flag('privacy', c.$1, c.$4),
-        onChanged: disabled || s == null ? null : (v) => _change(s, c.$1, v),
+        onChanged: disabled ? null : (v) => _change(s, c.$1, v),
       ));
     }
 

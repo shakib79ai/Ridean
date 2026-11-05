@@ -224,7 +224,7 @@ class _TripStatusScreenState extends ConsumerState<TripStatusScreen> {
       onRefresh: _refresh,
       children: [
         RdMap(height: 230, car: _carProgress(status)),
-        if (hasDriver && driver != null)
+        if (hasDriver)
           _chauffeurCard(b, driver, live)
         else if (isLive)
           RdCard(
