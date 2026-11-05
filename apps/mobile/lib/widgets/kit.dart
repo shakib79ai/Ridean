@@ -509,7 +509,7 @@ class RdListTile extends StatelessWidget {
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(title, style: RdText.sans(15, weight: FontWeight.w500, color: color)),
-              if (subtitle != null) Padding(padding: const EdgeInsets.only(top: 2), child: Text(subtitle!, style: RdText.sans(12.5, color: RdColors.muted))),
+              if (subtitle != null) Padding(padding: const EdgeInsets.only(top: 2), child: Text(subtitle!, maxLines: 1, overflow: TextOverflow.ellipsis, style: RdText.sans(12.5, color: RdColors.muted))),
             ]),
           ),
           if (trailingText != null) Padding(padding: const EdgeInsets.only(left: 8), child: Text(trailingText!, style: RdText.sans(13, color: RdColors.muted))),

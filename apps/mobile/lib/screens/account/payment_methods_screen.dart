@@ -112,7 +112,7 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
         _defaultId = null;
         ref.invalidate(walletProvider);
         ref.invalidate(businessProvider);
-        await ref.refresh(paymentMethodsProvider.future);
+        final _ = await ref.refresh(paymentMethodsProvider.future);
       },
       children: [
         if (cards.hasError && cards.valueOrNull == null) RdError(cards.error!, onRetry: () => ref.invalidate(paymentMethodsProvider)),

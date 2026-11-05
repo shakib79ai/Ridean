@@ -109,8 +109,19 @@ class RideanApi {
         () => _dio.post('/bookings', data: input),
         (d) => (booking: Booking.fromJson(_m(d['booking'])), clientSecret: d['clientSecret'] as String?, supplierPaymentUrl: d['supplierPaymentUrl'] as String?),
       );
-  Future<List<Booking>> bookings({String? status}) =>
-      _call(() => _dio.get('/bookings', queryParameters: {if (status != null) 'status': status}), (d) => _l(d['items']).map(Booking.fromJson).toList());
+  /// All of the customer's bookings (follows the API's pagination, up to 10 pages).
+  Future<List<Booking>> bookings({String? status}) async {
+    final all = <Booking>[];
+    for (var page = 1; page <= 10; page++) {
+      final r = await _call(
+        () => _dio.get('/bookings', queryParameters: {'page': page, if (status != null) 'status': status}),
+        (d) => (items: _l(d['items']).map(Booking.fromJson).toList(), total: (d['total'] as num?)?.toInt() ?? 0),
+      );
+      all.addAll(r.items);
+      if (r.items.isEmpty || all.length >= r.total) break;
+    }
+    return all;
+  }
   Future<Booking> booking(String id) => _call(() => _dio.get('/bookings/$id'), (d) => Booking.fromJson(_m(d)));
   Future<Booking> cancelBooking(String id, [String reason = 'Cancelled in app']) =>
       _call(() => _dio.post('/bookings/$id/cancel', data: {'reason': reason}), (d) => Booking.fromJson(_m(d)));

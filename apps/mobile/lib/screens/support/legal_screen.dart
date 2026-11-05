@@ -128,8 +128,9 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     AsyncValue<UserSettings>? settingsAsync;
     UserSettings? settings;
     if (signedIn) {
-      settingsAsync = ref.watch(settingsProvider);
-      settings = _local ?? settingsAsync.valueOrNull;
+      final watched = ref.watch(settingsProvider);
+      settingsAsync = watched;
+      settings = _local ?? watched.valueOrNull;
     }
     final s = settings;
     final disabled = !signedIn || s == null || _saving;

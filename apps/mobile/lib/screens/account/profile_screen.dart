@@ -85,7 +85,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(walletProvider);
       ref.invalidate(paymentMethodsProvider);
       ref.invalidate(businessProvider);
-      await ref.refresh(bookingsProvider.future);
+      final _ = await ref.refresh(bookingsProvider.future);
     }
 
     return RdTabPage(

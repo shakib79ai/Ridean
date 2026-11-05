@@ -174,7 +174,7 @@ class _BusinessScreenState extends ConsumerState<BusinessScreen> {
 
   Future<void> _refresh() async {
     _b = null;
-    await ref.refresh(businessProvider.future);
+    final _ = await ref.refresh(businessProvider.future);
   }
 
   @override

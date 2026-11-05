@@ -43,7 +43,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
 
   Future<void> _refresh() async {
     ref.invalidate(paymentMethodsProvider);
-    await ref.refresh(walletProvider.future);
+    final _ = await ref.refresh(walletProvider.future);
   }
 
   Future<void> _topUp(int amount, String currency) async {
