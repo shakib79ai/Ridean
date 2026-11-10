@@ -37,7 +37,7 @@ function LoginForm() {
   return (
     <form onSubmit={submit} className="az-card az-stack" style={{ width: 'min(420px, 100%)', padding: 32, gap: 18 }}>
       <div style={{ textAlign: 'center', marginBottom: 4 }}>
-        <div className="az-word" style={{ fontSize: 40 }}>Ridean</div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/logo-full.png" alt="Ridean" style={{ display: 'block', height: 92, width: 'auto', margin: '0 auto' }} />
         <div className="az-gold" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.28em', marginTop: 2 }}>ADMIN</div>
       </div>
       <div style={{ textAlign: 'center' }}>

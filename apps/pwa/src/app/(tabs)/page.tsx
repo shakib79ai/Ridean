@@ -187,21 +187,8 @@ function Hero() {
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 430, background: 'linear-gradient(180deg,rgba(0,9,9,.55) 0%,rgba(0,9,9,.05) 28%,rgba(0,9,9,.15) 60%,#000909 100%)' }} />
       <div style={{ position: 'relative' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px 0' }}>
-          <span
-            style={{
-              fontFamily: "'Playfair Display',serif",
-              fontWeight: 700,
-              letterSpacing: '-.01em',
-              background: 'linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              color: 'transparent',
-              fontSize: 44,
-              lineHeight: 1.1,
-            }}
-          >
-            Ridean
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo.png" alt="Ridean" style={{ display: 'block', height: 44, width: 'auto' }} />
           <Link href="/account" aria-label="Menu" style={{ display: 'flex', padding: 6, marginRight: -6 }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F3EEDF" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
               <path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17" />

@@ -30,7 +30,6 @@ const MENU = [
   { href: '/account/settings', label: 'Settings' },
 ];
 
-const logo: React.CSSProperties = { fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: '-.01em', background: 'linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', fontSize: 36, textDecoration: 'none' };
 
 export function SiteHeader() {
   const path = usePathname() ?? '/';
@@ -55,7 +54,9 @@ export function SiteHeader() {
     <header className="dz-header" style={{ position: 'relative', zIndex: 20, background: '#0A1813', borderBottom: '1px solid #1F4537' }}>
       <div style={{ maxWidth: 1344, margin: '0 auto', padding: '0 max(16px, min(48px, 4vw))', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 4vw, 56px)', height: 78 }}>
-          <Link href="/" style={logo} aria-label="Ridean home">Ridean</Link>
+          <Link href="/" aria-label="Ridean home" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/logo.png" alt="Ridean" style={{ display: 'block', height: 46, width: 'auto' }} />
+          </Link>
           <nav className={`dz-nav ${mobile ? 'open' : ''}`} aria-label="Main" style={{ display: 'flex', gap: 34, flex: 1 }}>
             {nav.map((n) => {
               const active = path.startsWith(n.href) || !!n.also?.some((a) => path.startsWith(a));
