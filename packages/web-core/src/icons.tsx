@@ -41,15 +41,26 @@ export const IconUser = ({ size = 18, ...r }: P) => (
 export const IconBag = ({ size = 18, ...r }: P) => (
   <svg {...base(size, r)}><rect x="4" y="7" width="16" height="13" rx="2" /><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" /></svg>
 );
+/** Solid service glyphs (24x24, even-odd). Shared by the website, PWA and admin; the Flutter app has the same paths. */
+export const SERVICE_PATHS = {
+  ride: ['M1.6 15.4v-2.1c0-.6.3-1 .9-1.2l3.9-.6 2.5-2.4c.4-.4.9-.6 1.5-.6h3.9c.6 0 1.1.2 1.5.6l2.3 2.2 3.3.6c.7.1 1.2.7 1.2 1.4v2.1c0 .4-.3.7-.7.7h-1.6a2.6 2.6 0 0 0-5.1 0H9.2a2.6 2.6 0 0 0-5.1 0H2.3c-.4 0-.7-.3-.7-.7zM7.7 11.4h3.6V9.6h-1.4c-.3 0-.6.1-.8.3zm4.6 0h4.2l-1.7-1.5c-.2-.2-.5-.3-.8-.3h-1.7z', 'M6.65 14.3a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2zm0 1.3a.8.8 0 1 0 0 1.6.8.8 0 0 0 0-1.6zM17.35 14.3a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2zm0 1.3a.8.8 0 1 0 0 1.6.8.8 0 0 0 0-1.6z'],
+  airport: ['M21 15.6v-1.9l-7.6-4.7V3.9c0-.8-.6-1.4-1.4-1.4s-1.4.6-1.4 1.4V9L3 13.7v1.9l7.6-2.4v5.1l-1.9 1.4v1.4L12 20.2l3.3.9v-1.4l-1.9-1.4v-5.1z'],
+  rent: ['M15.9 7.2 14.7 3.8c-.2-.5-.7-.9-1.3-.9H5.6c-.6 0-1.1.4-1.3.9L2.6 8.6v6.6c0 .5.4.9.9.9h.9c.5 0 .9-.4.9-.9v-.9h8.4v.9c0 .5.4.9.9.9h.9c.5 0 .9-.4.9-.9V9.2zM5.4 12.4a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8.3 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zM4.3 8.1l1.1-3.3h8.3l1.1 3.3z', 'M17.8 11.2a3.4 3.4 0 0 0-3.2 4.5l-2.9 2.9v2.2h2.2v-1.3h1.3v-1.3h1.3l.6-.6a3.4 3.4 0 1 0 .7-6.4zm.9 2.1a1 1 0 1 1 0 2 1 1 0 0 1 0-2z'],
+} as const;
+/** The glyph's paths for use inside an existing <svg viewBox="0 0 24 24">. */
+export function serviceGlyph(kind: keyof typeof SERVICE_PATHS, fill: string) {
+  return SERVICE_PATHS[kind].map((d) => (
+    <path key={d.slice(0, 12)} fill={fill} fillRule="evenodd" d={d} transform={kind === 'airport' ? 'rotate(45 12 12)' : undefined} />
+  ));
+}
 export const IconPlane = ({ size = 22, ...r }: P) => (
-  <svg {...base(size, r)} fill="currentColor" stroke="none"><path transform="rotate(45 12 12)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" /></svg>
+  <svg {...base(size, r)} fill="currentColor" stroke="none">{serviceGlyph('airport', 'currentColor')}</svg>
 );
-const CAR = 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z';
 export const IconCar = ({ size = 22, ...r }: P) => (
-  <svg {...base(size, r)} fill="currentColor" stroke="none"><path d={CAR} /></svg>
+  <svg {...base(size, r)} fill="currentColor" stroke="none">{serviceGlyph('ride', 'currentColor')}</svg>
 );
 export const IconRent = ({ size = 22, ...r }: P) => (
-  <svg {...base(size, r)} fill="currentColor" stroke="none"><path fillRule="evenodd" d={`${CAR}M9.25 14.6h5.5v1.1h-5.5zM9.25 16.6h5.5v1h-5.5z`} /></svg>
+  <svg {...base(size, r)} fill="currentColor" stroke="none">{serviceGlyph('rent', 'currentColor')}</svg>
 );
 export const IconStar = ({ size = 22, ...r }: P) => (
   <svg {...base(size, r)}><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" /></svg>

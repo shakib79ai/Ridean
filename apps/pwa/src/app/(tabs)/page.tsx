@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState, type CSSProperties, type ReactNode } from 'react';
 import type { QuoteSearchRequest } from '@ridean/shared';
-import { encodeSearch } from '@ridean/web-core';
+import { encodeSearch, serviceGlyph } from '@ridean/web-core';
 import { C, Field } from '@/components/site/ui';
 import { CalendarIcon, Stroke } from '@/components/booking/icons';
 import { Cta, DateTimeRow, FormError, PlaceField } from '@/components/booking/parts';
@@ -14,17 +14,10 @@ import { dateTimeToIso, defaultDateTime, toGeo, useLocate, validAddress, emptyPl
 
 type Tab = 'ride' | 'airport' | 'rent';
 
-const CAR_PATH =
-  'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z';
 const TABS: { key: Tab; label: string; cta: string; icon: (fill: string) => ReactNode }[] = [
-  { key: 'ride', label: 'Ride', cta: 'Find a ride', icon: (fill) => <path fill={fill} d={CAR_PATH} /> },
-  {
-    key: 'airport',
-    label: 'Airport transfer',
-    cta: 'Find a transfer',
-    icon: (fill) => <path fill={fill} transform="rotate(45 12 12)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />,
-  },
-  { key: 'rent', label: 'Rent a car', cta: 'Find a car', icon: (fill) => <path fill={fill} fillRule="evenodd" d={`${CAR_PATH}M9.25 14.6h5.5v1.1h-5.5zM9.25 16.6h5.5v1h-5.5z`} /> },
+  { key: 'ride', label: 'Ride', cta: 'Find a ride', icon: (fill) => serviceGlyph('ride', fill) },
+  { key: 'airport', label: 'Airport transfer', cta: 'Find a transfer', icon: (fill) => serviceGlyph('airport', fill) },
+  { key: 'rent', label: 'Rent a car', cta: 'Find a car', icon: (fill) => serviceGlyph('rent', fill) },
 ];
 const ROUTE: Record<Tab, string> = { ride: '/book/ride', airport: '/book/airport-transfer', rent: '/book/rent' };
 const RENT_TIME = '10:00';
@@ -114,12 +107,12 @@ function HeroSearch() {
               aria-selected={on}
               className="dz-btn-reset"
               onClick={() => pickTab(t.key)}
-              style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '14px 2px 11px', borderBottom: `2.5px solid ${on ? C.yellow : 'transparent'}` }}
+              style={{ flex: `${t.label.length + 6} 1 0`, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '14px 2px 11px', borderBottom: `2.5px solid ${on ? C.yellow : 'transparent'}` }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>
                 {t.icon(color)}
               </svg>
-              <span style={{ fontSize: 12.5, color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.label}</span>
+              <span style={{ fontSize: 12, color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.label}</span>
             </button>
           );
         })}
