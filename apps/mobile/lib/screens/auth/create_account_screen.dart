@@ -238,7 +238,7 @@ class _AuthHero extends StatelessWidget {
           right: 24,
           bottom: 20,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const RdWordmark(size: 40),
+            const RdWordmark(size: 40, withSlogan: true),
             const SizedBox(height: 4),
             Text('Arrive exceptionally.', style: RdText.sans(14, color: RdColors.soft)),
           ]),

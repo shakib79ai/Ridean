@@ -18,13 +18,24 @@ dependencies:
   intl: ^0.19.0
   url_launcher: ^6.3.1
   google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+
+# App icons from the Ridean logo — CI runs `dart run flutter_launcher_icons` after `flutter create`.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/brand/app-icon.png
+  remove_alpha_ios: true
+  adaptive_icon_background: "#112E18"
+  adaptive_icon_foreground: assets/brand/app-icon-foreground.png

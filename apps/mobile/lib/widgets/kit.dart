@@ -145,21 +145,20 @@ class RdBackButton extends StatelessWidget {
   }
 }
 
-/// Gold gradient "Ridean" wordmark used on tab pages.
+/// The Ridean logo (gold car and wordmark). [size] is the old text size; the image is drawn about 1.5× that tall.
+/// [withSlogan] adds "RIDE | TRANSFER | RENT" under the name (sign in, splash).
 class RdWordmark extends StatelessWidget {
-  const RdWordmark({super.key, this.size = 30});
+  const RdWordmark({super.key, this.size = 30, this.withSlogan = false});
   final double size;
+  final bool withSlogan;
   @override
   Widget build(BuildContext context) {
-    return ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (r) => const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xFFF8DD8A), Color(0xFFE2B04A), Color(0xFFB9842A)],
-        stops: [0, .55, 1],
-      ).createShader(r),
-      child: Text('Ridean', style: RdText.serif(size, weight: FontWeight.w700)),
+    return Image.asset(
+      withSlogan ? 'assets/images/logo-full.png' : 'assets/images/logo.png',
+      height: size * (withSlogan ? 2.1 : 1.5),
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.medium,
+      semanticLabel: 'Ridean',
     );
   }
 }

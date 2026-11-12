@@ -73,7 +73,10 @@ export function Shell({ children }: { children: ReactNode }) {
       <HeadProvider value={{ set: setHead }}>
         <div className="az-shell">
           <aside className={`az-side ${open ? 'open' : ''}`} aria-label="Main navigation">
-            <div className="az-brand"><div className="az-word">Ridean</div><small>ADMIN</small></div>
+            <div className="az-brand">
+              {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/logo.png" alt="Ridean" style={{ display: 'block', height: 62, width: 'auto', maxWidth: '100%' }} />
+              <small>ADMIN</small>
+            </div>
             <nav className="az-nav">
               {NAV.map(([href, label, icon]) => (
                 <Link key={href} href={href} aria-current={active(path, href) ? 'page' : undefined}>

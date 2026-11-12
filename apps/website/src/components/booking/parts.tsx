@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Quote } from '@ridean/shared';
+import { serviceGlyph } from '@ridean/web-core';
 import { C, ctaStyle, ErrorNote, Field } from '@/components/site/ui';
 import { ArrowIcon, CalendarIcon, CardIcon, ClockIcon, LocateIcon, MinusIcon, PinIcon, PlusIcon, SwapIcon } from './icons';
 import { classLabel, classThumb, price, useDefaultCard, type Place, type QuoteSearchState } from './useQuoteSearch';
@@ -84,19 +85,10 @@ export function FormCard({ children, onSubmit, tabs }: { children: ReactNode; on
 
 // ---------------------------------------------------------------- tabs
 
-const CAR_PATH =
-  'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z';
 const TABS = [
-  { key: 'ride', href: '/ride', label: 'Ride', icon: (fill: string) => <path fill={fill} d={CAR_PATH} /> },
-  {
-    key: 'airport',
-    href: '/airport-transfer',
-    label: 'Airport transfer',
-    icon: (fill: string) => (
-      <path fill={fill} transform="rotate(45 12 12)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
-    ),
-  },
-  { key: 'rent', href: '/rent', label: 'Rent a car', icon: (fill: string) => <path fill={fill} fillRule="evenodd" d={`${CAR_PATH}M9.25 14.6h5.5v1.1h-5.5zM9.25 16.6h5.5v1h-5.5z`} /> },
+  { key: 'ride', href: '/ride', label: 'Ride', icon: (fill: string) => serviceGlyph('ride', fill) },
+  { key: 'airport', href: '/airport-transfer', label: 'Airport transfer', icon: (fill: string) => serviceGlyph('airport', fill) },
+  { key: 'rent', href: '/rent', label: 'Rent a car', icon: (fill: string) => serviceGlyph('rent', fill) },
 ] as const;
 
 /** Ride / Airport transfer / Rent a car tabs at the top of the search card (links to the other service pages). */

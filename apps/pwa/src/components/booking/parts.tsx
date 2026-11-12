@@ -7,6 +7,7 @@ import type { Quote } from '@ridean/shared';
 import { C, ctaStyle, ErrorNote, Field } from '@/components/site/ui';
 import { ArrowIcon, BackIcon, CalendarIcon, CarIcon, CardIcon, ClockIcon, LocateIcon, MinusIcon, PinIcon, PlaneIcon, PlusIcon, RentIcon, SwapIcon } from './icons';
 import { classLabel, classThumb, price, useDefaultCard, type Place, type QuoteSearchState } from './useQuoteSearch';
+import { serviceGlyph } from '@ridean/web-core';
 
 // ---------------------------------------------------------------- layout
 
@@ -81,12 +82,12 @@ export function SectionTitle({ children, right }: { children: ReactNode; right?:
 
 export type TabKey = 'ride' | 'airport' | 'rent';
 export const SERVICE_TABS: { key: TabKey; href: string; label: string; icon: (c: string) => ReactNode }[] = [
-  { key: 'ride', href: '/book/ride', label: 'Ride', icon: (c) => <CarIcon color={c} /> },
-  { key: 'airport', href: '/book/airport-transfer', label: 'Airport transfer', icon: (c) => <PlaneIcon color={c} /> },
-  { key: 'rent', href: '/book/rent', label: 'Rent a car', icon: (c) => <RentIcon color={c} /> },
+  { key: 'ride', href: '/book/ride', label: 'Ride', icon: (c) => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>{serviceGlyph('ride', c)}</svg> },
+  { key: 'airport', href: '/book/airport-transfer', label: 'Airport transfer', icon: (c) => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>{serviceGlyph('airport', c)}</svg> },
+  { key: 'rent', href: '/book/rent', label: 'Rent a car', icon: (c) => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>{serviceGlyph('rent', c)}</svg> },
 ];
 
-const tabStyle = (on: boolean): CSSProperties => ({ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '14px 4px 12px', borderBottom: `2.5px solid ${on ? C.yellow : 'transparent'}` });
+const tabStyle = (on: boolean, label = ''): CSSProperties => ({ flex: `${label.length + 6} 1 0`, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '14px 4px 12px', borderBottom: `2.5px solid ${on ? C.yellow : 'transparent'}` });
 
 /** Ride / Airport transfer / Rent a car tabs at the top of a search card (links to the other booking screens). */
 export function ServiceTabs({ active }: { active: TabKey }) {
@@ -96,9 +97,9 @@ export function ServiceTabs({ active }: { active: TabKey }) {
         const on = t.key === active;
         const color = on ? C.yellow : C.cream;
         return (
-          <Link key={t.key} href={t.href} aria-current={on ? 'page' : undefined} style={tabStyle(on)}>
+          <Link key={t.key} href={t.href} aria-current={on ? 'page' : undefined} style={tabStyle(on, t.label)}>
             {t.icon(color)}
-            <span style={{ fontSize: 13.5, color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.label}</span>
+            <span style={{ fontSize: 13, color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.label}</span>
           </Link>
         );
       })}

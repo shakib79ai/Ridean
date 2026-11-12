@@ -8,6 +8,7 @@ import '../../api/models.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/kit.dart';
+import '../../widgets/service_icons.dart';
 
 // ---------------------------------------------------------------------------
 // Shared booking helpers
@@ -179,13 +180,14 @@ class BookingTabs extends StatelessWidget {
   Widget _icon(BookingTab t, Color c) {
     switch (t) {
       case BookingTab.ride:
-        return Icon(Icons.directions_car_outlined, size: 18, color: c);
+        return ServiceIcon(ServiceGlyph.ride, size: 20, color: c);
       case BookingTab.airport:
-        return Transform.rotate(angle: 0.785, child: Icon(Icons.flight, size: 18, color: c));
+        return ServiceIcon(ServiceGlyph.airport, size: 20, color: c);
       case BookingTab.rent:
-        return Icon(Icons.car_rental, size: 18, color: c);
+        return ServiceIcon(ServiceGlyph.rent, size: 20, color: c);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
