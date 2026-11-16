@@ -1,6 +1,8 @@
 # Ridean brand kit
 
-The Ridean logo: a gold car outline with a wheel, the gold **Ridean** wordmark and the slogan **RIDE | TRANSFER | RENT** in white, on deep emerald. Every file carries the Ridean name.
+The Ridean logo: a gold car outline with a five Y-spoke alloy wheel (so it never reads as an "O"), the gold **Ridean** wordmark and the slogan **RIDE | TRANSFER | RENT** in white, on deep emerald. Every file carries the Ridean name.
+
+The master artwork is `ridean-logo-master.png` (1536 × 770, on emerald); every other file is generated from it.
 
 | Folder | Files |
 |---|---|
