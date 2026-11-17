@@ -75,7 +75,7 @@ function Profile() {
   return (
     <div style={{ paddingBottom: '12px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 20px 14px', minHeight: '62px' }}>
-        <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: '-.01em', background: 'linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', fontSize: '30px' }}>Ridean</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/logo.png" alt="Ridean" style={{ display: 'block', height: 38, width: 'auto' }} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '0 20px' }}>
         <div style={{ background: '#0E2A22', border: '1px solid #1F4537', borderRadius: '16px', padding: '16px' }}>

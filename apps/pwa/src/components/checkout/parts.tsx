@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { SERVICES, VEHICLE_CLASSES, type CoreServiceKey, type QuoteSearchRequest, type ServiceKey, type Vehicle } from '@ridean/shared';
+import { SERVICES, chauffeurClass, type CoreServiceKey, type QuoteSearchRequest, type ServiceKey, type Vehicle } from '@ridean/shared';
 import { encodeSearch } from '@ridean/web-core';
 import { C } from '@/components/site/ui';
 
@@ -34,7 +34,7 @@ const CLASS_IMG: Record<string, string> = {
   black: '/img/design/cls-black.jpg',
 };
 export const vehicleImage = (v: Vehicle) => v.imageUrl || CLASS_IMG[v.class] || '/img/design/business.png';
-export const vehicleTitle = (v: Vehicle) => VEHICLE_CLASSES.find((c) => c.key === v.class)?.label ?? v.name;
+export const vehicleTitle = (v: Vehicle) => chauffeurClass(v.class)?.label ?? v.name;
 
 export function PriceLine({ label, value, strong, color }: { label: ReactNode; value: ReactNode; strong?: boolean; color?: string }) {
   return (

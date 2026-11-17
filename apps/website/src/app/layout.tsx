@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: { default: 'Ridean — Arrive exceptionally', template: '%s · Ridean' },
   description: 'Premium mobility for wherever life takes you — rides, airport transfers, hourly and luxury chauffeurs, and car rentals in one place.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
-  openGraph: { title: 'Ridean — Arrive exceptionally', images: ['/img/hero.jpg'] },
+  openGraph: { title: 'Ridean — Arrive exceptionally', description: 'Ride | Transfer | Rent — worldwide.' },
 };
 
 export const viewport: Viewport = { themeColor: '#071A14', width: 'device-width', initialScale: 1 };

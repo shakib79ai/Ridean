@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { VEHICLE_CLASSES, formatMoney, serviceLabel, type Booking, type BookingStatus, type RideanApi, type ServiceKey, type Vehicle } from '@ridean/shared';
+import { chauffeurClass, formatMoney, serviceLabel, type Booking, type BookingStatus, type RideanApi, type ServiceKey, type Vehicle } from '@ridean/shared';
 import { C } from '@/components/site/ui';
 
 /** Helpers shared by the PWA trip, wallet, help and legal screens (ported from the website's checkout/account kits). */
@@ -140,7 +140,7 @@ export const serviceMeta = (key: string) => ({ label: key === 'ride_now' ? 'Ride
 export const serviceImage = (service: ServiceKey) => serviceMeta(service).img;
 
 export function vehicleTitle(v: Vehicle) {
-  return VEHICLE_CLASSES.find((c) => c.key === v.class)?.label ?? v.name;
+  return chauffeurClass(v.class)?.label ?? v.name;
 }
 
 export function tripTitle(b: Booking) {
@@ -246,7 +246,7 @@ export function ScreenHeader({ title, sub, fallback, trailing }: { title: ReactN
 export function LogoHeader() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 20px 14px', minHeight: '40px' }}>
-      <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: '-.01em', background: 'linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', fontSize: '30px' }}>Ridean</span>
+      {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/logo.png" alt="Ridean" style={{ display: 'block', height: 38, width: 'auto' }} />
     </div>
   );
 }

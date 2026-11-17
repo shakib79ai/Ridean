@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent, type ReactNode } from 'react';
-import { SERVICES, VEHICLE_CLASSES, type CoreServiceKey, type QuoteSearchRequest } from '@ridean/shared';
+import { LUXURY_CLASS_KEYS, SERVICES, VEHICLE_CLASSES, type CoreServiceKey, type QuoteSearchRequest } from '@ridean/shared';
 import { IconArrow, IconBag, IconCalendar, IconClock, IconGlobe, IconLocate, IconPin, IconPlane, IconSwap, IconUser, SERVICE_ICON } from './icons';
 import { defaultLocal, encodeSearch, localToIso } from './search-params';
 
@@ -201,7 +201,7 @@ export function BookingSearch({ services = ['ride_now', 'airport_transfer', 'ren
               <Field icon={SERVICE_ICON.ride_now({ size: 20 })} label="Vehicle class">
                 <select value={vehicleClass} onChange={(e) => setVehicleClass(e.target.value)}>
                   <option value="">Any class</option>
-                  {VEHICLE_CLASSES.filter((v) => service !== 'luxury' || v.key === 'business' || v.key === 'black').map((v) => <option key={v.key} value={v.key}>{v.label}</option>)}
+                  {VEHICLE_CLASSES.filter((v) => service !== 'luxury' || LUXURY_CLASS_KEYS.includes(v.key)).map((v) => <option key={v.key} value={v.key}>{v.label}</option>)}
                 </select>
               </Field>
             )}

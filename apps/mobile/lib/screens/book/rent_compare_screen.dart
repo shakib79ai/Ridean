@@ -10,9 +10,9 @@ import 'ride_screen.dart';
 /// Filter chips → Ridean vehicle classes (rental partners' ACRISS codes are mapped to these by the API).
 const _filters = <(String, String, List<String>)>[
   ('all', 'All', []),
-  ('economy', 'Economy', ['sedan', 'extra_comfort']),
-  ('suv', 'SUV', ['xl']),
-  ('lux', 'Luxury', ['business', 'black']),
+  ('economy', 'Economy', ['economy_light', 'ride']),
+  ('suv', 'SUV', ['ride_suv', 'ride_xl', 'business_suv', 'first_suv']),
+  ('lux', 'Luxury', ['business', 'first']),
 ];
 
 class RentCompareScreen extends ConsumerStatefulWidget {

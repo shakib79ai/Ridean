@@ -51,5 +51,7 @@ jobs:
           channel: stable
       - run: flutter create --org com.ridean --project-name ridean --platforms=android,ios . 
       - run: flutter pub get
+      - name: Generate app icons from the Ridean logo
+        run: dart run flutter_launcher_icons
       - run: flutter analyze --no-fatal-infos
       - run: flutter test

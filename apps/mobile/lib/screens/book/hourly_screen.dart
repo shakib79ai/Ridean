@@ -1,13 +1,13 @@
 // Hourly chauffeur (board: HourlyChauffeur). PWA: src/app/book/hourly/page.tsx
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../api/api_client.dart';
 import '../../api/models.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../widgets/chauffeur.dart';
 import '../../widgets/kit.dart';
 import 'ride_screen.dart';
-
-const _hourOptions = [2, 3, 4, 6, 8, 10];
 
 class HourlyScreen extends ConsumerStatefulWidget {
   const HourlyScreen({super.key});
@@ -19,6 +19,7 @@ class _HourlyScreenState extends ConsumerState<HourlyScreen> with QuoteSearchMix
   final _pickup = TextEditingController();
   final _notes = TextEditingController();
   int _hours = 3;
+  String _cls = 'business';
   DateTime _start = defaultDateTime(24);
   String _keptDropoff = '';
   String? _formError;
@@ -30,7 +31,7 @@ class _HourlyScreenState extends ConsumerState<HourlyScreen> with QuoteSearchMix
     final init = ref.read(lastSearchProvider('hourly'));
     if (init != null) {
       _pickup.text = init.pickup;
-      _hours = _hourOptions.contains(init.hours) ? init.hours : 3;
+      _hours = init.hours.clamp(hourlyMinHours, hourlyMaxHours);
       _keptDropoff = init.dropoff;
       final at = init.pickupAt;
       if (at != null && at.isAfter(DateTime.now())) _start = at;
@@ -76,12 +77,24 @@ class _HourlyScreenState extends ConsumerState<HourlyScreen> with QuoteSearchMix
     if (lastRun != null) _submit(h);
   }
 
+  void _pickClass(String key) {
+    setState(() => _cls = key);
+    final best = bestQuoteByClass(quotes)[key];
+    if (best != null) selectQuote(best.id);
+    final min = minHoursFor(key);
+    if (_hours < min) _pickHours(min);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final q = selectedQuote;
     final shownHours = lastRun?.hours ?? _hours;
-    final canConfirm = q != null && !_dirty && !searching;
-    String perHour(Quote x) => '${formatMoney((x.price.customerPrice / shownHours).round(), x.price.currency)}/h';
+    // Always price the chosen class (cheapest supplier for it).
+    final q = bestQuoteByClass(quotes)[_cls];
+    final c = chauffeurClass(_cls);
+    final billed = billedHours(_cls, shownHours);
+    final currency = q?.price.currency ?? 'USD';
+    final perHour = q != null ? (q.price.customerPrice / billed).round() : (c?.hourlyRate ?? 0);
+    final canConfirm = q != null && !_dirty && !searching && lastRun?.hours == _hours;
     return RdHeroPage(
       hero: const RdHeroHeader(
         image: 'assets/images/seat.jpg',
@@ -91,11 +104,8 @@ class _HourlyScreenState extends ConsumerState<HourlyScreen> with QuoteSearchMix
         alignment: Alignment(0, -.2),
       ),
       children: [
-        const RdSectionTitle('How many hours?'),
-        IgnorePointer(
-          ignoring: searching,
-          child: RdChips<int>(options: [for (final h in _hourOptions) (h, '$h h')], value: _hours, onChanged: _pickHours),
-        ),
+        const RdSectionTitle('How long?'),
+        HoursStepper(value: _hours, min: minHoursFor(_cls), onChanged: _pickHours, disabled: searching),
         RdCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             RdField(
@@ -119,47 +129,40 @@ class _HourlyScreenState extends ConsumerState<HourlyScreen> with QuoteSearchMix
             const SizedBox(height: 12),
             RdTextArea(label: 'Notes for your chauffeur', controller: _notes, hint: 'Stops, meeting points, preferences'),
             if (_formError != null) ...[const SizedBox(height: 12), RdErrorText(_formError!)],
-          ]),
-        ),
-        const RdSectionTitle('Vehicle class'),
-        QuoteOptionsCard(
-          quotes: quotes,
-          loading: searching,
-          error: searchError,
-          selectedId: selectedId,
-          onSelect: selectQuote,
-          idleText: 'Choose how many hours, your start location and time to see prices for a dedicated chauffeur.',
-          subtitle: (x) => '${x.vehicle.name} · ${x.supplierName}',
-          amount: perHour,
-          meta: (x) => 'Up to ${x.vehicle.passengers}',
-        ),
-        if (!searching && supplierErrors.isNotEmpty) SupplierErrorsText(supplierErrors),
-        RdCard(
-          child: Row(children: [
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('${q != null ? '${classLabel(q.vehicle.cls)} · ' : ''}Estimated total · $shownHours hours',
-                    maxLines: 2, overflow: TextOverflow.ellipsis, style: RdText.sans(12.5, color: RdColors.muted)),
-                const SizedBox(height: 2),
-                Text(searching ? '…' : (q != null ? q.price.display : '—'), style: RdText.serif(28)),
-              ]),
+            const SizedBox(height: 14),
+            RdCta(
+              label: searching ? 'Searching…' : (quotes != null && !_dirty && lastRun?.hours == _hours ? 'Search again' : 'Search'),
+              busy: searching,
+              onPressed: _submit,
             ),
-            const SizedBox(width: 12),
-            const RdBadge('Free waiting'),
           ]),
         ),
-        RdCta(
-          label: searching ? 'Finding chauffeurs…' : (canConfirm ? 'Continue' : 'See prices'),
-          busy: searching,
-          onPressed: () {
-            final sel = selectedQuote;
-            if (canConfirm && sel != null) {
-              confirmQuote(sel, notes: _notes.text);
-            } else {
-              _submit();
-            }
-          },
+        if (quotes != null || searching) ...[
+        const RdSectionTitle('Choose your car'),
+        if (searchError != null) RdErrorText(errorText(searchError!, 'We could not load prices. Please try again.')),
+        if (searching) const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator(color: RdColors.yellow))) else ClassPickerList(hourly: true, quotes: quotes, value: _cls, hours: shownHours, onPick: _pickClass),
+        if (!searching && supplierErrors.isNotEmpty) SupplierErrorsText(supplierErrors),
+        if (q != null && !searching) RdCard(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text('YOUR BOOKING', style: RdText.eyebrow),
+            const SizedBox(height: 4),
+            RdSummaryRow('Vehicle', c?.label ?? classLabel(_cls), valueColor: RdColors.cream),
+            RdSummaryRow('Hourly rate', '${formatMoney(perHour, currency).replaceAll(RegExp(r'\.00$'), '')} × $billed h', valueColor: RdColors.cream),
+            RdSummaryRow('Miles included', '${billed * hourlyIncludedMiles} miles', valueColor: RdColors.cream),
+            const Divider(color: RdColors.line, height: 20),
+            Text('Total · $billed hours', style: RdText.sans(12.5, color: RdColors.muted)),
+            const SizedBox(height: 2),
+            Text(q.price.display, style: RdText.serif(30)),
+            const SizedBox(height: 14),
+            RdCta(
+              label: canConfirm ? 'Continue' : 'Search again to update the price',
+              onPressed: canConfirm ? () => confirmQuote(q, notes: _notes.text) : null,
+            ),
+            const SizedBox(height: 10),
+            Text('Free cancellation until 24 h before pickup.', textAlign: TextAlign.center, style: RdText.sans(12, color: RdColors.muted)),
+          ]),
         ),
+        ],
       ],
     );
   }

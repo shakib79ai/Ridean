@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { CSSProperties, ReactNode } from 'react';
-import type { Quote } from '@ridean/shared';
+import { chauffeurClass, type Quote } from '@ridean/shared';
 import { C, ctaStyle, ErrorNote, Field } from '@/components/site/ui';
 import { ArrowIcon, BackIcon, CalendarIcon, CarIcon, CardIcon, ClockIcon, LocateIcon, MinusIcon, PinIcon, PlaneIcon, PlusIcon, RentIcon, SwapIcon } from './icons';
 import { classLabel, classThumb, price, useDefaultCard, type Place, type QuoteSearchState } from './useQuoteSearch';
+import { serviceGlyph } from '@ridean/web-core';
 
 // ---------------------------------------------------------------- layout
 
@@ -81,12 +82,12 @@ export function SectionTitle({ children, right }: { children: ReactNode; right?:
 
 export type TabKey = 'ride' | 'airport' | 'rent';
 export const SERVICE_TABS: { key: TabKey; href: string; label: string; icon: (c: string) => ReactNode }[] = [
-  { key: 'ride', href: '/book/ride', label: 'Ride', icon: (c) => <CarIcon color={c} /> },
-  { key: 'airport', href: '/book/airport-transfer', label: 'Airport transfer', icon: (c) => <PlaneIcon color={c} /> },
-  { key: 'rent', href: '/book/rent', label: 'Rent a car', icon: (c) => <RentIcon color={c} /> },
+  { key: 'ride', href: '/book/ride', label: 'Ride', icon: (c) => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>{serviceGlyph('ride', c)}</svg> },
+  { key: 'airport', href: '/book/airport-transfer', label: 'Airport transfer', icon: (c) => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>{serviceGlyph('airport', c)}</svg> },
+  { key: 'rent', href: '/book/rent', label: 'Rent a car', icon: (c) => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>{serviceGlyph('rent', c)}</svg> },
 ];
 
-const tabStyle = (on: boolean): CSSProperties => ({ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '14px 4px 12px', borderBottom: `2.5px solid ${on ? C.yellow : 'transparent'}` });
+const tabStyle = (on: boolean, label = ''): CSSProperties => ({ flex: `${label.length + 6} 1 0`, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '14px 4px 12px', borderBottom: `2.5px solid ${on ? C.yellow : 'transparent'}` });
 
 /** Ride / Airport transfer / Rent a car tabs at the top of a search card (links to the other booking screens). */
 export function ServiceTabs({ active }: { active: TabKey }) {
@@ -96,9 +97,9 @@ export function ServiceTabs({ active }: { active: TabKey }) {
         const on = t.key === active;
         const color = on ? C.yellow : C.cream;
         return (
-          <Link key={t.key} href={t.href} aria-current={on ? 'page' : undefined} style={tabStyle(on)}>
+          <Link key={t.key} href={t.href} aria-current={on ? 'page' : undefined} style={tabStyle(on, t.label)}>
             {t.icon(color)}
-            <span style={{ fontSize: 13.5, color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.label}</span>
+            <span style={{ fontSize: 13, color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.label}</span>
           </Link>
         );
       })}
@@ -219,7 +220,8 @@ export function SupplierErrors({ errors }: { errors: { supplier: string; message
   return <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.5 }}>{errors.map((e) => `${e.supplier} didn’t respond: ${e.message}`).join(' · ')}</div>;
 }
 
-const optStyle: CSSProperties = { all: 'unset', boxSizing: 'border-box', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, width: '100%', padding: '10px 12px', borderRadius: 14 };
+/** Layout lives in .dz-opt (design.css) so the selected (.on) border and background are not overridden inline. */
+const optStyle: CSSProperties = {};
 
 /** ETA, trip time or capacity — shown under the price. */
 export function quoteMeta(q: Quote): string {
@@ -266,13 +268,14 @@ export function QuoteOptions({
             <img src={classThumb(q)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 15.5, fontWeight: 600, color: C.cream }}>{title(q)}</div>
+            <div style={{ fontSize: 15.5, fontWeight: 600, color: C.cream }}>{chauffeurClass(q.vehicle.class)?.label ?? title(q)}</div>
             <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2 }}>{sub(q)}</div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: C.cream }}>{amount(q)}</div>
+            <div className="dz-opt-price" style={{ fontSize: 16, fontWeight: 700 }}>{amount(q)}</div>
             <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{meta(q)}</div>
           </div>
+          <span className="dz-opt-ck" aria-hidden="true" />
         </button>
       );
     });

@@ -1,3 +1,4 @@
+import { CHAUFFEUR_CLASSES } from '@ridean/shared';
 import type { SupplierRow } from '../../db/schema';
 import { mockOffers } from '../../integrations/mock-offers';
 import { priceOffers } from './quotes.service';
@@ -33,7 +34,7 @@ describe('priceOffers', () => {
       { supplier: mozio, offers: mockOffers('mozio', req, 'USD') },
       { supplier: citych, offers: mockOffers('citych', req, 'USD') },
     ]);
-    expect(priced.length).toBe(10);
+    expect(priced.length).toBe(2 * CHAUFFEUR_CLASSES.length); // every supplier offers all 8 chauffeur classes
     for (let i = 1; i < priced.length; i++) expect(priced[i].price.customerPrice).toBeGreaterThanOrEqual(priced[i - 1].price.customerPrice);
     const m = priced.find((p) => p.supplier.code === 'mozio')!;
     expect(m.price.commission).toBe(Math.round(m.offer.price * 0.1));

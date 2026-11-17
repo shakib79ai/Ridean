@@ -1,22 +1,22 @@
 'use client';
 
-import { Suspense, useCallback, useState, type ReactNode } from 'react';
-import type { QuoteSearchRequest } from '@ridean/shared';
+import { Suspense, useCallback, useEffect, useState, type ReactNode } from 'react';
+import { LUXURY_CLASS_KEYS, type QuoteSearchRequest } from '@ridean/shared';
+import { ClassPicker, bestQuoteByClass, chauffeurChoices } from '@ridean/web-core';
 import { C } from '@/components/site/ui';
 import {
-  ConfirmRow,
+  bookingStyles as s,
   CtaButton,
   DateTimeRow,
   FormCard,
   FormError,
   PlaceField,
-  QuoteOptions,
   SectionHead,
   ServiceHero,
   ServiceLayout,
   validAddress,
 } from '@/components/booking/parts';
-import { dateTimeToIso, defaultDateTime, isoToDateTime, placeFrom, toGeo, useLocate, useQuoteSearch, type Place } from '@/components/booking/useQuoteSearch';
+import { classLabel as chauffeurLabel, dateTimeToIso, price, defaultDateTime, isoToDateTime, placeFrom, toGeo, useLocate, useQuoteSearch, type Place } from '@/components/booking/useQuoteSearch';
 
 export default function LuxuryChauffeurPage() {
   return (
@@ -41,6 +41,13 @@ function Perk({ label, children }: { label: string; children: ReactNode }) {
 
 function LuxuryChauffeur() {
   const qs = useQuoteSearch('luxury');
+  // Only luxury classes are offered here: keep the selection on one of them (cheapest by default).
+  const { quotes, selected, select } = qs;
+  useEffect(() => {
+    if (!quotes?.length || (selected && LUXURY_CLASS_KEYS.includes(selected.vehicle.class))) return;
+    const lux = quotes.filter((x) => LUXURY_CLASS_KEYS.includes(x.vehicle.class)).sort((a, b) => a.price.customerPrice - b.price.customerPrice);
+    if (lux[0]) select(lux[0].id);
+  }, [quotes, selected, select]);
   const init = qs.initial;
   const when = isoToDateTime(init?.pickupAt) ?? defaultDateTime(24);
   const [pickup, setPickup] = useState<Place>(placeFrom(init?.pickup));
@@ -71,6 +78,7 @@ function LuxuryChauffeur() {
         half
       />
       <ServiceLayout
+        flat
         form={
           <FormCard onSubmit={submit}>
             <SectionHead size={22}>Plan your journey</SectionHead>
@@ -89,7 +97,7 @@ function LuxuryChauffeur() {
             <DateTimeRow date={date} time={time} onDate={setDate} onTime={setTime} />
             <FormError message={error} />
             <CtaButton type="submit" disabled={qs.loading}>
-              {qs.loading ? 'Finding cars…' : 'Find a luxury car'}
+              {qs.loading ? 'Searching…' : qs.quotes ? 'Search again' : 'Search'}
             </CtaButton>
           </FormCard>
         }
@@ -111,9 +119,41 @@ function LuxuryChauffeur() {
                 <path d="M9 7V5h6v2M3 12h18" />
               </Perk>
             </div>
-            <SectionHead>Select your car</SectionHead>
-            <QuoteOptions state={qs} idleText="Enter your pickup, destination and time to see first-class cars with upfront prices." />
-            <ConfirmRow state={qs} verb="Book" showPayment={false} />
+            <div>
+              <SectionHead size={28}>Choose your car</SectionHead>
+              <div style={{ fontSize: 14, color: C.muted, marginTop: 6 }}>First-class sedans and SUVs · fixed price for your trip</div>
+            </div>
+            {qs.error && <FormError message={qs.error} />}
+            {qs.loading ? (
+              <div className={s.classGrid}>
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="dz-skel" style={{ height: 196, borderRadius: 16 }} />
+                ))}
+              </div>
+            ) : qs.quotes ? (
+              <>
+                <ClassPicker
+                  className={s.classGrid}
+                  choices={chauffeurChoices('luxury', qs.quotes)}
+                  value={qs.selected?.vehicle.class ?? null}
+                  onPick={(key) => {
+                    const best = bestQuoteByClass(qs.quotes).get(key);
+                    if (best) qs.select(best.id);
+                  }}
+                />
+                {qs.selected && (
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <div style={{ width: 400, maxWidth: '100%' }}>
+                      <CtaButton onClick={() => qs.confirm()}>{`Continue with ${chauffeurLabel(qs.selected.vehicle.class)} · ${price(qs.selected)}`}</CtaButton>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ background: C.panel, border: `1px dashed ${C.line}`, borderRadius: 16, padding: '24px', color: C.muted, fontSize: 15, lineHeight: 1.6 }}>
+                Enter your pickup and destination, choose a date and time, then press <b style={{ color: C.cream }}>Search</b> to see the available luxury cars and prices.
+              </div>
+            )}
           </div>
         }
       />

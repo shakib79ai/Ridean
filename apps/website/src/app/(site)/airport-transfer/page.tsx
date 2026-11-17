@@ -2,17 +2,18 @@
 
 import { Suspense, useCallback, useState } from 'react';
 import type { QuoteSearchRequest } from '@ridean/shared';
+import { ClassPicker, bestQuoteByClass, chauffeurChoices } from '@ridean/web-core';
 import { C, Field } from '@/components/site/ui';
 import { ClockIcon, GlobeIcon, PlaneIcon } from '@/components/booking/icons';
 import {
   ConfirmRow,
+  bookingStyles as s,
   CtaButton,
   DateTimeRow,
   FeatureTile,
   FormCard,
   FormError,
   PlaceField,
-  QuoteOptions,
   SectionHead,
   ServiceHero,
   ServiceLayout,
@@ -34,6 +35,7 @@ const goldIcon = { width: 21, height: 21, viewBox: '0 0 24 24', fill: 'none', st
 
 function AirportTransfer() {
   const qs = useQuoteSearch('airport_transfer');
+  const [cls, setCls] = useState('business');
   const init = qs.initial;
   const out = isoToDateTime(init?.pickupAt) ?? defaultDateTime(24);
   const back = isoToDateTime(init?.returnAt) ?? defaultDateTime(24 * 8);
@@ -150,8 +152,30 @@ function AirportTransfer() {
                 text="One upfront price, agreed before you book."
               />
             </div>
-            <SectionHead>Vehicle classes</SectionHead>
-            <QuoteOptions state={qs} idleText="Enter your trip details and choose “Find a transfer” to compare upfront prices from our partners." />
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, marginTop: 6 }}>
+              <div>
+                <SectionHead>Choose your car</SectionHead>
+                <div style={{ fontSize: 14, color: C.muted, marginTop: 6 }}>8 classes · fixed price including tolls and airport fees</div>
+              </div>
+              <div style={{ fontSize: 13, color: C.muted }}>{qs.quotes ? 'Fixed price for your trip' : ''}</div>
+            </div>
+            {qs.error && <FormError message={qs.error} />}
+            {!qs.quotes && !qs.loading ? (
+              <div style={{ background: C.panel, border: `1px dashed ${C.line}`, borderRadius: 16, padding: '24px', color: C.muted, fontSize: 15, lineHeight: 1.6 }}>
+                Enter your pickup, drop-off, date and time, then press <b style={{ color: C.cream }}>Find a transfer</b> to see all 8 car classes with fixed prices.
+              </div>
+            ) : (
+            <ClassPicker
+              className={s.classGrid}
+              choices={chauffeurChoices('transfer', qs.loading ? null : qs.quotes)}
+              value={qs.selected?.vehicle.class ?? cls}
+              onPick={(key) => {
+                setCls(key);
+                const q = bestQuoteByClass(qs.quotes).get(key);
+                if (q) qs.select(q.id);
+              }}
+            />
+            )}
             {qs.quotes && qs.quotes.length > 0 && <ConfirmRow state={qs} />}
           </div>
         }

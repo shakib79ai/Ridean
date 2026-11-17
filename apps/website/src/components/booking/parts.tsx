@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
-import type { Quote } from '@ridean/shared';
+import { chauffeurClass, type Quote } from '@ridean/shared';
+import { serviceGlyph } from '@ridean/web-core';
 import { C, ctaStyle, ErrorNote, Field } from '@/components/site/ui';
 import { ArrowIcon, CalendarIcon, CardIcon, ClockIcon, LocateIcon, MinusIcon, PinIcon, PlusIcon, SwapIcon } from './icons';
 import { classLabel, classThumb, price, useDefaultCard, type Place, type QuoteSearchState } from './useQuoteSearch';
@@ -55,12 +56,16 @@ export function ServiceHero({ title, text, img, objectPosition, half }: { title:
 }
 
 /** Container + the 470px form column / results column grid. */
-export function ServiceLayout({ form, results }: { form: ReactNode; results: ReactNode }) {
+/** `flat`: form and results start on the same line (no overlap with the hero) and the form column stays in view while scrolling. */
+export function ServiceLayout({ form, results, flat, summary }: { form: ReactNode; results: ReactNode; flat?: boolean; summary?: ReactNode }) {
   return (
-    <div className="dz-container" style={{ paddingTop: 0 }}>
-      <div className={s.layout}>
-        <div className={s.formCol}>{form}</div>
-        <div className={s.resultsCol}>{results}</div>
+    <div className="dz-container" style={{ paddingTop: flat ? 8 : 0 }}>
+      <div className={`${s.layout} ${flat ? s.layoutFlat : ''}`}>
+        <div className={flat ? s.formColFlat : s.formCol}>
+          {form}
+          {summary}
+        </div>
+        <div className={flat ? s.resultsColFlat : s.resultsCol}>{results}</div>
       </div>
     </div>
   );
@@ -84,19 +89,10 @@ export function FormCard({ children, onSubmit, tabs }: { children: ReactNode; on
 
 // ---------------------------------------------------------------- tabs
 
-const CAR_PATH =
-  'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z';
 const TABS = [
-  { key: 'ride', href: '/ride', label: 'Ride', icon: (fill: string) => <path fill={fill} d={CAR_PATH} /> },
-  {
-    key: 'airport',
-    href: '/airport-transfer',
-    label: 'Airport transfer',
-    icon: (fill: string) => (
-      <path fill={fill} transform="rotate(45 12 12)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
-    ),
-  },
-  { key: 'rent', href: '/rent', label: 'Rent a car', icon: (fill: string) => <path fill={fill} fillRule="evenodd" d={`${CAR_PATH}M9.25 14.6h5.5v1.1h-5.5zM9.25 16.6h5.5v1h-5.5z`} /> },
+  { key: 'ride', href: '/ride', label: 'Ride', icon: (fill: string) => serviceGlyph('ride', fill) },
+  { key: 'airport', href: '/airport-transfer', label: 'Airport transfer', icon: (fill: string) => serviceGlyph('airport', fill) },
+  { key: 'rent', href: '/rent', label: 'Rent a car', icon: (fill: string) => serviceGlyph('rent', fill) },
 ] as const;
 
 /** Ride / Airport transfer / Rent a car tabs at the top of the search card (links to the other service pages). */
@@ -260,17 +256,8 @@ export function SupplierErrors({ errors }: { errors: { supplier: string; message
   );
 }
 
-const optStyle: CSSProperties = {
-  all: 'unset',
-  boxSizing: 'border-box',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  gap: 12,
-  width: '100%',
-  padding: '10px 12px',
-  borderRadius: 14,
-};
+/** Layout lives in .dz-opt (design.css) so the selected (.on) border and background are not overridden inline. */
+const optStyle: CSSProperties = {};
 
 /** Default right-hand detail under the price: ETA, trip time or capacity. */
 export function quoteMeta(q: Quote): string {
@@ -278,7 +265,7 @@ export function quoteMeta(q: Quote): string {
   if (q.durationMinutes != null) return `~${q.durationMinutes} min trip`;
   return `Up to ${q.vehicle.passengers}`;
 }
-export const quoteSub = (q: Quote) => `${classLabel(q.vehicle.class)} · ${q.vehicle.passengers} seats · ${q.vehicle.bags} bags · ${q.supplierName}`;
+export const quoteSub = (q: Quote) => `${chauffeurClass(q.vehicle.class) ? q.vehicle.name : classLabel(q.vehicle.class)} · ${q.vehicle.passengers} seats · ${q.vehicle.bags} bags · ${q.supplierName}`;
 
 /** The "Choose your ride" list: skeletons, errors, empty state and the selectable dz-opt rows. */
 export function QuoteOptions({
@@ -319,13 +306,14 @@ export function QuoteOptions({
             <img src={classThumb(q)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 15.5, fontWeight: 600, color: C.cream }}>{q.vehicle.name}</div>
+            <div style={{ fontSize: 15.5, fontWeight: 600, color: C.cream }}>{chauffeurClass(q.vehicle.class)?.label ?? q.vehicle.name}</div>
             <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2 }}>{sub(q)}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: C.cream }}>{price(q)}</div>
+            <div className="dz-opt-price" style={{ fontSize: 16, fontWeight: 700 }}>{price(q)}</div>
             <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{meta(q)}</div>
           </div>
+          <span className="dz-opt-ck" aria-hidden="true" />
         </button>
       );
     });

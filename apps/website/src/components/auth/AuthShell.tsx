@@ -11,18 +11,6 @@ export function safeNext(next: string | null | undefined, fallback = '/account')
   return next;
 }
 
-const logoStyle = {
-  fontFamily: "'Playfair Display',serif",
-  fontWeight: 700,
-  letterSpacing: '-.01em',
-  background: 'linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)',
-  WebkitBackgroundClip: 'text',
-  backgroundClip: 'text',
-  color: 'transparent',
-  fontSize: 40,
-  textDecoration: 'none',
-} as const;
-
 /** Split-screen frame of the sign-in / sign-up boards: hero image left, form right. */
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
@@ -39,8 +27,9 @@ export function AuthShell({ children }: { children: ReactNode }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/img/design/signin-hero.png" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '78% center' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(7,26,20,.55) 0%,rgba(7,26,20,.1) 40%,rgba(7,26,20,.9) 100%)' }} />
-        <Link href="/" style={{ ...logoStyle, position: 'absolute', top: 36, left: 48 }}>
-          Ridean
+        <Link href="/" aria-label="Ridean home" style={{ position: 'absolute', top: 32, left: 48 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-full.png" alt="Ridean" style={{ display: 'block', height: 80, width: 'auto' }} />
         </Link>
         <div style={{ position: 'absolute', left: 48, right: 48, bottom: 56 }}>
           <div style={{ margin: 0, fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: 56, lineHeight: 1.06, color: C.cream }}>Arrive exceptionally.</div>
@@ -51,8 +40,9 @@ export function AuthShell({ children }: { children: ReactNode }) {
       </div>
       <div className="dz-auth-form">
         <div style={{ width: '100%', maxWidth: 440 }}>
-          <Link href="/" className="dz-auth-logo-sm" style={logoStyle}>
-            Ridean
+          <Link href="/" className="dz-auth-logo-sm" aria-label="Ridean home" style={{ display: 'inline-block', marginBottom: 8 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo.png" alt="Ridean" style={{ display: 'block', height: 44, width: 'auto' }} />
           </Link>
           {children}
         </div>

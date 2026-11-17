@@ -8,8 +8,25 @@ input, textarea, select { min-width: 0; max-width: 100%; color-scheme: dark; fon
 .dz-seg.on { background: #1E5442; color: #F3EEDF; font-weight: 600; }
 .dz-chip { all: unset; cursor: pointer; padding: 9px 15px; border-radius: 999px; border: 1px solid #1F4537; background: #0E2A22; font-size: 13.5px; color: #F3EEDF; font-family: 'Inter', sans-serif; }
 .dz-chip.on { background: #F6C428; border-color: #F6C428; color: #0A1F18; font-weight: 600; }
-.dz-opt { border: 1px solid transparent; background: #071A14; cursor: pointer; }
-.dz-opt.on { border-color: #D9A94F; background: #12352B; }
+.dz-opt { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 14px; border: 1.5px solid transparent; background: #071A14; position: relative; transition: border-color .15s, background .15s, box-shadow .15s; }
+.dz-opt:hover { border-color: #3C6D5A; }
+.dz-opt.on { border-color: #F6C428; background: #163F32; box-shadow: 0 0 0 3px rgba(246,196,40,.16); }
+.dz-opt .dz-opt-price { color: #F3EEDF; }
+.dz-opt.on .dz-opt-price { color: #F6C428; }
+.dz-opt-ck { width: 22px; height: 22px; border-radius: 11px; border: 1.5px solid #3C5D50; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.dz-opt.on .dz-opt-ck { background: #F6C428; border-color: #F6C428; }
+.dz-opt.on .dz-opt-ck::after { content: ''; width: 9px; height: 5px; margin-top: -2px; border-left: 2.2px solid #0A1F18; border-bottom: 2.2px solid #0A1F18; transform: rotate(-45deg); }
+.dz-opt-tile { display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #12352B; flex-shrink: 0; }
+.dz-opt.on .dz-opt-tile { background: #0E2A22; }
+.dz-opt-card:not(.on) { background: #0E2A22; border-color: #1F4537; }
+.dz-opt-card:not(.on):hover { border-color: #3C6D5A; }
+.dz-opt-card:disabled { cursor: not-allowed; }
+.dz-hstep { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #071A14; border: 1px solid #1F4537; border-radius: 14px; padding: 8px; }
+.dz-hsb { all: unset; box-sizing: border-box; cursor: pointer; background: #12352B; border: 1px solid #1F4537; color: #F3EEDF; }
+.dz-hsb:hover:not(:disabled) { border-color: #D9A94F; }
+.dz-hsb:disabled { opacity: .35; cursor: not-allowed; }
+.dz-hsb.plus { background: linear-gradient(180deg, #FFD43B, #F2B705); border-color: transparent; color: #0A1F18; }
+.dz-hsb:focus-visible, .dz-opt:focus-visible { outline: 2px solid #F6C428; outline-offset: 2px; }
 .dz-tg { all: unset; cursor: pointer; width: 48px; height: 28px; border-radius: 14px; background: #2A3D36; position: relative; flex-shrink: 0; transition: background .2s; }
 .dz-tg span { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 11px; background: #F3EEDF; transition: left .2s; }
 .dz-tg.on { background: #F6C428; }

@@ -17,7 +17,7 @@ export function AuthHero() {
       <img src="/img/design/night-car.jpg" alt="" style={{ position: 'absolute', inset: '0', width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 40%' }} />
       <div style={{ position: 'absolute', inset: '0', background: 'linear-gradient(180deg,rgba(7,26,20,.35),#071A14)' }}></div>
       <div style={{ position: 'absolute', left: '24px', right: '24px', bottom: '20px' }}>
-        <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: '-.01em', background: 'linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', fontSize: '40px' }}>Ridean</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/logo-full.png" alt="Ridean" style={{ display: 'block', height: 66, width: 'auto' }} />
         <div style={{ fontSize: '14px', color: '#D7DED6', marginTop: '4px' }}>Arrive exceptionally.</div>
       </div>
     </div>

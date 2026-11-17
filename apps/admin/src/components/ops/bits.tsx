@@ -23,7 +23,7 @@ export function RefLink({ b }: { b: Pick<Booking, 'id' | 'reference'> }) {
 
 export const passengerName = (b: Pick<Booking, 'passenger'>) => `${b.passenger.firstName} ${b.passenger.lastName}`.trim() || b.passenger.email;
 
-/** "business_sedan" → "Business Sedan" (catalogue label when known). */
+/** "business_sedan" → "Business" (catalogue label when known, old keys included). */
 export function vehicleClassLabel(key: string): string {
   const known = VEHICLE_CLASSES.find((v) => v.key === key);
   if (known) return known.label;

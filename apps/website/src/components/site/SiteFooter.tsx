@@ -15,7 +15,7 @@ export function SiteFooter() {
       <div style={{ maxWidth: 1344, margin: '0 auto', padding: '0 max(16px, min(48px, 4vw))', boxSizing: 'border-box' }}>
         <div className="dz-footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1fr', gap: 40, padding: '56px 0 40px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, letterSpacing: '-.01em', background: 'linear-gradient(180deg,#F8DD8A 0%,#E2B04A 55%,#B9842A 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', fontSize: 38 }}>Ridean</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brand/logo-full.png" alt="Ridean" style={{ display: 'block', height: 84, width: 'auto', alignSelf: 'flex-start' }} />
             <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: '#9FB2A6', maxWidth: 420 }}>Premium mobility for wherever life takes you — rides, airport transfers, chauffeurs and rentals in one place.</p>
             {(APP_STORE || PLAY_STORE) && (
               <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>

@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties, ReactNode } from 'react';
-import { VEHICLE_CLASSES, type Booking, type BookingStatus, type ServiceKey, type Vehicle } from '@ridean/shared';
+import { chauffeurClass, type Booking, type BookingStatus, type ServiceKey, type Vehicle } from '@ridean/shared';
 import { C } from '@/components/site/ui';
 
 /** Pieces shared by the checkout and trip pages, lifted from the design markup. */
@@ -91,7 +91,7 @@ const CLASS_IMG: Record<string, string> = {
 export const vehicleImage = (v: Vehicle) => v.imageUrl || CLASS_IMG[v.class] || '/img/design/business.png';
 
 export function vehicleTitle(v: Vehicle) {
-  return VEHICLE_CLASSES.find((c) => c.key === v.class)?.label ?? v.name;
+  return chauffeurClass(v.class)?.label ?? v.name;
 }
 export function vehicleSubtitle(v: Vehicle) {
   const title = vehicleTitle(v);

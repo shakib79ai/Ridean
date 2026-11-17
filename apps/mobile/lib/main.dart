@@ -40,7 +40,7 @@ class RideanApp extends ConsumerWidget {
       routerConfig: ref.watch(routerProvider),
       builder: (context, child) => ready
           ? (child ?? const SizedBox.shrink())
-          : const Scaffold(backgroundColor: RdColors.bg, body: Center(child: RdWordmark(size: 44))),
+          : const Scaffold(backgroundColor: RdColors.bg, body: Center(child: RdWordmark(size: 44, withSlogan: true))),
     );
   }
 }
