@@ -1,6 +1,6 @@
 'use client';
 import type { CSSProperties } from 'react';
-import { CHAUFFEUR_CLASSES, HOURLY_INCLUDED_MILES, HOURLY_MAX_HOURS, chauffeurClass, formatMoney, type CarShape, type ChauffeurClass, type Quote } from '@ridean/shared';
+import { CHAUFFEUR_CLASSES, LUXURY_CLASS_KEYS, HOURLY_INCLUDED_MILES, HOURLY_MAX_HOURS, chauffeurClass, formatMoney, type CarShape, type ChauffeurClass, type Quote } from '@ridean/shared';
 
 /** Side-view car silhouettes in Ridean gold, one per body shape of the 8 chauffeur classes. */
 const BODY: Record<CarShape, string> = {
@@ -202,15 +202,17 @@ export const billedHours = (key: string, hours: number) => Math.max(chauffeurCla
  * Cards for the 8 classes. Before a search they show the Ridean rate card ("$100/h", "from $130");
  * after a search they show live prices, and classes no supplier offered are marked unavailable.
  */
-export function chauffeurChoices(mode: 'hourly' | 'transfer', quotes: Quote[] | null, hours = 3, currency = 'USD'): ClassChoice[] {
+export function chauffeurChoices(mode: 'hourly' | 'transfer' | 'luxury', quotes: Quote[] | null, hours = 3, currency = 'USD'): ClassChoice[] {
   const best = bestQuoteByClass(quotes);
-  return (CHAUFFEUR_CLASSES as readonly ChauffeurClass[]).map((c) => {
+  const list = (CHAUFFEUR_CLASSES as readonly ChauffeurClass[]).filter((c) => mode !== 'luxury' || LUXURY_CLASS_KEYS.includes(c.key));
+  return list.map((c) => {
     const q = best.get(c.key);
     const base = { key: c.key, label: c.label, example: q?.vehicle.name ?? c.example, passengers: c.passengers, bags: c.bags, shape: c.shape, photo: q?.vehicle.imageUrl || c.photo, unavailable: !!quotes && !q };
     if (mode === 'hourly') {
       const perHour = q ? Math.round(q.price.customerPrice / billedHours(c.key, hours)) : c.hourlyRate;
       return { ...base, price: whole(perHour, q?.price.currency ?? currency), unit: '/h', note: `min ${c.minHours} h` };
     }
+    if (mode === 'luxury') return { ...base, price: q ? formatMoney(q.price.customerPrice, q.price.currency) : '—', note: q ? 'trip total' : undefined };
     return q ? { ...base, price: formatMoney(q.price.customerPrice, q.price.currency), note: q.supplierName } : { ...base, price: whole(c.airportFrom, currency), note: 'airport from' };
   });
 }

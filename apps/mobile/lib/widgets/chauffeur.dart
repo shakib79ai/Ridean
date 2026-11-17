@@ -35,6 +35,9 @@ const chauffeurClasses = [
   ChauffeurClass('executive_van', 'Executive Van', 'Mercedes Sprinter or similar', 12, 12, CarShape.van, 19500, 4, 25000, 'assets/images/cls-suv-black.jpg'),
 ];
 
+/// Classes offered for Luxury chauffeur.
+const luxuryClassKeys = ['business_sedan', 'first_sedan', 'large_suv', 'premium_suv'];
+
 const hourlyMinHours = 3;
 const hourlyMaxHours = 12;
 const hourlyIncludedMiles = 15;
@@ -144,18 +147,22 @@ class HoursStepper extends StatelessWidget {
 
 /// The 8-class list. Before a search it shows the rate card; after, live prices (classes nobody offered are greyed out).
 class ClassPickerList extends StatelessWidget {
-  const ClassPickerList({super.key, required this.hourly, required this.quotes, required this.value, required this.onPick, this.hours = 3});
+  const ClassPickerList({super.key, required this.hourly, required this.quotes, required this.value, required this.onPick, this.hours = 3, this.only});
   final bool hourly;
   final List<Quote>? quotes;
   final String? value;
   final ValueChanged<String> onPick;
   final int hours;
 
+  /// Show only these class keys (Luxury chauffeur).
+  final List<String>? only;
+
   @override
   Widget build(BuildContext context) {
     final best = bestQuoteByClass(quotes);
     final rows = <Widget>[];
     for (final c in chauffeurClasses) {
+      if (only != null && !only!.contains(c.key)) continue;
       final q = best[c.key];
       final on = c.key == value;
       final unavailable = quotes != null && q == null;
@@ -167,8 +174,13 @@ class ClassPickerList extends StatelessWidget {
         price = '${_whole(perHour, currency)}/h';
         note = 'min ${c.minHours} h';
       } else {
-        price = q != null ? q.price.display : _whole(c.airportFrom, currency);
-        note = q != null ? q.supplierName : 'from';
+        if (only != null) {
+          price = q != null ? q.price.display : '—';
+          note = q != null ? 'trip total' : '';
+        } else {
+          price = q != null ? q.price.display : _whole(c.airportFrom, currency);
+          note = q != null ? q.supplierName : 'from';
+        }
       }
       rows.add(Semantics(
         selected: on,

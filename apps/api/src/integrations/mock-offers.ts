@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { CHAUFFEUR_CLASSES, CHAUFFEUR_SERVICES, RIDE_CLASSES, chauffeurClass, type QuoteSearchRequest, type ServiceKey } from '@ridean/shared';
+import { CHAUFFEUR_CLASSES, CHAUFFEUR_SERVICES, LUXURY_CLASS_KEYS, RIDE_CLASSES, chauffeurClass, type QuoteSearchRequest, type ServiceKey } from '@ridean/shared';
 import type { SupplierOffer } from './supplier-adapter';
 
 /**
@@ -43,7 +43,8 @@ function baseFare(service: ServiceKey, km: number, req: QuoteSearchRequest): num
       // Business Sedan hourly rate; other classes scale by their rate.
       return 10000 * Math.max(3, req.hours ?? 3);
     case 'luxury':
-      return 9000 + km * 320;
+      // Business Sedan trip price; First Sedan and the SUVs scale by their rate.
+      return 6500 + km * 220;
     case 'rent': {
       const days = req.rentalPickupAt && req.rentalReturnAt ? Math.max(1, Math.ceil((Date.parse(req.rentalReturnAt) - Date.parse(req.rentalPickupAt)) / 86_400_000)) : 3;
       return 4200 * days;
@@ -56,7 +57,7 @@ function baseFare(service: ServiceKey, km: number, req: QuoteSearchRequest): num
 function classesFor(service: ServiceKey, wanted?: string) {
   const all: { key: string; example: string; passengers: number; bags: number }[] = CHAUFFEUR_SERVICES.includes(service) ? [...CHAUFFEUR_CLASSES] : [...RIDE_CLASSES];
   if (wanted) return all.filter((c) => c.key === wanted);
-  if (service === 'luxury') return all.filter((c) => c.key === 'first_sedan' || c.key === 'premium_suv');
+  if (service === 'luxury') return all.filter((c) => LUXURY_CLASS_KEYS.includes(c.key));
   if (service === 'ride_now') return all.slice(0, 3);
   return all;
 }

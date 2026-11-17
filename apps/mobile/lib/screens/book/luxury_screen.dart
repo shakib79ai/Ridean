@@ -1,9 +1,11 @@
 // Luxury chauffeur (board: LuxuryChauffeur). PWA: src/app/book/luxury/page.tsx
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../api/api_client.dart';
 import '../../api/models.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../widgets/chauffeur.dart';
 import '../../widgets/kit.dart';
 import 'ride_screen.dart';
 
@@ -97,18 +99,6 @@ class _LuxuryScreenState extends ConsumerState<LuxuryScreen> with QuoteSearchMix
             ]),
           ]),
         ),
-        const RdSectionTitle('Select your car'),
-        QuoteOptionsCard(
-          quotes: quotes,
-          loading: searching,
-          error: searchError,
-          selectedId: selectedId,
-          onSelect: selectQuote,
-          idleText: 'Enter your pickup, destination and time below to see first-class cars with upfront prices.',
-          title: (x) => x.vehicle.name.isEmpty ? classLabel(x.vehicle.cls) : x.vehicle.name,
-          subtitle: (x) => '${x.vehicle.passengers} seats · ${classLabel(x.vehicle.cls)} · ${x.supplierName}',
-        ),
-        if (!searching && supplierErrors.isNotEmpty) SupplierErrorsText(supplierErrors),
         RdCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             RdField(label: 'Pickup', icon: Icons.place_outlined, controller: _pickup, hint: 'Airport, hotel or address', onChanged: (_) => _edited(), textInputAction: TextInputAction.next),
@@ -123,20 +113,37 @@ class _LuxuryScreenState extends ConsumerState<LuxuryScreen> with QuoteSearchMix
               }),
             ),
             if (_formError != null) ...[const SizedBox(height: 12), RdErrorText(_formError!)],
+            const SizedBox(height: 14),
+            RdCta(
+              label: searching ? 'Searching…' : (quotes != null && !_dirty ? 'Search again' : 'Search'),
+              busy: searching,
+              onPressed: _submit,
+            ),
           ]),
         ),
-        RdCta(
-          label: searching ? 'Finding cars…' : (q != null && canConfirm ? 'Book ${classLabel(q.vehicle.cls)} · ${q.price.display}' : 'Find a luxury car'),
-          busy: searching,
-          onPressed: () {
-            final sel = selectedQuote;
-            if (canConfirm && sel != null) {
-              confirmQuote(sel);
-            } else {
-              _submit();
-            }
-          },
-        ),
+        if (quotes != null || searching) ...[
+          const RdSectionTitle('Choose your car'),
+          if (searchError != null) RdErrorText(errorText(searchError!, 'We could not load prices. Please try again.')),
+          if (searching)
+            const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator(color: RdColors.yellow)))
+          else
+            ClassPickerList(
+              hourly: false,
+              only: luxuryClassKeys,
+              quotes: quotes,
+              value: q?.vehicle.cls,
+              onPick: (key) {
+                final best = bestQuoteByClass(quotes)[key];
+                if (best != null) selectQuote(best.id);
+              },
+            ),
+          if (!searching && supplierErrors.isNotEmpty) SupplierErrorsText(supplierErrors),
+          if (q != null && !searching)
+            RdCta(
+              label: canConfirm ? 'Continue with ${classLabel(q.vehicle.cls)} · ${q.price.display}' : 'Search again to update prices',
+              onPressed: canConfirm ? () => confirmQuote(q) : null,
+            ),
+        ],
       ],
     );
   }

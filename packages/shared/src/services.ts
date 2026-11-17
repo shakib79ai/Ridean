@@ -142,6 +142,9 @@ export const CHAUFFEUR_CLASSES = [
 /** Every class any Ridean service can return (label lookup). */
 export const VEHICLE_CLASSES = [...RIDE_CLASSES, ...CHAUFFEUR_CLASSES] as const;
 
+/** Classes offered for Luxury chauffeur (point-to-point, first-class). */
+export const LUXURY_CLASS_KEYS: readonly string[] = ['business_sedan', 'first_sedan', 'large_suv', 'premium_suv'];
+
 /** Services that use the 8 chauffeur classes. */
 export const CHAUFFEUR_SERVICES: readonly ServiceKey[] = ['airport_transfer', 'hourly', 'luxury'];
 export const HOURLY_MIN_HOURS = 3;
