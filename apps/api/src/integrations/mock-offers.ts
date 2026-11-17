@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { VEHICLE_CLASSES, type QuoteSearchRequest, type ServiceKey } from '@ridean/shared';
+import { CHAUFFEUR_CLASSES, CHAUFFEUR_SERVICES, RIDE_CLASSES, chauffeurClass, type QuoteSearchRequest, type ServiceKey } from '@ridean/shared';
 import type { SupplierOffer } from './supplier-adapter';
 
 /**
@@ -12,7 +12,11 @@ export function mockOffers(supplierCode: string, req: QuoteSearchRequest, curren
   const base = baseFare(req.service, km, req);
   const classes = classesFor(req.service, req.vehicleClass);
   return classes.map((c, i) => {
-    const factor = [1, 1.35, 1.2, 1.7, 2.3][VEHICLE_CLASSES.findIndex((v) => v.key === c.key)] ?? 1 + i * 0.25;
+    // Chauffeur classes scale with the Ridean rate card (Business Sedan = 1); Ride Now classes use fixed steps.
+    const cc = chauffeurClass(c.key);
+    let factor = cc ? cc.hourlyRate / 10000 : [1, 1.35, 1.2, 1.7, 2.3][RIDE_CLASSES.findIndex((v) => v.key === c.key)] ?? 1 + i * 0.25;
+    // A class with a higher minimum (Executive Van: 4 h) is priced for its minimum hours.
+    if (cc && req.service === 'hourly') factor *= Math.max(cc.minHours, req.hours ?? 3) / Math.max(3, req.hours ?? 3);
     const jitter = 1 + ((seed >> (i + 2)) % 9) / 100;
     return {
       offerId: `${supplierCode}-${c.key}-${seed.toString(36)}`,
@@ -36,7 +40,8 @@ function baseFare(service: ServiceKey, km: number, req: QuoteSearchRequest): num
     case 'airport_transfer':
       return (4500 + km * 160) * (req.tripType === 'return' ? 1.9 : 1);
     case 'hourly':
-      return 6500 * Math.max(2, req.hours ?? 3);
+      // Business Sedan hourly rate; other classes scale by their rate.
+      return 10000 * Math.max(3, req.hours ?? 3);
     case 'luxury':
       return 9000 + km * 320;
     case 'rent': {
@@ -49,9 +54,9 @@ function baseFare(service: ServiceKey, km: number, req: QuoteSearchRequest): num
 }
 
 function classesFor(service: ServiceKey, wanted?: string) {
-  const all = [...VEHICLE_CLASSES];
+  const all: { key: string; example: string; passengers: number; bags: number }[] = CHAUFFEUR_SERVICES.includes(service) ? [...CHAUFFEUR_CLASSES] : [...RIDE_CLASSES];
   if (wanted) return all.filter((c) => c.key === wanted);
-  if (service === 'luxury') return all.filter((c) => c.key === 'business' || c.key === 'black');
+  if (service === 'luxury') return all.filter((c) => c.key === 'first_sedan' || c.key === 'premium_suv');
   if (service === 'ride_now') return all.slice(0, 3);
   return all;
 }

@@ -6,3 +6,4 @@ export * from './Account';
 export * from './ui';
 export * from './icons';
 export * from './search-params';
+export * from './Chauffeur';

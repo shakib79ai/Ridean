@@ -95,11 +95,65 @@ export function serviceLabel(key: ServiceKey): string {
   return (SERVICES as Record<string, ServiceDefinition>)[key]?.label ?? key;
 }
 
-export const VEHICLE_CLASSES = [
+/** On-demand Ride Now categories (yellow/green cabs and FHV partners). */
+export const RIDE_CLASSES = [
   { key: 'sedan', label: 'Sedan', example: 'Toyota Camry or similar', passengers: 3, bags: 2 },
   { key: 'xl', label: 'XL', example: 'Toyota Highlander or similar', passengers: 6, bags: 4 },
   { key: 'extra_comfort', label: 'Extra Comfort', example: 'Newer cars, more legroom', passengers: 3, bags: 2 },
   { key: 'business', label: 'Business', example: 'Mercedes E-Class or similar', passengers: 3, bags: 2 },
   { key: 'black', label: 'Black Car Service', example: 'Mercedes S-Class or similar', passengers: 3, bags: 2 },
 ] as const;
+
+export type CarShape = 'sedan' | 'suv' | 'minivan' | 'van';
+
+export interface ChauffeurClass {
+  key: string;
+  label: string;
+  example: string;
+  passengers: number;
+  bags: number;
+  shape: CarShape;
+  /** Company hourly rate in cents (Ridean rate card; customer channels add their margin). */
+  hourlyRate: number;
+  minHours: number;
+  /** Lowest airport fare in cents (JFK/LGA/EWR), shown as "from". */
+  airportFrom: number;
+  summary: string;
+  /** Studio photo served by the website and PWA under /img. */
+  photo: string;
+}
+
+/**
+ * The 8 pre-booked classes used by Ridean Direct (dispatch, bases, drivers).
+ * Airport transfer, Hourly chauffeur and Luxury chauffeur show exactly these.
+ * Keys match the dispatch API, so a booking keeps its class end to end.
+ */
+export const CHAUFFEUR_CLASSES = [
+  { key: 'standard_sedan', label: 'Standard Sedan', example: 'Toyota Camry or similar', passengers: 3, bags: 2, shape: 'sedan', hourlyRate: 8500, minHours: 3, airportFrom: 11000, summary: 'Everyday comfortable car for 1–3 people.', photo: '/img/cls-sedan.jpg' },
+  { key: 'business_sedan', label: 'Business Sedan', example: 'Mercedes E-Class or similar', passengers: 3, bags: 3, shape: 'sedan', hourlyRate: 10000, minHours: 3, airportFrom: 13000, summary: 'Black or gray executive car for business travel.', photo: '/img/cls-business.jpg' },
+  { key: 'first_sedan', label: 'First Sedan', example: 'Mercedes S-Class or similar', passengers: 3, bags: 3, shape: 'sedan', hourlyRate: 15500, minHours: 3, airportFrom: 18500, summary: 'Top luxury black sedan, chauffeur level.', photo: '/img/cls-black.jpg' },
+  { key: 'midsize_suv', label: 'Mid-size SUV', example: 'Toyota Highlander or similar', passengers: 6, bags: 2, shape: 'suv', hourlyRate: 9500, minHours: 3, airportFrom: 12500, summary: '7 seats: 6 people with 2 bags, or 3 people with 4 bags.', photo: '/img/cls-xl.jpg' },
+  { key: 'minivan', label: 'Minivan', example: 'Toyota Sienna or similar', passengers: 6, bags: 5, shape: 'minivan', hourlyRate: 10500, minHours: 3, airportFrom: 14000, summary: 'Sliding doors and room for families with luggage.', photo: '/img/cls-xl.jpg' },
+  { key: 'large_suv', label: 'Business SUV', example: 'Chevrolet Suburban or similar', passengers: 6, bags: 6, shape: 'suv', hourlyRate: 12500, minHours: 3, airportFrom: 16500, summary: 'Black or gray full-size SUV for groups with luggage.', photo: '/img/cls-xl.jpg' },
+  { key: 'premium_suv', label: 'Premium SUV', example: 'Cadillac Escalade or similar', passengers: 6, bags: 6, shape: 'suv', hourlyRate: 15000, minHours: 3, airportFrom: 19500, summary: 'Luxury black full-size SUV, VIP level.', photo: '/img/cls-suv-black.jpg' },
+  { key: 'executive_van', label: 'Executive Van', example: 'Mercedes Sprinter or similar', passengers: 12, bags: 12, shape: 'van', hourlyRate: 19500, minHours: 4, airportFrom: 25000, summary: 'Large van for groups of up to 12 with luggage.', photo: '/img/cls-suv-black.jpg' },
+] as const satisfies readonly ChauffeurClass[];
+
+/** Every class any Ridean service can return (label lookup). */
+export const VEHICLE_CLASSES = [...RIDE_CLASSES, ...CHAUFFEUR_CLASSES] as const;
+
+/** Services that use the 8 chauffeur classes. */
+export const CHAUFFEUR_SERVICES: readonly ServiceKey[] = ['airport_transfer', 'hourly', 'luxury'];
+export const HOURLY_MIN_HOURS = 3;
+export const HOURLY_MAX_HOURS = 12;
+/** Miles included per booked hour; extra miles are billed per started mile. */
+export const HOURLY_INCLUDED_MILES = 15;
+
+export function chauffeurClass(key: string | undefined): ChauffeurClass | undefined {
+  return (CHAUFFEUR_CLASSES as readonly ChauffeurClass[]).find((c) => c.key === key);
+}
+/** Minimum bookable hours for a class (Executive Van is 4). */
+export function minHoursFor(key?: string): number {
+  return chauffeurClass(key)?.minHours ?? HOURLY_MIN_HOURS;
+}
 export type VehicleClassKey = (typeof VEHICLE_CLASSES)[number]['key'] | (string & {});

@@ -2,7 +2,7 @@ import { BadRequestException, GoneException, Injectable, Logger, NotFoundExcepti
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { eq } from 'drizzle-orm';
-import { priceQuote, SERVICES, type Quote, type QuoteSearchRequest } from '@ridean/shared';
+import { HOURLY_MAX_HOURS, HOURLY_MIN_HOURS, priceQuote, SERVICES, type Quote, type QuoteSearchRequest } from '@ridean/shared';
 import { InjectDb, type Db } from '../../db/db.module';
 import { quotes, type QuoteRow, type SupplierRow } from '../../db/schema';
 import { SupplierRegistry } from '../../integrations/integrations.module';
@@ -37,7 +37,8 @@ export function validateSearch(req: QuoteSearchRequest) {
     if (!req.rentalPickupAt || !req.rentalReturnAt) throw new BadRequestException('Please choose pick-up and return dates');
     if (Date.parse(req.rentalReturnAt) <= Date.parse(req.rentalPickupAt)) throw new BadRequestException('Return must be after pick-up');
   }
-  if (req.service === 'hourly' && (!req.hours || req.hours < 2)) throw new BadRequestException('Hourly bookings are at least 2 hours');
+  if (req.service === 'hourly' && (!req.hours || req.hours < HOURLY_MIN_HOURS)) throw new BadRequestException(`Hourly bookings are at least ${HOURLY_MIN_HOURS} hours`);
+  if (req.service === 'hourly' && req.hours && req.hours > HOURLY_MAX_HOURS) throw new BadRequestException(`Hourly bookings are at most ${HOURLY_MAX_HOURS} hours`);
   if (req.pickupAt && Date.parse(req.pickupAt) < Date.now() - 5 * 60_000) throw new BadRequestException('Pickup time is in the past');
 }
 

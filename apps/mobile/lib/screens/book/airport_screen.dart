@@ -1,9 +1,11 @@
 // Airport transfer (board: AirportTransfer). PWA: src/app/book/airport-transfer/page.tsx
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../api/api_client.dart';
 import '../../api/models.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../widgets/chauffeur.dart';
 import '../../widgets/kit.dart';
 import 'ride_screen.dart';
 
@@ -191,8 +193,17 @@ class _AirportTransferScreenState extends ConsumerState<AirportTransferScreen> w
         if (_formError != null) RdErrorText(_formError!),
         RdCta(label: searching ? 'Finding transfers…' : 'Find a transfer', busy: searching, onPressed: _submit),
         if (showResults) ...[
-          const RdSectionTitle('Choose your transfer'),
-          QuoteOptionsCard(quotes: quotes, loading: searching, error: searchError, selectedId: selectedId, onSelect: selectQuote, idleText: ''),
+          const RdSectionTitle('Choose your car'),
+          if (searchError != null) RdErrorText(errorText(searchError!, 'We could not load prices. Please try again.')),
+          ClassPickerList(
+            hourly: false,
+            quotes: searching ? null : quotes,
+            value: q?.vehicle.cls,
+            onPick: (key) {
+              final best = bestQuoteByClass(quotes)[key];
+              if (best != null) selectQuote(best.id);
+            },
+          ),
           if (!searching && supplierErrors.isNotEmpty) SupplierErrorsText(supplierErrors),
           if (q != null && !searching) ...[
             const PaymentHintRow(),

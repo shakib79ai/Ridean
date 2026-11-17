@@ -42,6 +42,14 @@ const _classLabels = {
   'extra_comfort': 'Extra Comfort',
   'business': 'Business',
   'black': 'Black Car Service',
+  'standard_sedan': 'Standard Sedan',
+  'business_sedan': 'Business Sedan',
+  'first_sedan': 'First Sedan',
+  'midsize_suv': 'Mid-size SUV',
+  'minivan': 'Minivan',
+  'large_suv': 'Business SUV',
+  'premium_suv': 'Premium SUV',
+  'executive_van': 'Executive Van',
 };
 
 /// "extra_comfort" → "Extra Comfort" (VEHICLE_CLASSES labels, otherwise a tidied key).

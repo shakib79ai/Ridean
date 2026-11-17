@@ -10,7 +10,7 @@ import { m, svc } from '@/lib/format';
 
 const SERVICES = ['ride_now', 'airport_transfer', 'hourly', 'luxury', 'rent'] as const;
 type Svc = (typeof SERVICES)[number];
-const HOURS = [2, 3, 4, 6, 8, 12] as const;
+const HOURS = [3, 4, 5, 6, 8, 10, 12] as const;
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const localDate = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;

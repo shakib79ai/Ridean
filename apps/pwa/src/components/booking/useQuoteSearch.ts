@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { VEHICLE_CLASSES, formatMoney, type CoreServiceKey, type GeoPoint, type Quote, type QuoteSearchRequest, type SavedCard } from '@ridean/shared';
+import { VEHICLE_CLASSES, chauffeurClass, formatMoney, type CoreServiceKey, type GeoPoint, type Quote, type QuoteSearchRequest, type SavedCard } from '@ridean/shared';
 import { decodeSearch, defaultLocal, encodeSearch, localToIso, useRidean } from '@ridean/web-core';
 import { useToast } from '@/components/site/ui';
 import { updateDraft } from '@/components/checkout/draft';
@@ -194,7 +194,7 @@ const CLASS_THUMB: Record<string, string> = {
   business: '/img/design/business.png',
   black: '/img/design/cls-black.jpg',
 };
-export const classThumb = (q: Quote) => q.vehicle.imageUrl || CLASS_THUMB[q.vehicle.class] || '/img/design/business.png';
+export const classThumb = (q: Quote) => q.vehicle.imageUrl || chauffeurClass(q.vehicle.class)?.photo || CLASS_THUMB[q.vehicle.class] || '/img/design/business.png';
 export const classLabel = (cls: string) => VEHICLE_CLASSES.find((v) => v.key === cls)?.label ?? cls.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 export const price = (q: Quote) => formatMoney(q.price.customerPrice, q.price.currency);
 

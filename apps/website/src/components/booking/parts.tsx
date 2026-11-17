@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
-import type { Quote } from '@ridean/shared';
+import { chauffeurClass, type Quote } from '@ridean/shared';
 import { serviceGlyph } from '@ridean/web-core';
 import { C, ctaStyle, ErrorNote, Field } from '@/components/site/ui';
 import { ArrowIcon, CalendarIcon, CardIcon, ClockIcon, LocateIcon, MinusIcon, PinIcon, PlusIcon, SwapIcon } from './icons';
@@ -56,12 +56,16 @@ export function ServiceHero({ title, text, img, objectPosition, half }: { title:
 }
 
 /** Container + the 470px form column / results column grid. */
-export function ServiceLayout({ form, results }: { form: ReactNode; results: ReactNode }) {
+/** `flat`: form and results start on the same line (no overlap with the hero) and the form column stays in view while scrolling. */
+export function ServiceLayout({ form, results, flat, summary }: { form: ReactNode; results: ReactNode; flat?: boolean; summary?: ReactNode }) {
   return (
-    <div className="dz-container" style={{ paddingTop: 0 }}>
-      <div className={s.layout}>
-        <div className={s.formCol}>{form}</div>
-        <div className={s.resultsCol}>{results}</div>
+    <div className="dz-container" style={{ paddingTop: flat ? 8 : 0 }}>
+      <div className={`${s.layout} ${flat ? s.layoutFlat : ''}`}>
+        <div className={flat ? s.formColFlat : s.formCol}>
+          {form}
+          {summary}
+        </div>
+        <div className={flat ? s.resultsColFlat : s.resultsCol}>{results}</div>
       </div>
     </div>
   );
@@ -252,17 +256,8 @@ export function SupplierErrors({ errors }: { errors: { supplier: string; message
   );
 }
 
-const optStyle: CSSProperties = {
-  all: 'unset',
-  boxSizing: 'border-box',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  gap: 12,
-  width: '100%',
-  padding: '10px 12px',
-  borderRadius: 14,
-};
+/** Layout lives in .dz-opt (design.css) so the selected (.on) border and background are not overridden inline. */
+const optStyle: CSSProperties = {};
 
 /** Default right-hand detail under the price: ETA, trip time or capacity. */
 export function quoteMeta(q: Quote): string {
@@ -270,7 +265,7 @@ export function quoteMeta(q: Quote): string {
   if (q.durationMinutes != null) return `~${q.durationMinutes} min trip`;
   return `Up to ${q.vehicle.passengers}`;
 }
-export const quoteSub = (q: Quote) => `${classLabel(q.vehicle.class)} · ${q.vehicle.passengers} seats · ${q.vehicle.bags} bags · ${q.supplierName}`;
+export const quoteSub = (q: Quote) => `${chauffeurClass(q.vehicle.class) ? q.vehicle.name : classLabel(q.vehicle.class)} · ${q.vehicle.passengers} seats · ${q.vehicle.bags} bags · ${q.supplierName}`;
 
 /** The "Choose your ride" list: skeletons, errors, empty state and the selectable dz-opt rows. */
 export function QuoteOptions({
@@ -311,13 +306,14 @@ export function QuoteOptions({
             <img src={classThumb(q)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 15.5, fontWeight: 600, color: C.cream }}>{q.vehicle.name}</div>
+            <div style={{ fontSize: 15.5, fontWeight: 600, color: C.cream }}>{chauffeurClass(q.vehicle.class)?.label ?? q.vehicle.name}</div>
             <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2 }}>{sub(q)}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: C.cream }}>{price(q)}</div>
+            <div className="dz-opt-price" style={{ fontSize: 16, fontWeight: 700 }}>{price(q)}</div>
             <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{meta(q)}</div>
           </div>
+          <span className="dz-opt-ck" aria-hidden="true" />
         </button>
       );
     });

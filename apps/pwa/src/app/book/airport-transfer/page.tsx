@@ -4,7 +4,8 @@ import { Suspense, useCallback, useState } from 'react';
 import type { QuoteSearchRequest } from '@ridean/shared';
 import { C, Field } from '@/components/site/ui';
 import { FlightIcon, GlobeIcon, ShieldIcon } from '@/components/booking/icons';
-import { Column, Cta, DateTimeRow, FormError, HeroHeader, PaymentHint, PlaceField, QuoteOptions, SectionTitle, ServiceTabs, StepperRow, panel, screenStyle } from '@/components/booking/parts';
+import { Column, Cta, DateTimeRow, FormError, HeroHeader, PaymentHint, PlaceField, SectionTitle, ServiceTabs, StepperRow, panel, screenStyle } from '@/components/booking/parts';
+import { ClassPicker, bestQuoteByClass, chauffeurChoices } from '@ridean/web-core';
 import { classLabel, dateTimeToIso, defaultDateTime, isoToDateTime, placeFrom, price, toGeo, useLocate, useQuoteSearch, validAddress, type Place } from '@/components/booking/useQuoteSearch';
 
 export default function AirportTransferPage() {
@@ -125,8 +126,17 @@ function AirportTransfer() {
 
           {showResults && (
             <>
-              <SectionTitle>Choose your transfer</SectionTitle>
-              <QuoteOptions state={qs} idleText="" />
+              <SectionTitle>Choose your car</SectionTitle>
+              {qs.error && <FormError message={qs.error} />}
+              <ClassPicker
+                layout="list"
+                choices={chauffeurChoices('transfer', qs.loading ? null : qs.quotes)}
+                value={q?.vehicle.class ?? null}
+                onPick={(key) => {
+                  const best = bestQuoteByClass(qs.quotes).get(key);
+                  if (best) qs.select(best.id);
+                }}
+              />
               {q && !qs.loading && (
                 <>
                   <PaymentHint />

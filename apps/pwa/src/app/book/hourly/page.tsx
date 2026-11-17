@@ -1,11 +1,12 @@
 'use client';
 
-import { Suspense, useState } from 'react';
-import { formatMoney, type QuoteSearchRequest } from '@ridean/shared';
+import { Suspense, useEffect, useState } from 'react';
+import { HOURLY_INCLUDED_MILES, chauffeurClass, formatMoney, minHoursFor, type QuoteSearchRequest } from '@ridean/shared';
+import { ClassPicker, HoursStepper, bestQuoteByClass, billedHours, chauffeurChoices } from '@ridean/web-core';
 import { C, Field } from '@/components/site/ui';
 import { PinIcon } from '@/components/booking/icons';
-import { Column, Cta, DateTimeRow, FormError, HeroHeader, QuoteOptions, SectionTitle, panel, screenStyle } from '@/components/booking/parts';
-import { classLabel, dateTimeToIso, defaultDateTime, isoToDateTime, placeFrom, price, toGeo, useQuoteSearch, validAddress, type Place } from '@/components/booking/useQuoteSearch';
+import { Column, Cta, DateTimeRow, FormError, HeroHeader, SectionTitle, panel, screenStyle } from '@/components/booking/parts';
+import { dateTimeToIso, defaultDateTime, isoToDateTime, placeFrom, price, toGeo, useQuoteSearch, validAddress, type Place } from '@/components/booking/useQuoteSearch';
 
 export default function HourlyChauffeurPage() {
   return (
@@ -15,13 +16,12 @@ export default function HourlyChauffeurPage() {
   );
 }
 
-const HOURS = [2, 3, 4, 6, 8, 10];
-
 function HourlyChauffeur() {
   const qs = useQuoteSearch('hourly');
   const init = qs.initial;
   const start = isoToDateTime(init?.pickupAt) ?? defaultDateTime(24);
-  const [hours, setHours] = useState(init?.hours ?? 3);
+  const [cls, setCls] = useState<string>(init?.vehicleClass ?? 'business_sedan');
+  const [hours, setHours] = useState(Math.max(init?.hours ?? 3, minHoursFor(init?.vehicleClass ?? 'business_sedan')));
   const [pickup, setPickup] = useState<Place>(placeFrom(init?.pickup));
   const [date, setDate] = useState(start.date);
   const [time, setTime] = useState(start.time);
@@ -48,10 +48,32 @@ function HourlyChauffeur() {
     if (qs.last) submit(h);
   }
 
-  const q = qs.selected;
+  const classQuote = bestQuoteByClass(qs.quotes).get(cls) ?? null;
+  const { selected, select } = qs;
+  useEffect(() => {
+    if (classQuote && selected?.id !== classQuote.id) select(classQuote.id);
+  }, [classQuote, selected, select]);
+
+  function pickClass(key: string) {
+    setCls(key);
+    const min = minHoursFor(key);
+    if (hours < min) pickHours(min);
+  }
+
+  const q = classQuote;
+  const c = chauffeurClass(cls);
+  const minH = minHoursFor(cls);
   const shownHours = qs.last?.hours ?? hours;
-  const canConfirm = !!q && !dirty && !qs.loading;
-  const perHour = (x: NonNullable<typeof q>) => `${formatMoney(Math.round(x.price.customerPrice / shownHours), x.price.currency)}/h`;
+  const billed = billedHours(cls, shownHours);
+  const perHour = q ? Math.round(q.price.customerPrice / billed) : (c?.hourlyRate ?? 0);
+  const currency = q?.price.currency ?? 'USD';
+  const canConfirm = !!q && !dirty && !qs.loading && qs.last?.hours === hours;
+  const row = (k: string, v: string) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, fontSize: 14, color: C.muted, padding: '5px 0' }}>
+      <span>{k}</span>
+      <b style={{ color: C.cream, fontWeight: 600, textAlign: 'right' }}>{v}</b>
+    </div>
+  );
 
   return (
     <div style={screenStyle}>
@@ -60,21 +82,12 @@ function HourlyChauffeur() {
         noValidate
         onSubmit={(e) => {
           e.preventDefault();
-          if (canConfirm) qs.confirm(null, { notes });
-          else submit();
+          submit();
         }}
       >
         <Column>
-          <SectionTitle>
-            <span id="hours-label">How many hours?</span>
-          </SectionTitle>
-          <div role="group" aria-labelledby="hours-label" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {HOURS.map((h) => (
-              <button key={h} type="button" className={`dz-chip ${hours === h ? 'on' : ''}`} aria-pressed={hours === h} disabled={qs.loading} onClick={() => pickHours(h)}>
-                {h} h
-              </button>
-            ))}
-          </div>
+          <SectionTitle>How long?</SectionTitle>
+          <HoursStepper value={hours} min={minH} onChange={pickHours} disabled={qs.loading} big={30} />
           <div style={panel(16)}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <Field icon={<PinIcon />} label="Start location">
@@ -110,32 +123,44 @@ function HourlyChauffeur() {
                 />
               </label>
               <FormError message={error} />
+              <Cta type="submit" disabled={qs.loading}>
+                {qs.loading ? 'Searching…' : qs.quotes && !dirty && qs.last?.hours === hours ? 'Search again' : 'Search'}
+              </Cta>
             </div>
           </div>
-          <SectionTitle>Vehicle class</SectionTitle>
-          <QuoteOptions
-            state={qs}
-            idleText="Choose how many hours, your start location and time to see prices for a dedicated chauffeur."
-            sub={(x) => `${x.vehicle.name} · ${x.supplierName}`}
-            amount={perHour}
-            meta={(x) => `Up to ${x.vehicle.passengers}`}
-          />
+          {(qs.quotes || qs.loading) && (
+            <>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+            <SectionTitle>Choose your car</SectionTitle>
+            <span style={{ fontSize: 12.5, color: C.muted }}>Prices per hour</span>
+          </div>
+          {qs.error && <FormError message={qs.error} />}
+          {qs.loading ? (
+            [0, 1, 2].map((i) => <div key={i} className="dz-skel" style={{ height: 80, borderRadius: 16 }} />)
+          ) : (
+            <ClassPicker layout="list" choices={chauffeurChoices('hourly', qs.quotes, shownHours)} value={cls} onPick={pickClass} />
+          )}
+          {q && !qs.loading && (
           <div style={panel(16)}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 12.5, color: C.muted }}>
-                  {q ? `${classLabel(q.vehicle.class)} · ` : ''}Estimated total · {shownHours} hours
-                </div>
-                <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 28, fontWeight: 600, color: C.cream, marginTop: 2 }}>{qs.loading ? '…' : q ? price(q) : '—'}</div>
-              </div>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 9px', borderRadius: 999, background: 'rgba(217,169,79,.14)', color: C.gold, fontSize: 11.5, fontWeight: 600, whiteSpace: 'nowrap' }}>
-                Free waiting
-              </span>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: C.gold, marginBottom: 6 }}>Your booking</div>
+            {row('Vehicle', c?.label ?? cls)}
+            {row('Hourly rate', `${formatMoney(perHour, currency).replace(/\.00$/, '')} × ${billed} h`)}
+            {row('Miles included', `${billed * HOURLY_INCLUDED_MILES} miles`)}
+            <div style={{ height: 1, background: C.line, margin: '10px 0 12px' }} />
+            <div style={{ fontSize: 12.5, color: C.muted }}>
+              {canConfirm ? 'Total' : 'Estimated total'} · {billed} hours
             </div>
+            <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 30, fontWeight: 600, color: C.cream, marginTop: 2 }}>{qs.loading ? '…' : q ? price(q) : formatMoney(perHour * billed, currency)}</div>
+            <div style={{ marginTop: 14 }}>
+              <Cta onClick={() => canConfirm && qs.confirm(q, { notes })} disabled={!canConfirm}>
+                {canConfirm ? 'Continue' : 'Search again to update the price'}
+              </Cta>
+            </div>
+            <div style={{ fontSize: 12, color: C.muted, textAlign: 'center', marginTop: 10, lineHeight: 1.5 }}>Free cancellation until 24 h before pickup.</div>
           </div>
-          <Cta type="submit" disabled={qs.loading}>
-            {qs.loading ? 'Finding chauffeurs…' : canConfirm ? 'Continue' : 'See prices'}
-          </Cta>
+          )}
+            </>
+          )}
         </Column>
       </form>
     </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { CSSProperties, ReactNode } from 'react';
-import type { Quote } from '@ridean/shared';
+import { chauffeurClass, type Quote } from '@ridean/shared';
 import { C, ctaStyle, ErrorNote, Field } from '@/components/site/ui';
 import { ArrowIcon, BackIcon, CalendarIcon, CarIcon, CardIcon, ClockIcon, LocateIcon, MinusIcon, PinIcon, PlaneIcon, PlusIcon, RentIcon, SwapIcon } from './icons';
 import { classLabel, classThumb, price, useDefaultCard, type Place, type QuoteSearchState } from './useQuoteSearch';
@@ -220,7 +220,8 @@ export function SupplierErrors({ errors }: { errors: { supplier: string; message
   return <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.5 }}>{errors.map((e) => `${e.supplier} didn’t respond: ${e.message}`).join(' · ')}</div>;
 }
 
-const optStyle: CSSProperties = { all: 'unset', boxSizing: 'border-box', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, width: '100%', padding: '10px 12px', borderRadius: 14 };
+/** Layout lives in .dz-opt (design.css) so the selected (.on) border and background are not overridden inline. */
+const optStyle: CSSProperties = {};
 
 /** ETA, trip time or capacity — shown under the price. */
 export function quoteMeta(q: Quote): string {
@@ -267,13 +268,14 @@ export function QuoteOptions({
             <img src={classThumb(q)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 15.5, fontWeight: 600, color: C.cream }}>{title(q)}</div>
+            <div style={{ fontSize: 15.5, fontWeight: 600, color: C.cream }}>{chauffeurClass(q.vehicle.class)?.label ?? title(q)}</div>
             <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2 }}>{sub(q)}</div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: C.cream }}>{amount(q)}</div>
+            <div className="dz-opt-price" style={{ fontSize: 16, fontWeight: 700 }}>{amount(q)}</div>
             <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{meta(q)}</div>
           </div>
+          <span className="dz-opt-ck" aria-hidden="true" />
         </button>
       );
     });
