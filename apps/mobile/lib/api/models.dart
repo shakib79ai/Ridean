@@ -49,6 +49,8 @@ ServiceDef serviceByKey(String k) => services.firstWhere((s) => s.key == k, orEl
 /// Illustrative photo for a vehicle class key (sedan, xl, comfort, business, black, suv, van, …).
 String vehicleImage(String cls, [String service = '']) {
   final c = cls.toLowerCase();
+  if (c == 'first_suv' || c == 'ride_xxl' || c == 'premium_suv' || c == 'executive_van') return 'assets/images/cls-suv-black.jpg';
+  if (c.contains('economy')) return 'assets/images/cls-comfort.jpg';
   if (c.contains('xl') || c.contains('van') || c.contains('suv') || c.contains('minivan')) return 'assets/images/cls-xl.jpg';
   if (c.contains('black') || c.contains('first') || c.contains('luxury')) return 'assets/images/cls-black.jpg';
   if (c.contains('business') || c.contains('executive')) return 'assets/images/cls-business.jpg';

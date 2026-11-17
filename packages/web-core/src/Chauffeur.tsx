@@ -195,7 +195,7 @@ export function bestQuoteByClass(quotes: Quote[] | null): Map<string, Quote> {
   return m;
 }
 
-/** Hours a class is billed for: never below its minimum (Executive Van: 4). */
+/** Hours a class is billed for: never below its minimum (Ride XXL: 4). */
 export const billedHours = (key: string, hours: number) => Math.max(chauffeurClass(key)?.minHours ?? 0, hours);
 
 /**

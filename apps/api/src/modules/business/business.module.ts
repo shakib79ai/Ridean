@@ -12,7 +12,7 @@ import { bookings, businessAccounts, businessMembers, users } from '../../db/sch
 const DEFAULT_POLICY: BusinessPolicy = { requirePurpose: true, businessClassOnly: false, approvalOver: 0 };
 const SPEND_STATUSES = ['payment_authorised', 'confirmed', 'driver_assigned', 'in_progress', 'completed'];
 /** Vehicle classes allowed when the policy restricts travel to business class and above. */
-export const BUSINESS_CLASSES = ['business', 'black'];
+export const BUSINESS_CLASSES = ['business', 'business_suv', 'first', 'first_suv'];
 
 const CreateSchema = z.object({ name: z.string().min(2).max(120), monthlyBudget: z.number().int().min(0).optional(), billingEmail: z.string().email().optional() });
 const UpdateSchema = z.object({

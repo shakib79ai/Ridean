@@ -33,8 +33,8 @@ function HourlyChauffeur() {
   const qs = useQuoteSearch('hourly');
   const init = qs.initial;
   const start = isoToDateTime(init?.pickupAt) ?? defaultDateTime(24);
-  const [cls, setCls] = useState<string>(init?.vehicleClass ?? 'business_sedan');
-  const [hours, setHours] = useState(Math.max(init?.hours ?? 3, minHoursFor(init?.vehicleClass ?? 'business_sedan')));
+  const [cls, setCls] = useState<string>(init?.vehicleClass ?? 'business');
+  const [hours, setHours] = useState(Math.max(init?.hours ?? 3, minHoursFor(init?.vehicleClass ?? 'business')));
   const [pickup, setPickup] = useState<Place>(placeFrom(init?.pickup));
   const [dropoff, setDropoff] = useState<Place>(placeFrom(init?.dropoff));
   const [date, setDate] = useState(start.date);
@@ -136,7 +136,7 @@ function HourlyChauffeur() {
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16 }}>
               <div>
                 <SectionHead size={28}>Choose your car</SectionHead>
-                <div style={{ fontSize: 14, color: C.muted, marginTop: 6 }}>Standard to Executive Van · licensed chauffeurs · cars 2019 or newer</div>
+                <div style={{ fontSize: 14, color: C.muted, marginTop: 6 }}>Economy Light to Ride XXL · licensed chauffeurs · cars 2019 or newer</div>
               </div>
               {qs.quotes && <div style={{ fontSize: 13, color: C.muted }}>Prices per hour · {shownHours} h booking</div>}
             </div>

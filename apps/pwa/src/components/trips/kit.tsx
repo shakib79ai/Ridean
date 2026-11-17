@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { VEHICLE_CLASSES, formatMoney, serviceLabel, type Booking, type BookingStatus, type RideanApi, type ServiceKey, type Vehicle } from '@ridean/shared';
+import { chauffeurClass, formatMoney, serviceLabel, type Booking, type BookingStatus, type RideanApi, type ServiceKey, type Vehicle } from '@ridean/shared';
 import { C } from '@/components/site/ui';
 
 /** Helpers shared by the PWA trip, wallet, help and legal screens (ported from the website's checkout/account kits). */
@@ -140,7 +140,7 @@ export const serviceMeta = (key: string) => ({ label: key === 'ride_now' ? 'Ride
 export const serviceImage = (service: ServiceKey) => serviceMeta(service).img;
 
 export function vehicleTitle(v: Vehicle) {
-  return VEHICLE_CLASSES.find((c) => c.key === v.class)?.label ?? v.name;
+  return chauffeurClass(v.class)?.label ?? v.name;
 }
 
 export function tripTitle(b: Booking) {

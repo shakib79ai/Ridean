@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { CHAUFFEUR_CLASSES, CHAUFFEUR_SERVICES, LUXURY_CLASS_KEYS, RIDE_CLASSES, chauffeurClass, type QuoteSearchRequest, type ServiceKey } from '@ridean/shared';
+import { CHAUFFEUR_CLASSES, CHAUFFEUR_SERVICES, LUXURY_CLASS_KEYS, RIDE_CLASSES, chauffeurClass, normalizeClassKey, type QuoteSearchRequest, type ServiceKey } from '@ridean/shared';
 import type { SupplierOffer } from './supplier-adapter';
 
 /**
@@ -12,10 +12,10 @@ export function mockOffers(supplierCode: string, req: QuoteSearchRequest, curren
   const base = baseFare(req.service, km, req);
   const classes = classesFor(req.service, req.vehicleClass);
   return classes.map((c, i) => {
-    // Chauffeur classes scale with the Ridean rate card (Business Sedan = 1); Ride Now classes use fixed steps.
+    // Every class scales with the Ridean rate card (Business = 1).
     const cc = chauffeurClass(c.key);
-    let factor = cc ? cc.hourlyRate / 10000 : [1, 1.35, 1.2, 1.7, 2.3][RIDE_CLASSES.findIndex((v) => v.key === c.key)] ?? 1 + i * 0.25;
-    // A class with a higher minimum (Executive Van: 4 h) is priced for its minimum hours.
+    let factor = cc ? cc.hourlyRate / 10000 : 1 + i * 0.25;
+    // A class with a higher minimum (Ride XXL: 4 h) is priced for its minimum hours.
     if (cc && req.service === 'hourly') factor *= Math.max(cc.minHours, req.hours ?? 3) / Math.max(3, req.hours ?? 3);
     const jitter = 1 + ((seed >> (i + 2)) % 9) / 100;
     return {
@@ -40,10 +40,10 @@ function baseFare(service: ServiceKey, km: number, req: QuoteSearchRequest): num
     case 'airport_transfer':
       return (4500 + km * 160) * (req.tripType === 'return' ? 1.9 : 1);
     case 'hourly':
-      // Business Sedan hourly rate; other classes scale by their rate.
+      // Business hourly rate; other classes scale by their rate.
       return 10000 * Math.max(3, req.hours ?? 3);
     case 'luxury':
-      // Business Sedan trip price; First Sedan and the SUVs scale by their rate.
+      // Business trip price; First and the SUVs scale by their rate.
       return 6500 + km * 220;
     case 'rent': {
       const days = req.rentalPickupAt && req.rentalReturnAt ? Math.max(1, Math.ceil((Date.parse(req.rentalReturnAt) - Date.parse(req.rentalPickupAt)) / 86_400_000)) : 3;
@@ -56,9 +56,8 @@ function baseFare(service: ServiceKey, km: number, req: QuoteSearchRequest): num
 
 function classesFor(service: ServiceKey, wanted?: string) {
   const all: { key: string; example: string; passengers: number; bags: number }[] = CHAUFFEUR_SERVICES.includes(service) ? [...CHAUFFEUR_CLASSES] : [...RIDE_CLASSES];
-  if (wanted) return all.filter((c) => c.key === wanted);
+  if (wanted) return all.filter((c) => c.key === normalizeClassKey(wanted));
   if (service === 'luxury') return all.filter((c) => LUXURY_CLASS_KEYS.includes(c.key));
-  if (service === 'ride_now') return all.slice(0, 3);
   return all;
 }
 

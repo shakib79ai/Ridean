@@ -8,8 +8,11 @@ import '../theme.dart';
 enum CarShape { sedan, suv, minivan, van }
 
 class ChauffeurClass {
-  const ChauffeurClass(this.key, this.label, this.example, this.passengers, this.bags, this.shape, this.hourlyRate, this.minHours, this.airportFrom, this.photo);
+  const ChauffeurClass(this.key, this.label, this.category, this.example, this.passengers, this.bags, this.shape, this.hourlyRate, this.minHours, this.airportFrom, this.photo);
   final String key, label, example;
+
+  /// economy · ride · business · first (same structure as SIXT ride).
+  final String category;
   final int passengers, bags;
   final CarShape shape;
 
@@ -24,29 +27,58 @@ class ChauffeurClass {
   final String photo;
 }
 
+/// Ridean's 9 classes — the same keys and names as Ridean Direct dispatch.
 const chauffeurClasses = [
-  ChauffeurClass('standard_sedan', 'Standard Sedan', 'Toyota Camry or similar', 3, 2, CarShape.sedan, 8500, 3, 11000, 'assets/images/cls-sedan.jpg'),
-  ChauffeurClass('business_sedan', 'Business Sedan', 'Mercedes E-Class or similar', 3, 3, CarShape.sedan, 10000, 3, 13000, 'assets/images/cls-business.jpg'),
-  ChauffeurClass('first_sedan', 'First Sedan', 'Mercedes S-Class or similar', 3, 3, CarShape.sedan, 15500, 3, 18500, 'assets/images/cls-black.jpg'),
-  ChauffeurClass('midsize_suv', 'Mid-size SUV', 'Toyota Highlander or similar', 6, 2, CarShape.suv, 9500, 3, 12500, 'assets/images/cls-xl.jpg'),
-  ChauffeurClass('minivan', 'Minivan', 'Toyota Sienna or similar', 6, 5, CarShape.minivan, 10500, 3, 14000, 'assets/images/cls-xl.jpg'),
-  ChauffeurClass('large_suv', 'Business SUV', 'Chevrolet Suburban or similar', 6, 6, CarShape.suv, 12500, 3, 16500, 'assets/images/cls-xl.jpg'),
-  ChauffeurClass('premium_suv', 'Premium SUV', 'Cadillac Escalade or similar', 6, 6, CarShape.suv, 15000, 3, 19500, 'assets/images/cls-suv-black.jpg'),
-  ChauffeurClass('executive_van', 'Executive Van', 'Mercedes Sprinter or similar', 12, 12, CarShape.van, 19500, 4, 25000, 'assets/images/cls-suv-black.jpg'),
+  ChauffeurClass('economy_light', 'Economy Light', 'economy', 'Toyota Corolla or similar', 3, 1, CarShape.sedan, 7500, 3, 9500, 'assets/images/cls-comfort.jpg'),
+  ChauffeurClass('ride', 'Ride', 'ride', 'Toyota Camry or similar', 3, 2, CarShape.sedan, 8500, 3, 11000, 'assets/images/cls-sedan.jpg'),
+  ChauffeurClass('ride_suv', 'Ride SUV', 'ride', 'Toyota Highlander or similar', 5, 4, CarShape.suv, 9500, 3, 12500, 'assets/images/cls-xl.jpg'),
+  ChauffeurClass('ride_xl', 'Ride XL', 'ride', 'Toyota Sienna or similar', 6, 5, CarShape.minivan, 10500, 3, 14000, 'assets/images/cls-xl.jpg'),
+  ChauffeurClass('ride_xxl', 'Ride XXL', 'ride', 'Mercedes Sprinter or similar', 12, 8, CarShape.van, 19500, 4, 25000, 'assets/images/cls-suv-black.jpg'),
+  ChauffeurClass('business', 'Business', 'business', 'Mercedes E-Class or similar', 3, 2, CarShape.sedan, 10000, 3, 13000, 'assets/images/cls-business.jpg'),
+  ChauffeurClass('business_suv', 'Business SUV', 'business', 'Chevrolet Suburban or similar', 6, 4, CarShape.suv, 12500, 3, 16500, 'assets/images/cls-xl.jpg'),
+  ChauffeurClass('first', 'First', 'first', 'Mercedes S-Class or similar', 3, 2, CarShape.sedan, 15500, 3, 18500, 'assets/images/cls-black.jpg'),
+  ChauffeurClass('first_suv', 'First SUV', 'first', 'Cadillac Escalade or similar', 6, 4, CarShape.suv, 15000, 3, 19500, 'assets/images/cls-suv-black.jpg'),
 ];
 
+/// Old class keys → new keys, so older bookings and partner feeds still resolve.
+const legacyClassKeys = {
+  'sedan': 'ride',
+  'extra_comfort': 'ride',
+  'xl': 'ride_suv',
+  'black': 'first',
+  'standard_sedan': 'ride',
+  'business_sedan': 'business',
+  'first_sedan': 'first',
+  'midsize_suv': 'ride_suv',
+  'minivan': 'ride_xl',
+  'large_suv': 'business_suv',
+  'premium_suv': 'first_suv',
+  'executive_van': 'ride_xxl',
+};
+
+String normalizeClassKey(String key) => legacyClassKeys[key] ?? key;
+
 /// Classes offered for Luxury chauffeur.
-const luxuryClassKeys = ['business_sedan', 'first_sedan', 'large_suv', 'premium_suv'];
+const luxuryClassKeys = ['business', 'business_suv', 'first', 'first_suv'];
 
 const hourlyMinHours = 3;
 const hourlyMaxHours = 12;
 const hourlyIncludedMiles = 15;
 
 ChauffeurClass? chauffeurClass(String key) {
+  final k = normalizeClassKey(key);
   for (final c in chauffeurClasses) {
-    if (c.key == key) return c;
+    if (c.key == k) return c;
   }
   return null;
+}
+
+/// Display name for any class key, old or new ("business_sedan" → "Business").
+String vehicleClassLabel(String key) {
+  final c = chauffeurClass(key);
+  if (c != null) return c.label;
+  final s = key.replaceAll('_', ' ').trim();
+  return s.isEmpty ? 'Car' : s[0].toUpperCase() + s.substring(1);
 }
 
 int minHoursFor(String key) => chauffeurClass(key)?.minHours ?? hourlyMinHours;

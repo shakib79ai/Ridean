@@ -19,7 +19,7 @@ class _HourlyScreenState extends ConsumerState<HourlyScreen> with QuoteSearchMix
   final _pickup = TextEditingController();
   final _notes = TextEditingController();
   int _hours = 3;
-  String _cls = 'business_sedan';
+  String _cls = 'business';
   DateTime _start = defaultDateTime(24);
   String _keptDropoff = '';
   String? _formError;

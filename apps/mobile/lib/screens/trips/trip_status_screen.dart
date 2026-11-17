@@ -9,6 +9,7 @@ import '../../api/api_client.dart';
 import '../../api/models.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../widgets/chauffeur.dart';
 import '../../widgets/kit.dart';
 
 /// Board: TripStatus. Live status, chauffeur, timeline, share and cancel.
@@ -23,13 +24,6 @@ class TripStatusScreen extends ConsumerStatefulWidget {
 const _liveStatuses = ['pending_payment', 'payment_authorised', 'confirmed', 'driver_assigned', 'in_progress'];
 const _cancellable = ['pending_payment', 'payment_authorised', 'confirmed', 'driver_assigned'];
 
-const _classLabels = {
-  'sedan': 'Sedan',
-  'xl': 'XL',
-  'extra_comfort': 'Extra Comfort',
-  'business': 'Business',
-  'black': 'Black Car Service',
-};
 
 String _headline(String status, LiveStatus? live) {
   switch (status) {
@@ -262,7 +256,7 @@ class _TripStatusScreenState extends ConsumerState<TripStatusScreen> {
     final eta = live?.etaMinutes;
     final vehicleName = (driver.vehicle ?? '').isNotEmpty ? driver.vehicle : (b.vehicle.name.isNotEmpty ? b.vehicle.name : null);
     final plate = driver.plate;
-    final classLabel = _classLabels[b.vehicle.cls] ?? b.vehicle.name;
+    final classLabel = chauffeurClass(b.vehicle.cls)?.label ?? b.vehicle.name;
     return RdCard(
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Row(children: [

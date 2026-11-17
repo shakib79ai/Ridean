@@ -20,8 +20,8 @@ function HourlyChauffeur() {
   const qs = useQuoteSearch('hourly');
   const init = qs.initial;
   const start = isoToDateTime(init?.pickupAt) ?? defaultDateTime(24);
-  const [cls, setCls] = useState<string>(init?.vehicleClass ?? 'business_sedan');
-  const [hours, setHours] = useState(Math.max(init?.hours ?? 3, minHoursFor(init?.vehicleClass ?? 'business_sedan')));
+  const [cls, setCls] = useState<string>(init?.vehicleClass ?? 'business');
+  const [hours, setHours] = useState(Math.max(init?.hours ?? 3, minHoursFor(init?.vehicleClass ?? 'business')));
   const [pickup, setPickup] = useState<Place>(placeFrom(init?.pickup));
   const [date, setDate] = useState(start.date);
   const [time, setTime] = useState(start.time);

@@ -7,6 +7,7 @@ import '../../api/api_client.dart';
 import '../../api/models.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../widgets/chauffeur.dart';
 import '../../widgets/kit.dart';
 import '../../widgets/service_icons.dart';
 
@@ -36,28 +37,9 @@ bool canAutoRun(QuoteSearch? s) {
   return at.isAfter(DateTime.now());
 }
 
-const _classLabels = {
-  'sedan': 'Sedan',
-  'xl': 'XL',
-  'extra_comfort': 'Extra Comfort',
-  'business': 'Business',
-  'black': 'Black Car Service',
-  'standard_sedan': 'Standard Sedan',
-  'business_sedan': 'Business Sedan',
-  'first_sedan': 'First Sedan',
-  'midsize_suv': 'Mid-size SUV',
-  'minivan': 'Minivan',
-  'large_suv': 'Business SUV',
-  'premium_suv': 'Premium SUV',
-  'executive_van': 'Executive Van',
-};
-
-/// "extra_comfort" → "Extra Comfort" (VEHICLE_CLASSES labels, otherwise a tidied key).
+/// "business_sedan" → "Business" (the 9 Ridean classes, otherwise a tidied key).
 String classLabel(String cls) {
-  final known = _classLabels[cls];
-  if (known != null) return known;
-  final s = cls.replaceAll('_', ' ').trim();
-  return s.isEmpty ? 'Car' : s[0].toUpperCase() + s.substring(1);
+  return vehicleClassLabel(cls);
 }
 
 /// ETA, trip time or capacity — shown under the price.

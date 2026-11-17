@@ -95,20 +95,21 @@ export function serviceLabel(key: ServiceKey): string {
   return (SERVICES as Record<string, ServiceDefinition>)[key]?.label ?? key;
 }
 
-/** On-demand Ride Now categories (yellow/green cabs and FHV partners). */
-export const RIDE_CLASSES = [
-  { key: 'sedan', label: 'Sedan', example: 'Toyota Camry or similar', passengers: 3, bags: 2 },
-  { key: 'xl', label: 'XL', example: 'Toyota Highlander or similar', passengers: 6, bags: 4 },
-  { key: 'extra_comfort', label: 'Extra Comfort', example: 'Newer cars, more legroom', passengers: 3, bags: 2 },
-  { key: 'business', label: 'Business', example: 'Mercedes E-Class or similar', passengers: 3, bags: 2 },
-  { key: 'black', label: 'Black Car Service', example: 'Mercedes S-Class or similar', passengers: 3, bags: 2 },
-] as const;
-
 export type CarShape = 'sedan' | 'suv' | 'minivan' | 'van';
+
+/** The four class categories, cheapest first (same structure as SIXT ride). */
+export type ClassCategory = 'economy' | 'ride' | 'business' | 'first';
+export const CLASS_CATEGORIES: readonly { key: ClassCategory; label: string; summary: string }[] = [
+  { key: 'economy', label: 'Economy', summary: 'Lowest price, light luggage' },
+  { key: 'ride', label: 'Ride', summary: 'Everyday cars at a great price' },
+  { key: 'business', label: 'Business', summary: 'Black cars with a suited chauffeur' },
+  { key: 'first', label: 'First', summary: 'Top luxury, maximum comfort' },
+];
 
 export interface ChauffeurClass {
   key: string;
   label: string;
+  category: ClassCategory;
   example: string;
   passengers: number;
   bags: number;
@@ -121,31 +122,55 @@ export interface ChauffeurClass {
   summary: string;
   /** Studio photo served by the website and PWA under /img. */
   photo: string;
+  /** Also offered for on-demand Ride (Ride Now). */
+  rideNow: boolean;
 }
 
 /**
- * The 8 pre-booked classes used by Ridean Direct (dispatch, bases, drivers).
- * Airport transfer, Hourly chauffeur and Luxury chauffeur show exactly these.
- * Keys match the dispatch API, so a booking keeps its class end to end.
+ * Ridean's 9 vehicle classes — one list for every service and for Ridean Direct
+ * (dispatch, bases, drivers). Names and categories follow SIXT ride
+ * (Ride, Business, First, Ride SUV, Business SUV, Ride XXL) plus Economy Light,
+ * Ride XL (minivan) and First SUV. Keys are the dispatch API keys.
  */
-export const CHAUFFEUR_CLASSES = [
-  { key: 'standard_sedan', label: 'Standard Sedan', example: 'Toyota Camry or similar', passengers: 3, bags: 2, shape: 'sedan', hourlyRate: 8500, minHours: 3, airportFrom: 11000, summary: 'Everyday comfortable car for 1–3 people.', photo: '/img/cls-sedan.jpg' },
-  { key: 'business_sedan', label: 'Business Sedan', example: 'Mercedes E-Class or similar', passengers: 3, bags: 3, shape: 'sedan', hourlyRate: 10000, minHours: 3, airportFrom: 13000, summary: 'Black or gray executive car for business travel.', photo: '/img/cls-business.jpg' },
-  { key: 'first_sedan', label: 'First Sedan', example: 'Mercedes S-Class or similar', passengers: 3, bags: 3, shape: 'sedan', hourlyRate: 15500, minHours: 3, airportFrom: 18500, summary: 'Top luxury black sedan, chauffeur level.', photo: '/img/cls-black.jpg' },
-  { key: 'midsize_suv', label: 'Mid-size SUV', example: 'Toyota Highlander or similar', passengers: 6, bags: 2, shape: 'suv', hourlyRate: 9500, minHours: 3, airportFrom: 12500, summary: '7 seats: 6 people with 2 bags, or 3 people with 4 bags.', photo: '/img/cls-xl.jpg' },
-  { key: 'minivan', label: 'Minivan', example: 'Toyota Sienna or similar', passengers: 6, bags: 5, shape: 'minivan', hourlyRate: 10500, minHours: 3, airportFrom: 14000, summary: 'Sliding doors and room for families with luggage.', photo: '/img/cls-xl.jpg' },
-  { key: 'large_suv', label: 'Business SUV', example: 'Chevrolet Suburban or similar', passengers: 6, bags: 6, shape: 'suv', hourlyRate: 12500, minHours: 3, airportFrom: 16500, summary: 'Black or gray full-size SUV for groups with luggage.', photo: '/img/cls-xl.jpg' },
-  { key: 'premium_suv', label: 'Premium SUV', example: 'Cadillac Escalade or similar', passengers: 6, bags: 6, shape: 'suv', hourlyRate: 15000, minHours: 3, airportFrom: 19500, summary: 'Luxury black full-size SUV, VIP level.', photo: '/img/cls-suv-black.jpg' },
-  { key: 'executive_van', label: 'Executive Van', example: 'Mercedes Sprinter or similar', passengers: 12, bags: 12, shape: 'van', hourlyRate: 19500, minHours: 4, airportFrom: 25000, summary: 'Large van for groups of up to 12 with luggage.', photo: '/img/cls-suv-black.jpg' },
+export const VEHICLE_CLASSES = [
+  { key: 'economy_light', label: 'Economy Light', category: 'economy', example: 'Toyota Corolla or similar', passengers: 3, bags: 1, shape: 'sedan', hourlyRate: 7500, minHours: 3, airportFrom: 9500, summary: 'Lowest price for light travellers.', photo: '/img/cls-comfort.jpg', rideNow: true },
+  { key: 'ride', label: 'Ride', category: 'ride', example: 'Toyota Camry or similar', passengers: 3, bags: 2, shape: 'sedan', hourlyRate: 8500, minHours: 3, airportFrom: 11000, summary: 'Reliable everyday car at a great price.', photo: '/img/cls-sedan.jpg', rideNow: true },
+  { key: 'ride_suv', label: 'Ride SUV', category: 'ride', example: 'Toyota Highlander or similar', passengers: 5, bags: 4, shape: 'suv', hourlyRate: 9500, minHours: 3, airportFrom: 12500, summary: 'More room in a comfortable SUV.', photo: '/img/cls-xl.jpg', rideNow: true },
+  { key: 'ride_xl', label: 'Ride XL', category: 'ride', example: 'Toyota Sienna or similar', passengers: 6, bags: 5, shape: 'minivan', hourlyRate: 10500, minHours: 3, airportFrom: 14000, summary: 'Minivan for families and extra luggage.', photo: '/img/cls-xl.jpg', rideNow: true },
+  { key: 'ride_xxl', label: 'Ride XXL', category: 'ride', example: 'Mercedes Sprinter or similar', passengers: 12, bags: 8, shape: 'van', hourlyRate: 19500, minHours: 4, airportFrom: 25000, summary: 'Van for larger group transfers, up to 12.', photo: '/img/cls-suv-black.jpg', rideNow: false },
+  { key: 'business', label: 'Business', category: 'business', example: 'Mercedes E-Class or similar', passengers: 3, bags: 2, shape: 'sedan', hourlyRate: 10000, minHours: 3, airportFrom: 13000, summary: 'Black executive sedan with a suited chauffeur.', photo: '/img/cls-business.jpg', rideNow: true },
+  { key: 'business_suv', label: 'Business SUV', category: 'business', example: 'Chevrolet Suburban or similar', passengers: 6, bags: 4, shape: 'suv', hourlyRate: 12500, minHours: 3, airportFrom: 16500, summary: 'Black full-size SUV with a suited chauffeur.', photo: '/img/cls-xl.jpg', rideNow: false },
+  { key: 'first', label: 'First', category: 'first', example: 'Mercedes S-Class or similar', passengers: 3, bags: 2, shape: 'sedan', hourlyRate: 15500, minHours: 3, airportFrom: 18500, summary: 'Top luxury sedan with maximum comfort.', photo: '/img/cls-black.jpg', rideNow: true },
+  { key: 'first_suv', label: 'First SUV', category: 'first', example: 'Cadillac Escalade or similar', passengers: 6, bags: 4, shape: 'suv', hourlyRate: 15000, minHours: 3, airportFrom: 19500, summary: 'Luxury flagship SUV for VIP travel.', photo: '/img/cls-suv-black.jpg', rideNow: false },
 ] as const satisfies readonly ChauffeurClass[];
 
-/** Every class any Ridean service can return (label lookup). */
-export const VEHICLE_CLASSES = [...RIDE_CLASSES, ...CHAUFFEUR_CLASSES] as const;
+/** Pre-booked services (Airport transfer, Hourly, Luxury) offer all 9 classes. */
+export const CHAUFFEUR_CLASSES = VEHICLE_CLASSES;
+
+/** On-demand Ride offers the cars partners can send right away. */
+export const RIDE_CLASSES = VEHICLE_CLASSES.filter((c) => c.rideNow);
+
+/** Old class keys (before the SIXT-style names) → new keys, so older bookings and partner feeds still resolve. */
+export const LEGACY_CLASS_KEYS: Readonly<Record<string, string>> = {
+  sedan: 'ride',
+  extra_comfort: 'ride',
+  xl: 'ride_suv',
+  black: 'first',
+  standard_sedan: 'ride',
+  business_sedan: 'business',
+  first_sedan: 'first',
+  midsize_suv: 'ride_suv',
+  minivan: 'ride_xl',
+  large_suv: 'business_suv',
+  premium_suv: 'first_suv',
+  executive_van: 'ride_xxl',
+};
+export const normalizeClassKey = (key: string): string => LEGACY_CLASS_KEYS[key] ?? key;
 
 /** Classes offered for Luxury chauffeur (point-to-point, first-class). */
-export const LUXURY_CLASS_KEYS: readonly string[] = ['business_sedan', 'first_sedan', 'large_suv', 'premium_suv'];
+export const LUXURY_CLASS_KEYS: readonly string[] = ['business', 'business_suv', 'first', 'first_suv'];
 
-/** Services that use the 8 chauffeur classes. */
+/** Services that use the full class list. */
 export const CHAUFFEUR_SERVICES: readonly ServiceKey[] = ['airport_transfer', 'hourly', 'luxury'];
 export const HOURLY_MIN_HOURS = 3;
 export const HOURLY_MAX_HOURS = 12;
@@ -153,9 +178,15 @@ export const HOURLY_MAX_HOURS = 12;
 export const HOURLY_INCLUDED_MILES = 15;
 
 export function chauffeurClass(key: string | undefined): ChauffeurClass | undefined {
-  return (CHAUFFEUR_CLASSES as readonly ChauffeurClass[]).find((c) => c.key === key);
+  if (!key) return undefined;
+  const k = normalizeClassKey(key);
+  return (VEHICLE_CLASSES as readonly ChauffeurClass[]).find((c) => c.key === k);
 }
-/** Minimum bookable hours for a class (Executive Van is 4). */
+/** Display name for any class key, old or new ("business_sedan" → "Business"). */
+export function vehicleClassLabel(key: string): string {
+  return chauffeurClass(key)?.label ?? key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+}
+/** Minimum bookable hours for a class (Ride XXL is 4). */
 export function minHoursFor(key?: string): number {
   return chauffeurClass(key)?.minHours ?? HOURLY_MIN_HOURS;
 }

@@ -126,7 +126,7 @@ export class PricelineAdapter extends CarRentalAdapter {
     const data = this.ensureOk(this.key, res, 'transfer search');
     return (data.results ?? []).map((r) => ({
       offerId: r.id,
-      vehicle: { class: 'sedan', name: r.vehicle, passengers: r.seats, bags: r.bags },
+      vehicle: { class: 'ride', name: r.vehicle, passengers: r.seats, bags: r.bags },
       price: this.toMinor(r.price),
       currency: r.currency ?? ctx.currency,
       cancellation: 'Free cancellation up to 24 hours before pickup',
@@ -155,8 +155,8 @@ interface RentalOffer {
 export function mapRentalClass(code?: string): string {
   const c = (code ?? '').toUpperCase();
   if (/^[FL]/.test(c) || c.includes('LUX') || c.includes('PREMIUM')) return 'business';
-  if (/^[PU]/.test(c)) return 'black';
+  if (/^[PU]/.test(c)) return 'first';
   if (c.includes('SUV') || /^.F/.test(c) || /^S/.test(c)) return 'xl';
-  if (/^[IJ]/.test(c)) return 'extra_comfort';
-  return 'sedan';
+  if (/^[IJ]/.test(c)) return 'ride';
+  return 'ride';
 }

@@ -35,7 +35,7 @@ const goldIcon = { width: 21, height: 21, viewBox: '0 0 24 24', fill: 'none', st
 
 function AirportTransfer() {
   const qs = useQuoteSearch('airport_transfer');
-  const [cls, setCls] = useState('business_sedan');
+  const [cls, setCls] = useState('business');
   const init = qs.initial;
   const out = isoToDateTime(init?.pickupAt) ?? defaultDateTime(24);
   const back = isoToDateTime(init?.returnAt) ?? defaultDateTime(24 * 8);

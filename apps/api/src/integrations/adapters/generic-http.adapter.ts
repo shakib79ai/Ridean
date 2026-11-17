@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SERVICE_KEYS, type QuoteSearchRequest } from '@ridean/shared';
+import { SERVICE_KEYS, normalizeClassKey, type QuoteSearchRequest } from '@ridean/shared';
 import { BaseSupplierAdapter } from '../base-adapter';
 import type { AdapterContext, SupplierBookingInput, SupplierBookingResult, SupplierOffer } from '../supplier-adapter';
 
@@ -46,7 +46,7 @@ export class GenericHttpAdapter extends BaseSupplierAdapter {
     const data = this.ensureOk(ctx.supplier.code, res, 'search');
     return (data.offers ?? []).map((o) => ({
       offerId: o.id,
-      vehicle: { class: o.vehicleClass ?? 'sedan', name: o.vehicleName, passengers: o.passengers ?? 3, bags: o.bags ?? 2, imageUrl: o.imageUrl },
+      vehicle: { class: normalizeClassKey(o.vehicleClass ?? 'ride'), name: o.vehicleName, passengers: o.passengers ?? 3, bags: o.bags ?? 2, imageUrl: o.imageUrl },
       price: Math.round(o.priceMinor ?? o.price * 100),
       currency: o.currency ?? ctx.currency,
       etaMinutes: o.etaMinutes,

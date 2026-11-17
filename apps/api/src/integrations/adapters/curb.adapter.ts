@@ -36,7 +36,7 @@ export class CurbAdapter extends BaseSupplierAdapter {
     const data = this.ensureOk(this.key, res, 'estimates');
     return (data.estimates ?? []).map((e) => ({
       offerId: e.estimate_id,
-      vehicle: { class: e.vehicle_type === 'fhv' ? 'sedan' : 'sedan', name: e.display_name ?? 'Taxi', passengers: e.capacity ?? 4, bags: 2 },
+      vehicle: { class: 'ride', name: e.display_name ?? 'Taxi', passengers: e.capacity ?? 4, bags: 2 },
       price: this.toMinor(e.fare_estimate),
       currency: e.currency ?? ctx.currency,
       etaMinutes: e.eta_minutes,

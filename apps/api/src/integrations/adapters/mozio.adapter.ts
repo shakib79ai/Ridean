@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { QuoteSearchRequest } from '@ridean/shared';
+import { normalizeClassKey, type QuoteSearchRequest } from '@ridean/shared';
 import { BaseSupplierAdapter } from '../base-adapter';
 import { SupplierError, type AdapterContext, type SupplierBookingInput, type SupplierBookingResult, type SupplierOffer } from '../supplier-adapter';
 
@@ -56,7 +56,7 @@ export class MozioAdapter extends BaseSupplierAdapter {
     }
     return results.map((r) => ({
       offerId: r.result_id,
-      vehicle: { class: r.vehicle_class ?? 'sedan', name: r.vehicle_name, passengers: r.max_passengers ?? 3, bags: r.max_bags ?? 2, imageUrl: r.image },
+      vehicle: { class: normalizeClassKey(r.vehicle_class ?? 'ride'), name: r.vehicle_name, passengers: r.max_passengers ?? 3, bags: r.max_bags ?? 2, imageUrl: r.image },
       price: this.toMinor(r.total_price),
       currency: r.currency ?? ctx.currency,
       durationMinutes: r.duration_minutes,

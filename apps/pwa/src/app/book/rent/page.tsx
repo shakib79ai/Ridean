@@ -18,9 +18,9 @@ export default function RentComparePage() {
 /** Filter chips → Ridean vehicle classes (rental partners' ACRISS codes are mapped to these by the API). */
 const FILTERS = [
   { key: 'all', label: 'All', classes: [] as string[] },
-  { key: 'economy', label: 'Economy', classes: ['sedan', 'extra_comfort'] },
-  { key: 'suv', label: 'SUV', classes: ['xl'] },
-  { key: 'lux', label: 'Luxury', classes: ['business', 'black'] },
+  { key: 'economy', label: 'Economy', classes: ['economy_light', 'ride'] },
+  { key: 'suv', label: 'SUV', classes: ['ride_suv', 'ride_xl', 'business_suv', 'first_suv'] },
+  { key: 'lux', label: 'Luxury', classes: ['business', 'first'] },
 ] as const;
 type FilterKey = (typeof FILTERS)[number]['key'];
 

@@ -8,6 +8,7 @@ import '../../api/api_client.dart';
 import '../../api/models.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../widgets/chauffeur.dart';
 import '../../widgets/kit.dart';
 
 /// Board: BookingReview. Route, vehicle, promo, price and passenger details before Payment.
@@ -21,15 +22,8 @@ class BookingReviewScreen extends ConsumerStatefulWidget {
 
 final _emailRe = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
 
-const _classLabels = {
-  'sedan': 'Sedan',
-  'xl': 'XL',
-  'extra_comfort': 'Extra Comfort',
-  'business': 'Business',
-  'black': 'Black Car Service',
-};
 
-String _vehicleTitle(Vehicle v) => _classLabels[v.cls] ?? (v.name.isEmpty ? 'Vehicle' : v.name);
+String _vehicleTitle(Vehicle v) => chauffeurClass(v.cls)?.label ?? (v.name.isEmpty ? 'Vehicle' : v.name);
 
 String _fmtTime(DateTime d) => DateFormat('h:mm a').format(d);
 
